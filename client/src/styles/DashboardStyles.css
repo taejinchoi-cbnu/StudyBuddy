@@ -1,0 +1,314 @@
+/* MainStyles.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Single+Day&display=swap');
+
+:root {
+  --primary-color: #ffccc4;
+  --primary-dark: #cc9991;
+  --accent-color: #cc6659;
+  --text-color: #4d4d4d;
+  --light-bg: #fafafa;
+  --white: #ffffff;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  --hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--text-color);
+  background-color: var(--light-bg);
+}
+
+/* 메인 레이아웃 */
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* 상단 헤더 */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  height: 118px;
+}
+
+.mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 40px;
+  background-color: #ffebe5;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.mode-toggle:hover {
+  transform: scale(1.05);
+}
+
+.header-logo {
+  height: 100px;
+  width: auto;
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.main-error {
+  background-color: rgba(255, 87, 87, 0.2);
+  color: #cc3333;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+/* 대시보드 그리드 */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+/* 카드 스타일 */
+.dashboard-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+
+.card-title {
+  font-family: 'Single Day', cursive;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-content p {
+  margin-bottom: 0.75rem;
+}
+
+.card-content p:last-of-type {
+  margin-bottom: 1.5rem;
+}
+
+.card-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--white);
+  color: #000;
+  border: 2px solid var(--primary-dark);
+  border-radius: 12px;
+  font-family: 'Single Day', cursive;
+  font-size: 1.1rem;
+  text-decoration: none;
+  align-self: flex-start;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(204, 153, 145, 0.3);
+}
+
+.card-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(204, 153, 145, 0.4);
+}
+
+.card-button.accent {
+  background-color: var(--accent-color);
+  color: var(--white);
+  border: none;
+  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+}
+
+.card-button.accent:hover {
+  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+}
+
+/* 하단 네비게이션 바 */
+.bottom-navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: var(--primary-color);
+  padding: 1rem;
+  height: 118px;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover, .nav-item.active {
+  transform: translateY(-5px);
+}
+
+.nav-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.nav-text {
+  font-size: 1.2rem;
+}
+
+/* 로딩 스피너 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 204, 196, 0.3);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 다크 모드 */
+.dark-mode {
+  --primary-color: #664d4a;
+  --primary-dark: #50403e;
+  --accent-color: #994d42;
+  --text-color: #e6e6e6;
+  --light-bg: #333333;
+  --white: #404040;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  --hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .card-button {
+  background-color: #505050;
+  color: #e6e6e6;
+  border-color: #807070;
+}
+
+.dark-mode .mode-toggle {
+  background-color: #505050;
+  color: #e6e6e6;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .main-header, .bottom-navbar {
+    padding: 1rem;
+  }
+  
+  .main-content {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-header {
+    height: auto;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .bottom-navbar {
+    height: auto;
+    padding: 0.75rem 0;
+  }
+  
+  .nav-icon {
+    font-size: 1.25rem;
+  }
+  
+  .nav-text {
+    font-size: 0.9rem;
+  }
+  
+  .dashboard-card {
+    padding: 1.25rem;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+  }
+  
+  .card-button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mode-toggle {
+    width: 100px;
+    height: 35px;
+    font-size: 16px;
+  }
+  
+  .header-logo {
+    height: 70px;
+  }
+  
+  .dashboard-card {
+    padding: 1rem;
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .nav-icon {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .nav-text {
+    font-size: 0.8rem;
+  }
+}

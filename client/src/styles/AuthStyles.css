@@ -1,0 +1,505 @@
+/* AuthStyles.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Single+Day&display=swap');
+
+.auth-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffccc4;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+.auth-left-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.auth-image {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  max-height: 600px;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.auth-right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.auth-logo-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-logo {
+  font-family: 'Single Day', cursive;
+  font-size: 3.5rem; /* 대신 rem 단위 사용 */
+  color: #ffffff;
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.auth-tagline {
+  font-family: 'Single Day', cursive;
+  font-size: 1.5rem; /* 대신 rem 단위 사용 */
+  color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  margin: 0;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 534px;
+}
+
+.auth-error {
+  background-color: rgba(255, 87, 87, 0.2);
+  color: #cc3333;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 534px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.input-field-container {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: 'Single Day', cursive;
+  font-size: 1.25rem; /* 대신 rem 단위 사용 */
+  color: #000000;
+  font-weight: 500;
+}
+
+.input-field {
+  width: 100%;
+  height: 60px; /* 고정 높이 대신 더 작은 크기 사용 */
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  outline: none;
+  box-sizing: border-box;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.input-field:focus {
+  box-shadow: 0 6px 12px rgba(204, 153, 145, 0.25);
+}
+
+.auth-buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.auth-button {
+  width: 120px; /* 더 작은 버튼 크기 */
+  height: 50px;
+  border-radius: 12px;
+  font-family: 'Single Day', cursive;
+  font-size: 1.5rem; /* 대신 rem 단위 사용 */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.75rem 0;
+  transition: all 0.3s ease;
+  border: none;
+  position: relative;
+}
+
+.auth-button.primary {
+  background-color: #ffffff;
+  border: 2px solid #cc9991;
+  color: #000000;
+  box-shadow: 0 4px 10px rgba(204, 153, 145, 0.3);
+}
+
+.auth-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(204, 153, 145, 0.4);
+}
+
+.auth-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(204, 153, 145, 0.3);
+}
+
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.auth-button-link {
+  text-decoration: none;
+}
+
+.auth-link {
+  font-family: 'Single Day', cursive;
+  font-size: 1.25rem; /* 대신 rem 단위 사용 */
+  color: #cc6659;
+  text-decoration: none;
+  margin-top: 1.5rem;
+  display: inline-block;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.auth-link:hover {
+  transform: translateY(-2px);
+}
+
+.auth-link:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #cc6659;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.auth-link:hover:after {
+  transform: scaleX(1);
+}
+
+.auth-text {
+  font-family: 'Single Day', cursive;
+  font-size: 1.25rem; /* 대신 rem 단위 사용 */
+  color: #cc6659;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+/* 노트북 화면에 최적화된 미디어 쿼리 추가 */
+@media (max-width: 1440px) {
+  .auth-form, 
+  .auth-error {
+    max-width: 450px;
+  }
+  
+  .auth-image {
+    max-width: 500px;
+    max-height: 500px;
+  }
+  
+  .auth-logo {
+    font-size: 3rem;
+  }
+  
+  .auth-tagline {
+    font-size: 1.25rem;
+  }
+  
+  .input-field-container {
+    margin-bottom: 1.25rem;
+  }
+  
+  .input-field {
+    height: 55px;
+  }
+}
+
+/* 작은 노트북 화면에 최적화된 미디어 쿼리 */
+@media (max-width: 1280px) {
+  .auth-left-section,
+  .auth-right-section {
+    padding: 0.75rem;
+  }
+  
+  .auth-form, 
+  .auth-error {
+    max-width: 400px;
+  }
+  
+  .auth-image {
+    max-width: 450px;
+    max-height: 450px;
+  }
+  
+  .auth-logo {
+    font-size: 2.75rem;
+  }
+  
+  .auth-tagline {
+    font-size: 1.15rem;
+  }
+  
+  .input-field {
+    height: 50px;
+  }
+  
+  .auth-button {
+    width: 110px;
+    height: 45px;
+    font-size: 1.35rem;
+  }
+}
+
+/* 태블릿에 최적화된 미디어 쿼리 */
+@media (max-width: 1024px) {
+  .auth-layout {
+    flex-direction: column;
+    padding: 2rem 0;
+  }
+  
+  .auth-left-section,
+  .auth-right-section {
+    flex: none;
+    width: 100%;
+  }
+  
+  .auth-left-section {
+    max-height: 40vh;
+    overflow: hidden;
+  }
+  
+  .auth-image {
+    max-width: 90%;
+    max-height: 40vh;
+  }
+  
+  .auth-logo-container {
+    margin-bottom: 1.5rem;
+  }
+  
+  .auth-form, 
+  .auth-error {
+    max-width: 500px;
+  }
+  
+  .auth-button {
+    margin: 0.5rem 0;
+  }
+  
+  .auth-buttons-container {
+    margin-top: 1.25rem;
+  }
+}
+
+/* 모바일 크기에 최적화된 미디어 쿼리 */
+@media (max-width: 768px) {
+  .auth-layout {
+    padding: 1rem 0;
+  }
+  
+  .auth-left-section {
+    display: none; /* 모바일에서는 이미지 숨김 */
+  }
+  
+  .auth-right-section {
+    padding: 1rem;
+  }
+  
+  .auth-logo {
+    font-size: 2.5rem;
+  }
+  
+  .auth-tagline {
+    font-size: 1rem;
+  }
+  
+  .auth-form, 
+  .auth-error {
+    max-width: 350px;
+  }
+  
+  .input-field {
+    height: 45px;
+  }
+  
+  .input-label {
+    font-size: 1rem;
+  }
+  
+  .auth-button {
+    width: 100px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+  
+  .auth-link, .auth-text {
+    font-size: 1rem;
+  }
+}
+
+/* 작은 모바일 화면에 최적화된 미디어 쿼리 */
+@media (max-width: 480px) {
+  .auth-form, 
+  .auth-error {
+    max-width: 320px;
+  }
+  
+  .auth-logo {
+    font-size: 2.25rem;
+  }
+  
+  .auth-tagline {
+    font-size: 0.9rem;
+  }
+  
+  .input-field-container {
+    margin-bottom: 1rem;
+  }
+  
+  .auth-button {
+    width: 90px;
+    height: 38px;
+    font-size: 1.15rem;
+  }
+}
+
+/* 초고해상도 디스플레이에 대한 최적화 */
+@media (min-width: 1920px) {
+  .auth-image {
+    max-width: 700px;
+    max-height: 700px;
+  }
+  
+  .auth-form, 
+  .auth-error {
+    max-width: 600px;
+  }
+  
+  .auth-logo {
+    font-size: 4rem;
+  }
+  
+  .auth-tagline {
+    font-size: 1.75rem;
+  }
+  
+  .input-field {
+    height: 70px;
+    font-size: 1.1rem;
+  }
+  
+  .input-label {
+    font-size: 1.4rem;
+  }
+  
+  .auth-button {
+    width: 150px;
+    height: 60px;
+    font-size: 1.75rem;
+  }
+}
+
+/* 화면 높이가 작은 경우에 대한 최적화 */
+@media (max-height: 800px) {
+  .auth-logo-container {
+    margin-bottom: 1.25rem;
+  }
+  
+  .input-field-container {
+    margin-bottom: 1rem;
+  }
+  
+  .auth-buttons-container {
+    margin-top: 1rem;
+  }
+  
+  .auth-button {
+    margin: 0.5rem 0;
+  }
+  
+  .auth-link {
+    margin-top: 1rem;
+  }
+}
+
+/* 화면 높이가 매우 작은 경우(노트북 일부 모델) */
+@media (max-height: 650px) {
+  .auth-layout {
+    padding: 0.5rem 0;
+  }
+  
+  .auth-logo {
+    font-size: 2.5rem;
+  }
+  
+  .auth-tagline {
+    font-size: 1rem;
+  }
+  
+  .input-field {
+    height: 45px;
+  }
+  
+  .auth-button {
+    height: 40px;
+  }
+}
+
+/* 성공 메시지 표시용 스타일 */
+.auth-success {
+    background-color: rgba(87, 255, 132, 0.2);
+    color: #33cc33;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 534px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* 설명 텍스트 스타일 */
+  .auth-description {
+    margin: 1rem 0 2rem;
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    width: 100%;
+  }
+  
+  /* 강조 버튼 스타일 (비밀번호 재설정 버튼 등) */
+  .auth-button.accent {
+    background-color: #cc6659;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(204, 102, 89, 0.3);
+    border: none;
+  }
+  
+  .auth-button.accent:hover {
+    background-color: #d17a6f;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(204, 102, 89, 0.4);
+  }
+  
+  .auth-button.accent:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(204, 102, 89, 0.3);
+  }

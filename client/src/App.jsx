@@ -1,18 +1,57 @@
-import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+
+// Components
+import AppNavbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// Pages
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
+
+// Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
+// Import Bootstrap Icons CSS (you need to install this package)
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 function App() {
   return (
-    <div className="container">
-      <h1>StudyBuddy App</h1>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/group" element={<div>Group Page</div>} />
-        <Route path="/schedule" element={<div>Schedule Page</div>} />
-        <Route path="/chat" element={<div>Chat Page</div>} />
-        <Route path="/profile" element={<div>Profile Page</div>} />
-      </Routes>
-    </div>
+    <Router>
+      <AuthProvider>
+        <AppNavbar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          
+          {/* Protected Routes */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Redirect for any other paths */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </AuthProvider>
+    </Router>
   );
 }
 
