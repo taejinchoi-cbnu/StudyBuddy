@@ -15,8 +15,10 @@ import ProfilePage from './pages/ProfilePage';
 
 // Import Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
-// Import Bootstrap Icons CSS (you need to install this package)
+// Import Bootstrap Icons CSS
 import 'bootstrap-icons/font/bootstrap-icons.css';
+// Import custom styles
+import './index.css';
 
 function App() {
   return (
@@ -43,6 +45,25 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* 그룹 및 스케줄 페이지는 2주차, 3주차에 구현 예정 */}
+          <Route 
+            path="/groups" 
+            element={
+              <ProtectedRoute>
+                <DashboardPage /> {/* 임시로 대시보드로 리다이렉트 */}
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/schedule" 
+            element={
+              <ProtectedRoute>
+                <DashboardPage /> {/* 임시로 대시보드로 리다이렉트 */}
               </ProtectedRoute>
             } 
           />

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/AuthStyles.css';
-import studyImage from '../assets/loginLogo.gif'; // 이미지 경로 확인 필요
+import studyImage from '../assets/logoQuestion.png'; 
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');

@@ -1,17 +1,22 @@
 :root {
-  --primary-color: #007bff;
+  --primary-color: #ff6b6b;
   --secondary-color: #6c757d;
   --success-color: #28a745;
-  --danger-color: #dc3545;
+  --danger-color: #ff6b6b;
   --warning-color: #ffc107;
   --info-color: #17a2b8;
   --light-color: #f8f9fa;
   --dark-color: #343a40;
+  --accent-color: #ff6b6b;
 }
+
+/* Import Google Fonts - Single Day and Noto Sans KR */
+@import url('https://fonts.googleapis.com/css2?family=Single+Day&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -24,12 +29,27 @@ code {
     monospace;
 }
 
+/* 전체 레이아웃 */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
 /* Custom card styling */
 .card {
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: none;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
 }
 
 .card:hover {
@@ -50,8 +70,20 @@ code {
 }
 
 .btn-primary:hover {
-  background-color: #0069d9;
-  border-color: #0062cc;
+  background-color: #e05959;
+  border-color: #d14848;
+}
+
+.btn-accent {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+.btn-accent:hover {
+  background-color: #e05959;
+  border-color: #d14848;
+  color: white;
 }
 
 /* Form styling */
@@ -64,30 +96,18 @@ code {
 
 .form-control:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
 }
 
 /* Navigation styling */
 .navbar {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
 }
 
 /* Spacing utilities */
 .section-padding {
   padding: 80px 0;
-}
-
-/* Homepage feature icons */
-.feature-icon {
-  width: 80px;
-  height: 80px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: var(--primary-color);
-  color: white;
-  margin-bottom: 1rem;
 }
 
 /* Profile image styling */
@@ -98,4 +118,59 @@ code {
   border-radius: 50%;
   border: 4px solid white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dashboard page styles */
+.dashboard-card {
+  height: 100%;
+  margin-bottom: 20px;
+}
+
+.dashboard-card-title {
+  font-family: 'Single Day', 'Noto Sans KR', cursive;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Animation utilities */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 2rem;
+}
+
+/* Error message styling */
+.error-message {
+  padding: 1rem;
+  border-radius: 0.3rem;
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid var(--danger-color);
+  color: var(--danger-color);
+  margin-bottom: 1rem;
+}
+
+/* Success message styling */
+.success-message {
+  padding: 1rem;
+  border-radius: 0.3rem;
+  background-color: rgba(40, 167, 69, 0.1);
+  border: 1px solid var(--success-color);
+  color: var(--success-color);
+  margin-bottom: 1rem;
 }

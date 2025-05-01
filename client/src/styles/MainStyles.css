@@ -1,260 +1,381 @@
-/* MainStyles.css에 아래 스타일을 추가하세요 */
+/* Import Google Fonts - Single Day and Noto Sans KR */
+@import url('https://fonts.googleapis.com/css2?family=Single+Day&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+/* MainStyles.css */
+:root {
+  --primary-color: #ff6b6b;
+  --primary-dark: #e05959;
+  --accent-color: #ff6b6b;
+  --text-color: #444;
+  --light-bg: #f8f9fa;
+  --white: #ffffff;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
 
 /* 홈페이지 스타일 */
 .home-page {
-    background-color: var(--light-bg);
-  }
-  
-  /* 히어로 섹션 */
+  background-color: var(--light-bg);
+}
+
+/* 히어로 섹션 */
+.hero-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 4rem;
+  padding: 2rem 0;
+}
+
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hero-title {
+  font-family: 'Single Day', 'Noto Sans KR', cursive;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.hero-text {
+  font-size: 1.25rem;
+  line-height: 1.5;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+}
+
+.hero-image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  /* 이미지가 투명 배경이면 그림자 효과 제거 */
+  /* box-shadow: var(--shadow); */
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.hero-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--white);
+  color: #000;
+  border: 2px solid var(--primary-dark);
+  border-radius: 12px;
+  font-family: 'Single Day', 'Noto Sans KR', cursive;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(204, 153, 145, 0.3);
+  cursor: pointer;
+}
+
+.hero-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(204, 153, 145, 0.4);
+}
+
+.hero-button.accent {
+  background-color: var(--accent-color);
+  color: var(--white);
+  border: none;
+  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+}
+
+.hero-button.accent:hover {
+  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+}
+
+/* 특징 섹션 */
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.feature-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+
+.feature-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background-color: var(--accent-color);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 2rem;
+}
+
+.feature-title {
+  font-family: 'Single Day', 'Noto Sans KR', cursive;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.feature-text {
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+/* CTA 섹션 */
+.cta-section {
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+}
+
+.cta-title {
+  font-family: 'Single Day', 'Noto Sans KR', cursive;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.cta-text {
+  font-size: 1.25rem;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 2rem;
+  background-color: var(--accent-color);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Single Day', 'Noto Sans KR', cursive;
+  font-size: 1.25rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+  cursor: pointer;
+}
+
+.cta-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+}
+
+/* 다크 모드 스타일 */
+.dark-mode .hero-title,
+.dark-mode .feature-title,
+.dark-mode .cta-title {
+  color: #e6e6e6;
+}
+
+.dark-mode .hero-text,
+.dark-mode .feature-text,
+.dark-mode .cta-text {
+  color: #bbb;
+}
+
+.dark-mode .feature-icon {
+  background-color: var(--primary-dark);
+}
+
+/* 반응형 스타일 */
+@media (max-width: 1024px) {
   .hero-section {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 2rem;
-    margin-bottom: 4rem;
-    padding: 2rem 0;
+    flex-direction: column;
   }
   
   .hero-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    text-align: center;
+    align-items: center;
   }
   
   .hero-title {
-    font-family: 'Single Day', cursive;
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: #333;
+    font-size: 2.5rem;
+  }
+  
+  .features-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .features-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
   }
   
   .hero-text {
-    font-size: 1.25rem;
-    line-height: 1.5;
-    color: var(--text-color);
-    margin-bottom: 2rem;
-  }
-  
-  .hero-image-container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .hero-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-  }
-  
-  .hero-buttons {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .hero-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 1.5rem;
-    background-color: var(--white);
-    color: #000;
-    border: 2px solid var(--primary-dark);
-    border-radius: 12px;
-    font-family: 'Single Day', cursive;
     font-size: 1.1rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(204, 153, 145, 0.3);
-  }
-  
-  .hero-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(204, 153, 145, 0.4);
-  }
-  
-  .hero-button.accent {
-    background-color: var(--accent-color);
-    color: var(--white);
-    border: none;
-    box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
-  }
-  
-  .hero-button.accent:hover {
-    box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
-  }
-  
-  /* 특징 섹션 */
-  .features-section {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin-bottom: 4rem;
-  }
-  
-  .feature-card {
-    background-color: var(--white);
-    border-radius: 12px;
-    padding: 2rem;
-    text-align: center;
-    box-shadow: var(--shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--hover-shadow);
-  }
-  
-  .feature-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 1.5rem;
-    background-color: var(--primary-color);
-    color: #fff;
-    border-radius: 50%;
-    font-size: 2rem;
-  }
-  
-  .feature-title {
-    font-family: 'Single Day', cursive;
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #333;
-  }
-  
-  .feature-text {
-    color: var(--text-color);
-    line-height: 1.5;
-  }
-  
-  /* CTA 섹션 */
-  .cta-section {
-    background-color: var(--white);
-    border-radius: 12px;
-    padding: 3rem 2rem;
-    text-align: center;
-    box-shadow: var(--shadow);
-    margin-bottom: 2rem;
   }
   
   .cta-title {
-    font-family: 'Single Day', cursive;
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: #333;
+    font-size: 1.75rem;
   }
   
   .cta-text {
-    font-size: 1.25rem;
-    color: var(--text-color);
-    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 1rem 0;
   }
   
-  .cta-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 2rem;
-    background-color: var(--accent-color);
-    color: var(--white);
-    border: none;
-    border-radius: 12px;
-    font-family: 'Single Day', cursive;
-    font-size: 1.25rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
   }
   
-  .cta-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+  .hero-button {
+    width: 100%;
+    margin-bottom: 0.75rem;
   }
   
-  /* 다크 모드 스타일 */
-  .dark-mode .hero-title,
-  .dark-mode .feature-title,
-  .dark-mode .cta-title {
-    color: #e6e6e6;
+  .cta-section {
+    padding: 2rem 1rem;
   }
-  
-  .dark-mode .hero-text,
-  .dark-mode .feature-text,
-  .dark-mode .cta-text {
-    color: #bbb;
-  }
-  
-  .dark-mode .feature-icon {
-    background-color: var(--primary-dark);
-  }
-  
-  /* 반응형 스타일 */
-  @media (max-width: 1024px) {
-    .hero-section {
-      flex-direction: column;
-    }
-    
-    .hero-content {
-      text-align: center;
-      align-items: center;
-    }
-    
-    .hero-title {
-      font-size: 2.5rem;
-    }
-    
-    .features-section {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .features-section {
-      grid-template-columns: 1fr;
-    }
-    
-    .hero-title {
-      font-size: 2rem;
-    }
-    
-    .hero-text {
-      font-size: 1.1rem;
-    }
-    
-    .cta-title {
-      font-size: 1.75rem;
-    }
-    
-    .cta-text {
-      font-size: 1.1rem;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .hero-section {
-      padding: 1rem 0;
-    }
-    
-    .hero-buttons {
-      flex-direction: column;
-      width: 100%;
-    }
-    
-    .hero-button {
-      width: 100%;
-      margin-bottom: 0.75rem;
-    }
-    
-    .cta-section {
-      padding: 2rem 1rem;
-    }
-  }
+}
+
+/* 투명 네비게이션 바 */
+.transparent-navbar {
+  background-color: rgba(255, 255, 255, 0.7) !important; /* 약간 반투명한 배경 */
+  backdrop-filter: blur(5px); /* 블러 효과 추가 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: none !important;
+  transition: all 0.3s ease;
+}
+
+.transparent-navbar .navbar-brand,
+.transparent-navbar .nav-link {
+  color: #333 !important;
+  font-weight: 500;
+}
+
+.transparent-navbar .nav-link:hover {
+  color: var(--primary-color) !important;
+}
+
+.main-layout {
+  padding-top: 56px; /* 네비게이션 바 높이만큼 상단 여백 추가 */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+}
+
+/* 모달 스타일 */
+.auth-modal .modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: var(--shadow);
+}
+
+.auth-modal .modal-header {
+  border-bottom: none;
+  padding: 1.5rem 1.5rem 0.5rem;
+}
+
+.auth-modal .modal-title {
+  font-family: 'Single Day', 'Noto Sans KR', cursive;
+  font-size: 1.75rem;
+  color: #333;
+  width: 100%;
+  text-align: center;
+}
+
+.auth-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.auth-modal .form-control {
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0; /* 간격 조정을 Form.Group에 맡김 */
+}
+
+.auth-modal .btn-primary {
+  background-color: var(--accent-color);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 0;
+  font-weight: 500;
+}
+
+.auth-modal .modal-footer {
+  border-top: none;
+  justify-content: center;
+  padding: 0.5rem 1.5rem 1.5rem;
+}
+
+.auth-modal .auth-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-modal .auth-link:hover {
+  text-decoration: underline;
+}
+
+/* 비밀번호 재설정 링크 스타일 */
+.auth-modal .btn-link {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.auth-modal .btn-link:hover {
+  color: var(--primary-dark);
+}
+
+/* 모달 내 정렬 문제 해결 */
+.auth-modal .close {
+  margin-left: auto;
+}

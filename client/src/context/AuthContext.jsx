@@ -1,116 +1,108 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { auth, firestore } from '../firebase';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
-  signOut,
-  onAuthStateChanged,
-  updateProfile,
-  sendPasswordResetEmail
+  signOut, 
+  sendPasswordResetEmail,
+  onAuthStateChanged
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
+export function useAuth() {
   return useContext(AuthContext);
-};
+}
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Signup function
-  const signup = async (email, password, displayName) => {
+  // 회원가입 함수
+  async function signup(email, password, displayName) {
     try {
-      // Create user with email and password
+      // 사용자 계정 생성
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
       
-      // Update profile with display name
-      await updateProfile(userCredential.user, { displayName });
-      
-      // Create user profile document in Firestore
-      await setDoc(doc(db, 'users', userCredential.user.uid), {
-        uid: userCredential.user.uid,
-        email,
-        displayName,
-        createdAt: new Date().toISOString(),
-        department: '',
+      // Firestore에 사용자 프로필 문서 생성
+      await setDoc(doc(firestore, 'users', user.uid), {
+        uid: user.uid,
+        email: email,
+        displayName: displayName,
+        department: "",
         interests: [],
-        profileImageUrl: '',
-        groups: []
+        profileImageUrl: "",
+        groups: [],
+        createdAt: serverTimestamp()
       });
       
-      return userCredential.user;
+      return user;
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  // Login function
-  const login = (email, password) => {
+  // 로그인 함수
+  function login(email, password) {
     return signInWithEmailAndPassword(auth, email, password);
-  };
+  }
 
-  // Logout function
-  const logout = () => {
+  // 로그아웃 함수
+  function logout() {
     return signOut(auth);
-  };
+  }
 
-  // Password reset function
-  const resetPassword = (email) => {
+  // 비밀번호 재설정 함수
+  function resetPassword(email) {
     return sendPasswordResetEmail(auth, email);
-  };
+  }
 
-  // Update user profile
-  const updateUserProfile = async (data) => {
+  // 사용자 프로필 데이터 가져오기
+  async function fetchUserProfile(uid) {
     try {
-      const userRef = doc(db, 'users', currentUser.uid);
-      await setDoc(userRef, data, { merge: true });
-      
-      // If display name is being updated, update auth profile as well
-      if (data.displayName) {
-        await updateProfile(currentUser, { displayName: data.displayName });
-      }
-      
-      // If profile image is being updated, update auth profile as well
-      if (data.profileImageUrl) {
-        await updateProfile(currentUser, { photoURL: data.profileImageUrl });
-      }
-      
-      // Update local user profile state
-      const updatedDoc = await getDoc(userRef);
-      setUserProfile(updatedDoc.data());
-      
-      return true;
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      throw error;
-    }
-  };
-
-  // Fetch user profile from Firestore
-  const fetchUserProfile = async (uid) => {
-    try {
-      const userRef = doc(db, 'users', uid);
-      const userDoc = await getDoc(userRef);
+      const userDocRef = doc(firestore, 'users', uid);
+      const userDoc = await getDoc(userDocRef);
       
       if (userDoc.exists()) {
-        setUserProfile(userDoc.data());
-        return userDoc.data();
+        const userData = userDoc.data();
+        setUserProfile(userData);
+        return userData;
       } else {
-        console.log("No user profile found!");
+        console.error('User document does not exist');
         return null;
       }
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      console.error('Error fetching user profile:', error);
       return null;
     }
-  };
+  }
 
+  // 사용자 프로필 업데이트
+  async function updateUserProfile(profileData) {
+    try {
+      if (!currentUser) throw new Error('No authenticated user');
+      
+      const userDocRef = doc(firestore, 'users', currentUser.uid);
+      await setDoc(userDocRef, profileData, { merge: true });
+      
+      // 프로필 상태 업데이트
+      setUserProfile(prev => ({
+        ...prev,
+        ...profileData
+      }));
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
+  }
+
+  // 인증 상태 변경 감지
   useEffect(() => {
-    // Subscribe to auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       
@@ -133,8 +125,9 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     resetPassword,
+    fetchUserProfile,
     updateUserProfile,
-    fetchUserProfile
+    loading
   };
 
   return (
@@ -142,4 +135,6 @@ export const AuthProvider = ({ children }) => {
       {!loading && children}
     </AuthContext.Provider>
   );
-};
+}
+
+export default AuthProvider;

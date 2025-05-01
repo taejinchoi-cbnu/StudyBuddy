@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/AuthStyles.css'; // 공통 CSS 파일 경로
-import studyImage from '../assets/loginLogo.gif'; // 이미지 경로 확인 필요
+import studyImage from '../assets/logoHello.png'; 
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
