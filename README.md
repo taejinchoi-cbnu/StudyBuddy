@@ -66,22 +66,56 @@ npm run dev
 
 ## 프로젝트 구조
 ```text
-StudyBuddy/
-├── client/                # 프론트엔드 (React + Vite)
-│   └── src/
-│       ├── components/    # 재사용 가능한 UI 컴포넌트
-│       ├── pages/         # 페이지 컴포넌트
-│       ├── services/      # API 호출 로직
-│       ├── context/       # 상태 관리
-│       ├── utils/         # 유틸리티 함수
-│       └── firebase.js    # Firebase 설정
-│
-└── server/                # 백엔드 (Node.js + Express)
-├── controllers/       # API 컨트롤러
-├── middleware/        # 미들웨어
-├── routes/            # API 라우트
-├── config/            # 설정 파일
-└── server.js          # 메인 서버 파일
+STUDYBUDDY/
+├── client/
+│   ├── node_modules/
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   │   ├── logoHello.png
+│   │   │   ├── logoQuestion.png
+│   │   │   ├── logoSmall.png
+│   │   │   └── logoTextGif.gif
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx
+│   │   │   └── ProtectedRoute.jsx
+│   │   ├── context/ 
+│   │   │   └── AuthContext.jsx
+│   │   ├── pages/
+│   │   │   ├── DashboardPage.jsx
+│   │   │   ├── ForgotPasswordPage.jsx
+│   │   │   ├── HomePage.jsx
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── ProfilePage.jsx
+│   │   │   └── SignupPage.jsx
+│   │   ├── styles/
+│   │   ├── App.jsx
+│   │   ├── firebase.js
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── .env
+│   ├── .gitignore
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   └── vite.config.js
+└── server/
+    ├── config/
+    ├── controllers/
+    ├── middleware/
+    ├── node_modules/
+    ├── routes/
+    ├── .env
+    ├── package-lock.json
+    ├── package.json
+    ├── server.js
+    ├── .env.example
+    ├── .gitignore
+    ├── package-lock.json
+    ├── package.json
+    ├── Project Log.md
+    └── README.md
 ```
 
 ## 기여 방법
