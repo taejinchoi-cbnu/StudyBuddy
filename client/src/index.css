@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Poor+Story&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
 :root {
   --primary-color: #ff6b6b;
   --secondary-color: #6c757d;
@@ -9,10 +12,6 @@
   --dark-color: #343a40;
   --accent-color: #ff6b6b;
 }
-
-/* Import Google Fonts - Single Day and Noto Sans KR */
-@import url('https://fonts.googleapis.com/css2?family=Single+Day&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
 body {
   margin: 0;
