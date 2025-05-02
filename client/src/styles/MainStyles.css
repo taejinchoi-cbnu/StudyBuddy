@@ -1,53 +1,226 @@
+/* ===== 1. 폰트 및 기본 변수 ===== */
 @import url('https://fonts.googleapis.com/css2?family=Poor+Story&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
-/* MainStyles.css */
 :root {
-  --primary-color: #ff6b6b;
-  --primary-dark: #e05959;
-  --accent-color: #ff6b6b;
-  --text-color: #444;
-  --light-bg: #f8f9fa;
+  --primary-color: #ffccc4;
+  --primary-dark: #cc9991;
+  --accent-color: #cc6659;
+  --text-color: #4d4d4d;
+  --light-bg: #fafafa;
   --white: #ffffff;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  --hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  --border-color: #ffccc4;
 }
 
-/* 홈페이지 스타일 */
-.home-page {
+/* ===== 2. 기본 레이아웃 스타일 ===== */
+body {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.main-layout {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  color: var(--text-color);
   background-color: var(--light-bg);
+  min-height: 100vh;
 }
 
-/* 히어로 섹션 */
+.main-content {
+  padding-top: 60px; /* 네비게이션 바 높이만큼 상단 여백 추가 */
+}
+
+/* 네비게이션 바 높이만큼 여백 추가 */
+.navbar-spacer {
+  height: 60px;
+}
+
+/* 공통 마진 유틸리티 */
+.me-3 {
+  margin-right: 1rem !important;
+}
+
+/* ===== 3. 네비게이션 바 스타일 ===== */
+/* 기본 네비게이션 바 */
+.dashboard-navbar {
+  background-color: var(--primary-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: 60px;
+  padding: 0;
+  transition: background-color 0.3s ease;
+}
+
+.transparent-navbar {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.transparent-navbar-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+  transition: background-color 0.3s ease;
+}
+
+/* 네비게이션 바 브랜드 */
+.navbar-brand {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+/* 네비게이션 링크 */
+.nav-link-item {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  margin: 0 0.2rem;
+  color: #333 !important;
+  transition: all 0.2s ease;
+}
+
+.nav-link-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+/* 네비게이션 바 오른쪽 아이템 */
+.navbar-right-items {
+  display: flex;
+  align-items: center;
+}
+
+.nav-button-group {
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+}
+
+/* 다크모드 토글 스위치 */
+.toggle-switch-wrapper {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.dark-mode-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.dark-mode-toggle .form-check-input {
+  height: 22px;
+  width: 40px;
+}
+
+.dark-mode-toggle .form-check-input:checked {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.dark-mode-toggle .form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(204, 153, 145, 0.25);
+}
+
+.dark-mode-toggle .form-check-label {
+  font-size: 1.2rem;
+  margin-left: 8px;
+}
+
+/* 네비게이션 바 버튼 */
+.profile-link, .logout-button {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.profile-link {
+  color: #333 !important; 
+  margin: 0 10px;
+}
+
+.signup-button {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  color: white !important;
+  font-weight: 500;
+}
+
+/* 버튼 호버 효과 */
+.profile-link:hover, 
+.logout-button:hover,
+.signup-button:hover {
+  transform: translateY(-2px);
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: var(--hover-shadow);
+}
+
+/* 네비게이션 바 라이트/다크 모드 변형 */
+.transparent-navbar .signup-button {
+  color: white !important;
+  background-color: var(--accent-color);
+}
+
+.transparent-navbar:not(.dark-mode) .btn-outline-dark {
+  color: #333;
+  border-color: #333;
+}
+
+.transparent-navbar:not(.dark-mode) .btn-dark {
+  background-color: #333;
+  color: #fff;
+}
+
+.transparent-navbar:not(.dark-mode) .navbar-brand,
+.transparent-navbar:not(.dark-mode) .nav-link-item {
+  color: #333 !important;
+}
+
+/* ===== 4. 홈페이지 히어로 섹션 ===== */
 .hero-section {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 2rem;
-  margin-bottom: 4rem;
-  padding: 2rem 0;
+  justify-content: space-between;
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .hero-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  max-width: 600px;
 }
 
 .hero-title {
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
   color: #333;
 }
 
 .hero-text {
-  font-size: 1.25rem;
-  line-height: 1.5;
-  color: var(--text-color);
+  font-size: 1.2rem;
   margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
 }
 
 .hero-image-container {
@@ -60,32 +233,26 @@
 .hero-image {
   max-width: 100%;
   height: auto;
-  border-radius: 12px;
-  /* 이미지가 투명 배경이면 그림자 효과 제거 */
-  /* box-shadow: var(--shadow); */
+  max-height: 400px;
 }
 
-.hero-buttons {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
+/* ===== 5. 홈페이지 버튼 스타일 ===== */
 .hero-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0.75rem 1.5rem;
   background-color: var(--white);
-  color: #000;
+  color: #333;
   border: 2px solid var(--primary-dark);
   border-radius: 12px;
   font-family: 'Poor Story', 'Noto Sans KR', cursive;
   font-size: 1.1rem;
+  font-weight: 500;
   text-decoration: none;
+  cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 8px rgba(204, 153, 145, 0.3);
-  cursor: pointer;
 }
 
 .hero-button:hover {
@@ -104,73 +271,48 @@
   box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
 }
 
+/* ===== 6. 홈페이지 특징 및 CTA 섹션 ===== */
 /* 특징 섹션 */
 .features-section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  margin-bottom: 4rem;
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .feature-card {
-  background-color: var(--white);
-  border-radius: 12px;
-  padding: 2rem;
   text-align: center;
-  box-shadow: var(--shadow);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--hover-shadow);
 }
 
 .feature-icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 1.5rem;
-  background-color: var(--accent-color);
-  color: #fff;
-  border-radius: 50%;
-  font-size: 2rem;
-}
-
-.feature-title {
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 1.5rem;
+  font-size: 3rem;
   margin-bottom: 1rem;
-  color: #333;
 }
 
 .feature-text {
-  color: var(--text-color);
+  font-size: 1.1rem;
   line-height: 1.5;
 }
 
 /* CTA 섹션 */
 .cta-section {
-  background-color: var(--white);
-  border-radius: 12px;
-  padding: 3rem 2rem;
   text-align: center;
-  box-shadow: var(--shadow);
-  margin-bottom: 2rem;
+  padding: 6rem 2rem;
+  max-width: 800px;
+  margin: 4rem auto;
 }
 
 .cta-title {
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
   color: #333;
 }
 
 .cta-text {
-  font-size: 1.25rem;
-  color: var(--text-color);
+  font-size: 1.2rem;
   margin-bottom: 2rem;
 }
 
@@ -184,11 +326,12 @@
   border: none;
   border-radius: 12px;
   font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 500;
   text-decoration: none;
+  cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
-  cursor: pointer;
 }
 
 .cta-button:hover {
@@ -196,31 +339,243 @@
   box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
 }
 
-/* 반응형 스타일 */
-@media (max-width: 1024px) {
+/* ===== 7. 카드 컴포넌트 스타일 ===== */
+.dashboard-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+}
+
+/* ===== 8. 모달 스타일 ===== */
+.auth-modal .modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: var(--shadow);
+}
+
+.auth-modal .modal-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+.auth-modal .modal-title {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-weight: 600;
+  color: #333;
+}
+
+.auth-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.auth-modal .modal-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+.auth-modal .form-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.auth-modal .form-control {
+  border-radius: 8px;
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.auth-modal .form-control:focus {
+  box-shadow: 0 0 0 3px rgba(255, 204, 196, 0.25);
+  border-color: var(--primary-color);
+}
+
+.auth-modal .btn-primary {
+  background-color: var(--accent-color);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.75rem;
+}
+
+.auth-modal .btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.auth-modal .btn-link {
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
+.auth-modal .btn-link:hover {
+  color: var(--primary-dark);
+}
+
+/* ===== 9. 다크 모드 스타일 ===== */
+.dark-mode {
+  --primary-color: #664d4a;
+  --primary-dark: #50403e;
+  --accent-color: #994d42;
+  --text-color: #e6e6e6;
+  --light-bg: #333333;
+  --white: #404040;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  --hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  --border-color: #50403e;
+}
+
+/* 네비게이션 바 다크모드 */
+.dark-mode .dashboard-navbar {
+  background-color: var(--primary-dark);
+}
+
+.dark-mode .nav-link-item,
+.dark-mode .profile-link {
+  color: #fff !important;
+}
+
+.dark-mode .transparent-navbar .navbar-brand,
+.dark-mode .transparent-navbar .nav-link-item {
+  color: #fff !important;
+}
+
+.dark-mode .btn-outline-dark {
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .btn-outline-light {
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .btn-dark {
+  background-color: #fff;
+  color: #333;
+}
+
+.dark-mode .signup-button {
+  color: #333 !important;
+  background-color: #e6e6e6;
+}
+
+.dark-mode .transparent-navbar.home-navbar {
+  background-color: rgba(51, 51, 51, 0.8) !important;
+}
+
+/* 홈페이지 요소 다크모드 */
+.dark-mode .hero-title,
+.dark-mode .feature-title,
+.dark-mode .cta-title,
+.dark-mode .card-title {
+  color: #e6e6e6;
+}
+
+.dark-mode .hero-button {
+  background-color: #505050;
+  color: #e6e6e6;
+  border-color: #807070;
+}
+
+.dark-mode .features-section {
+  background-color: transparent;
+}
+
+/* 모달 다크모드 */
+.dark-mode .auth-modal .modal-content {
+  background-color: #404040;
+}
+
+.dark-mode .auth-modal .modal-title,
+.dark-mode .auth-modal .form-label {
+  color: #e6e6e6;
+}
+
+.dark-mode .auth-modal .form-control {
+  background-color: #505050;
+  color: #e6e6e6;
+  border-color: #606060;
+}
+
+.dark-mode .auth-modal .btn-link {
+  color: #ffb3a7;
+}
+
+/* ===== 10. 반응형 디자인 ===== */
+@media (max-width: 1200px) {
+  .hero-section,
+  .features-section {
+    padding: 3rem 1.5rem;
+  }
+}
+
+@media (max-width: 992px) {
+  /* 네비게이션 바 */
+  .navbar-right-items {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .nav-button-group {
+    margin-left: 0;
+    margin-top: 10px;
+    width: 100%;
+  }
+  
+  /* 히어로 섹션 */
   .hero-section {
     flex-direction: column;
+    text-align: center;
+    gap: 2rem;
   }
   
   .hero-content {
-    text-align: center;
-    align-items: center;
+    max-width: 100%;
   }
   
-  .hero-title {
-    font-size: 2.5rem;
+  .hero-buttons {
+    justify-content: center;
   }
   
+  /* 특징 섹션 */
   .features-section {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 768px) {
+  /* 특징 섹션 */
   .features-section {
     grid-template-columns: 1fr;
   }
   
+  /* 히어로 섹션 */
   .hero-title {
     font-size: 2rem;
   }
@@ -229,134 +584,32 @@
     font-size: 1.1rem;
   }
   
+  /* CTA 섹션 */
   .cta-title {
-    font-size: 1.75rem;
+    font-size: 1.8rem;
   }
   
   .cta-text {
     font-size: 1.1rem;
   }
-}
-
-@media (max-width: 480px) {
-  .hero-section {
-    padding: 1rem 0;
-  }
   
-  .hero-buttons {
+  /* 네비게이션 바 */
+  .navbar-right-items {
     flex-direction: column;
-    width: 100%;
+    align-items: flex-start;
   }
   
-  .hero-button {
+  .nav-button-group {
+    margin-left: 0;
+    margin-top: 10px;
     width: 100%;
-    margin-bottom: 0.75rem;
+    flex-direction: column;
+    align-items: flex-start;
   }
   
-  .cta-section {
-    padding: 2rem 1rem;
+  .profile-link,
+  .toggle-switch-wrapper,
+  .logout-button {
+    margin: 5px 0;
   }
-}
-
-/* 투명 네비게이션 바 */
-.transparent-navbar {
-  background-color: rgba(255, 255, 255, 0.7) !important; /* 약간 반투명한 배경 */
-  backdrop-filter: blur(5px); /* 블러 효과 추가 */
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  box-shadow: none !important;
-  transition: all 0.3s ease;
-}
-
-.transparent-navbar .navbar-brand,
-.transparent-navbar .nav-link {
-  color: #333 !important;
-  font-weight: 500;
-}
-
-.transparent-navbar .nav-link:hover {
-  color: var(--primary-color) !important;
-}
-
-.main-layout {
-  padding-top: 56px; /* 네비게이션 바 높이만큼 상단 여백 추가 */
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.main-content {
-  flex: 1;
-  padding: 2rem;
-}
-
-/* 모달 스타일 */
-.auth-modal .modal-content {
-  border-radius: 12px;
-  border: none;
-  box-shadow: var(--shadow);
-}
-
-.auth-modal .modal-header {
-  border-bottom: none;
-  padding: 1.5rem 1.5rem 0.5rem;
-}
-
-.auth-modal .modal-title {
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 1.75rem;
-  color: #333;
-  width: 100%;
-  text-align: center;
-}
-
-.auth-modal .modal-body {
-  padding: 1.5rem;
-}
-
-.auth-modal .form-control {
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 0; /* 간격 조정을 Form.Group에 맡김 */
-}
-
-.auth-modal .btn-primary {
-  background-color: var(--accent-color);
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 0;
-  font-weight: 500;
-}
-
-.auth-modal .modal-footer {
-  border-top: none;
-  justify-content: center;
-  padding: 0.5rem 1.5rem 1.5rem;
-}
-
-.auth-modal .auth-link {
-  color: var(--primary-color);
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.auth-modal .auth-link:hover {
-  text-decoration: underline;
-}
-
-/* 비밀번호 재설정 링크 스타일 */
-.auth-modal .btn-link {
-  color: var(--primary-color);
-  font-weight: 500;
-}
-
-.auth-modal .btn-link:hover {
-  color: var(--primary-dark);
-}
-
-.auth-modal .close {
-  margin-left: auto;
 }

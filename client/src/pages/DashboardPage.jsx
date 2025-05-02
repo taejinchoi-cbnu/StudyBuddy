@@ -1,21 +1,25 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { Navbar, Nav, Container, Button, Form } from 'react-bootstrap';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/DashboardStyles.css';
+import logoSmall from '../assets/logoSmall.png'; // 로고 이미지 import
 
 const DashboardPage = () => {
   const { currentUser, userProfile, logout } = useAuth();
   const [error, setError] = useState('');
   const [darkMode, setDarkMode] = useState(false);
+  const navigate = useNavigate();
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
-    // 실제로는 여기에 다크모드 전환 로직을 추가할 수 있습니다
+    // 다크모드 디테일하게 로직 추가해야함
   };
 
   const handleLogout = async () => {
     try {
       await logout();
+      navigate('/');
     } catch (error) {
       setError('로그아웃에 실패했습니다.');
     }
@@ -31,102 +35,83 @@ const DashboardPage = () => {
 
   return (
     <div className={`dashboard-layout ${darkMode ? 'dark-mode' : ''}`}>
-      {/* 좌측 네비게이션 바 */}
-      <nav className="side-navbar">
-        <div className="logo-container">
-          <img src="/src/assets/logoTextGif.gif" alt="StudyBuddy" className="sidebar-logo" />
-        </div>
-        
-        <div className="nav-links">
-          <Link to="/dashboard" className="nav-item active">
-            <span className="nav-icon">🏠</span>
-            <span className="nav-text">홈</span>
-          </Link>
-          <Link to="/groups" className="nav-item">
-            <span className="nav-icon">👥</span>
-            <span className="nav-text">스터디 그룹</span>
-          </Link>
-          <Link to="/chat" className="nav-item">
-            <span className="nav-icon">💬</span>
-            <span className="nav-text">채팅</span>
-          </Link>
-          <Link to="/schedule" className="nav-item">
-            <span className="nav-icon">📅</span>
-            <span className="nav-text">나의 스케줄</span>
-          </Link>
-          <Link to="/profile" className="nav-item">
-            <span className="nav-icon">👤</span>
-            <span className="nav-text">내 정보</span>
-          </Link>
-        </div>
-        
-        <div className="sidebar-footer">
-          <div className="mode-toggle" onClick={toggleDarkMode}>
-            <span>{darkMode ? '☀️' : '🌙'}</span>
-          </div>
-          <button onClick={handleLogout} className="logout-btn">
-            <span className="nav-icon">🚪</span>
-            <span className="nav-text">로그아웃</span>
-          </button>
-        </div>
-      </nav>
-
-      <div className="main-area">
-        {/* 상단 헤더 */}
-        <header className="top-header">
-          <h1>대시보드</h1>
-          <div className="user-profile-preview">
-            <span className="welcome-text">안녕하세요, {userProfile.displayName || '사용자'}님!</span>
-            <img 
-              src={userProfile.profileImageUrl || '/src/assets/logoSmall.png'} 
-              alt="프로필" 
-              className="profile-thumbnail" 
+      {/* AppNavbar 스타일 적용 */}
+      <Navbar variant="dark" expand="lg" className="dashboard-navbar" fixed="top">
+        <Container>
+          <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+            <img
+              src={logoSmall}
+              alt="StudyBuddy Logo"
+              height="30"
+              className="d-inline-block align-top me-2"
             />
-          </div>
-        </header>
+            <span className="fw-bold" style={{ fontFamily: 'Poor Story, cursive', fontSize: '1.25rem' }}>
+              STUDYBUDDY
+            </span>
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link as={Link} to="/dashboard">대시보드</Nav.Link>
+              <Nav.Link as={Link} to="/groups">그룹</Nav.Link>
+              <Nav.Link as={Link} to="/chat">채팅</Nav.Link>
+              <Nav.Link as={Link} to="/schedule">일정</Nav.Link>
+            </Nav>
+            <Nav className="navbar-right-items">
+              <div className="nav-button-group">
+                <div className="toggle-switch-wrapper">
+                  <Form.Check 
+                    type="switch"
+                    id="dark-mode-switch"
+                    checked={darkMode}
+                    onChange={toggleDarkMode}
+                    className="dark-mode-toggle"
+                    label={darkMode ? "🌙" : "☀️"}
+                  />
+                </div>
+                <Nav.Link as={Link} to="/profile" className="profile-link">
+                  프로필
+                </Nav.Link>
+                <Button variant="outline-light" onClick={handleLogout} className="logout-button">
+                  로그아웃
+                </Button>
+              </div>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
+      <div className="main-area-full">
+        <div className="navbar-spacer"></div>
+        
         {/* 대시보드 내용 */}
         <main className="dashboard-content">
           {error && <div className="main-error">{error}</div>}
           
-          <div className="dashboard-grid">
-            {/* 프로필 카드 */}
-            <div className="dashboard-card">
-              <h3 className="card-title">내 프로필</h3>
-              <div className="card-content">
-                <p><strong>이메일:</strong> {currentUser.email}</p>
-                <p><strong>학과:</strong> {userProfile.department || '설정되지 않음'}</p>
-                <p>
-                  <strong>관심분야:</strong> {userProfile.interests && userProfile.interests.length > 0
-                    ? userProfile.interests.join(', ')
-                    : '추가된 관심분야가 없습니다'
-                  }
-                </p>
-                <Link to="/profile" className="card-button">
-                  프로필 편집
-                </Link>
+          {/* 스터디 시간 차트 */}
+          <div className="study-chart-container">
+            <div className="chart-card">
+              <h3 className="card-title">스터디 시간을 보여주는 chart</h3>
+              <div className="chart-content">
+                {/* 차트가 들어갈 영역 */}
               </div>
             </div>
-            
+          </div>
+          
+          <div className="dashboard-grid">
             {/* 스터디 그룹 카드 */}
             <div className="dashboard-card">
-              <h3 className="card-title">내 스터디 그룹</h3>
+              <h3 className="card-title">간단한 할 일 input</h3>
               <div className="card-content">
-                <p>아직 참여 중인 스터디 그룹이 없습니다.</p>
-                <Link to="/groups/find" className="card-button accent">
-                  그룹 찾기
-                </Link>
+                <p>체크 클릭 시 middle-line이 생기고 X누를 시 사라짐</p>
               </div>
             </div>
             
             {/* 일정 카드 */}
             <div className="dashboard-card">
-              <h3 className="card-title">예정된 스터디 세션</h3>
+              <h3 className="card-title">내 스터디 그룹</h3>
               <div className="card-content">
-                <p>예정된 스터디 세션이 없습니다.</p>
-                <Link to="/schedule" className="card-button">
-                  일정 보기
-                </Link>
+                <p>기존과 동일 size만 변경</p>
               </div>
             </div>
             
@@ -134,7 +119,7 @@ const DashboardPage = () => {
             <div className="dashboard-card">
               <h3 className="card-title">최근 알림</h3>
               <div className="card-content">
-                <p>새로운 알림이 없습니다.</p>
+                <p>기존과 동일 size만 변경</p>
               </div>
             </div>
           </div>
