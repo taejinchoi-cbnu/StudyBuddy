@@ -196,23 +196,6 @@
   box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
 }
 
-/* 다크 모드 스타일 */
-.dark-mode .hero-title,
-.dark-mode .feature-title,
-.dark-mode .cta-title {
-  color: #e6e6e6;
-}
-
-.dark-mode .hero-text,
-.dark-mode .feature-text,
-.dark-mode .cta-text {
-  color: #bbb;
-}
-
-.dark-mode .feature-icon {
-  background-color: var(--primary-dark);
-}
-
 /* 반응형 스타일 */
 @media (max-width: 1024px) {
   .hero-section {
@@ -374,7 +357,6 @@
   color: var(--primary-dark);
 }
 
-/* 모달 내 정렬 문제 해결 */
 .auth-modal .close {
   margin-left: auto;
 }

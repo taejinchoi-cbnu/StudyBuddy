@@ -7,9 +7,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
 import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 
@@ -24,12 +21,14 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppNavbar />
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          {/* 홈페이지에만 NavBar 표시 */}
+          <Route path="/" element={
+            <>
+              <AppNavbar />
+              <HomePage />
+            </>
+          } />
           
           {/* Protected Routes */}
           <Route 
@@ -40,6 +39,7 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          
           <Route 
             path="/profile" 
             element={
@@ -51,7 +51,7 @@ function App() {
           
           {/* 그룹 및 스케줄 페이지는 2주차, 3주차에 구현 예정 */}
           <Route 
-            path="/groups" 
+            path="/groups/*" 
             element={
               <ProtectedRoute>
                 <DashboardPage /> {/* 임시로 대시보드로 리다이렉트 */}
@@ -60,7 +60,16 @@ function App() {
           />
           
           <Route 
-            path="/schedule" 
+            path="/chat/*" 
+            element={
+              <ProtectedRoute>
+                <DashboardPage /> {/* 임시로 대시보드로 리다이렉트 */}
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/schedule/*" 
             element={
               <ProtectedRoute>
                 <DashboardPage /> {/* 임시로 대시보드로 리다이렉트 */}
