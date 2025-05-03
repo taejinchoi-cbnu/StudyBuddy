@@ -1,35 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Navbar, Nav, Container, Button, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import useLoading from '../hooks/useLoading'; // 추가
-import LoadingSpinner from '../components/LoadingSpinner'; // 추가
+import { useDarkMode } from '../contexts/DarkModeContext'; // DarkModeContext 사용
+import useLoading from '../hooks/useLoading';
+import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/DashboardStyles.css';
-import logoSmall from '../assets/logoSmall.png';
 
 const DashboardPage = () => {
-  const { currentUser, userProfile, logout } = useAuth();
+  const { currentUser, userProfile } = useAuth();
+  const { darkMode } = useDarkMode(); // darkMode를 context에서 가져옴
   const [error, setError] = useState('');
-  const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
   
-  // useLoading 적용
-  const [isLoggingOut, startLogoutLoading] = useLoading();
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    // 다크모드 디테일하게 로직 추가해야함
-  };
-
-  // 로그아웃 핸들러 수정
-  const handleLogout = async () => {
-    try {
-      await startLogoutLoading(logout());
-      navigate('/');
-    } catch (error) {
-      setError('로그아웃에 실패했습니다.');
-    }
-  };
+  // useLoading 적용 (여기서는 필요한 경우만)
+  const [isLoading, startLoading] = useLoading();
 
   if (!currentUser || !userProfile) {
     return <LoadingSpinner />;
@@ -38,60 +22,12 @@ const DashboardPage = () => {
   return (
     <>
       {/* 로딩 오버레이 추가 */}
-      {isLoggingOut && <LoadingSpinner />}
+      {isLoading && <LoadingSpinner />}
       
       <div className={`dashboard-layout ${darkMode ? 'dark-mode' : ''}`}>
-        {/* AppNavbar 스타일 적용 */}
-        <Navbar variant="dark" expand="lg" className="dashboard-navbar" fixed="top">
-          <Container>
-            <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
-              <img
-                src={logoSmall}
-                alt="StudyBuddy Logo"
-                height="30"
-                className="d-inline-block align-top me-2"
-              />
-              <span className="fw-bold" style={{ fontFamily: 'Poor Story, cursive', fontSize: '1.25rem' }}>
-                STUDYBUDDY
-              </span>
-            </Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-              <Nav className="me-auto">
-                <Nav.Link as={Link} to="/dashboard">대시보드</Nav.Link>
-                <Nav.Link as={Link} to="/groups">그룹</Nav.Link>
-                <Nav.Link as={Link} to="/chat">채팅</Nav.Link>
-                <Nav.Link as={Link} to="/schedule">일정</Nav.Link>
-              </Nav>
-              <Nav className="navbar-right-items">
-                <div className="nav-button-group">
-                  <div className="toggle-switch-wrapper">
-                    <Form.Check 
-                      type="switch"
-                      id="dark-mode-switch"
-                      checked={darkMode}
-                      onChange={toggleDarkMode}
-                      className="dark-mode-toggle"
-                      label={darkMode ? "🌙" : "☀️"}
-                    />
-                  </div>
-                  <Nav.Link as={Link} to="/profile" className="profile-link">
-                    프로필
-                  </Nav.Link>
-                  <Button 
-                    variant="outline-light" 
-                    onClick={handleLogout} 
-                    className="logout-button"
-                    disabled={isLoggingOut}
-                  >
-                    {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
-                  </Button>
-                </div>
-              </Nav>
-            </Navbar.Collapse>
-          </Container>
-        </Navbar>
-
+        {/* AppNavbar는 App.jsx에서 이미 렌더링되므로 제거 */}
+        {/* AppNavbar 컴포넌트를 사용하여 일관된 네비게이션 바 표시 */}
+        
         <div className="main-area-full">
           <div className="navbar-spacer"></div>
           
