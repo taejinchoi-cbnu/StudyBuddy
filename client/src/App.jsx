@@ -77,7 +77,7 @@ const AppWithNavbar = () => {
           } 
         />
         
-        {/* Redirect for any other paths */}
+        {/* 잘못된 경로로 이동하면 Home으로 보내기 */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </AuthProvider>

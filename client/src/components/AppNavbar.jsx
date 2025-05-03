@@ -3,6 +3,8 @@ import { Navbar, Nav, Container, Button, Form, Modal, Alert } from 'react-bootst
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
+import useLoading from '../hooks/useLoading'; 
+import LoadingSpinner from './LoadingSpinner'; 
 import logoSmall from '../assets/logoSmall.png';
 
 const AppNavbar = forwardRef(({ transparent = false }, ref) => {
@@ -10,6 +12,11 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   const { darkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // useLoading 적용
+  const [isLoggingIn, startLoginLoading] = useLoading();
+  const [isSigningUp, startSignupLoading] = useLoading();
+  const [isResettingPassword, startResetPasswordLoading] = useLoading();
   
   // 모달 상태
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -23,7 +30,6 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
   
   // ref를 통해 외부에서 접근 가능한 메서드 노출
   useImperativeHandle(ref, () => ({
@@ -83,29 +89,26 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     handleForgotPasswordModalOpen();
   };
   
-  // 로그인 핸들러
+  // 로그인 핸들러 수정
   const handleLogin = async (e) => {
     e.preventDefault();
     
     try {
       setError('');
-      setLoading(true);
-      await login(email, password);
+      await startLoginLoading(login(email, password));
       handleLoginModalClose();
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
       setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
-    } finally {
-      setLoading(false);
     }
   };
   
-  // 회원가입 핸들러
+  // 회원가입 핸들러 수정
   const handleSignup = async (e) => {
     e.preventDefault();
     
-    // Validate form
+    // 잘못된 입력들
     if (password !== passwordConfirm) {
       return setError('비밀번호가 일치하지 않습니다.');
     }
@@ -116,8 +119,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     
     try {
       setError('');
-      setLoading(true);
-      await signup(email, password, displayName);
+      await startSignupLoading(signup(email, password, displayName));
       handleSignupModalClose();
       navigate('/dashboard');
     } catch (error) {
@@ -127,20 +129,17 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
       } else {
         setError('계정 생성에 실패했습니다.');
       }
-    } finally {
-      setLoading(false);
     }
   };
   
-  // 비밀번호 재설정 핸들러
+  // 비밀번호 재설정 핸들러 수정
   const handleResetPassword = async (e) => {
     e.preventDefault();
     
     try {
       setMessage('');
       setError('');
-      setLoading(true);
-      await resetPassword(email);
+      await startResetPasswordLoading(resetPassword(email));
       setMessage('이메일로 비밀번호 재설정 안내가 발송되었습니다.');
       setTimeout(() => {
         handleForgotPasswordModalClose();
@@ -149,8 +148,6 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     } catch (error) {
       console.error('Password reset error:', error);
       setError('비밀번호 재설정에 실패했습니다. 이메일 주소를 확인해주세요.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -171,6 +168,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
 
   return (
     <>
+      {/* 로딩 오버레이 추가 */}
+      {(isLoggingIn || isSigningUp || isResettingPassword) && <LoadingSpinner />}
+      
       <Navbar 
         variant={transparent && !darkMode && isHomePage ? "light" : "dark"} 
         expand="lg" 
@@ -252,7 +252,6 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Container>
       </Navbar>
 
-      {/* 모달 코드는 그대로 유지 */}
       {/* 로그인 모달 */}
       <Modal 
         show={showLoginModal} 
@@ -290,9 +289,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
               variant="primary" 
               type="submit" 
               className="w-100 mt-4" 
-              disabled={loading}
+              disabled={isLoggingIn}
             >
-              로그인
+              {isLoggingIn ? '로그인 중...' : '로그인'}
             </Button>
             <div className="text-center mt-3">
               <Button 
@@ -376,9 +375,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
               variant="primary" 
               type="submit" 
               className="w-100 mt-4" 
-              disabled={loading}
+              disabled={isSigningUp}
             >
-              회원가입
+              {isSigningUp ? '회원가입 중...' : '회원가입'}
             </Button>
           </Form>
         </Modal.Body>
@@ -427,9 +426,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
               variant="primary" 
               type="submit" 
               className="w-100 mt-3" 
-              disabled={loading}
+              disabled={isResettingPassword}
             >
-              재설정 링크 발송
+              {isResettingPassword ? '전송 중...' : '재설정 링크 발송'}
             </Button>
           </Form>
         </Modal.Body>
