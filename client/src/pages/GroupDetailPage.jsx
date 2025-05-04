@@ -1,119 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Badge, Alert, Tabs, Tab, Modal, Form } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Badge, Alert, Tabs, Tab, Image } from 'react-bootstrap';
 import { getGroupById, getGroupMembers, sendJoinRequest } from '../utils/GroupService';
 import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import useLoading from '../hooks/UseLoading';
+import useLoading from '../hooks/useLoading';
+import logoQuestion from '../assets/logoQuestion.png'; // 로고 이미지 import 추가
 
-// 간단한 그룹 정보 컴포넌트
-const GroupInfo = ({ group }) => {
-  return (
-    <Card className="shadow-sm mb-4">
-      <Card.Body>
-        <h3 className="mb-3">그룹 소개</h3>
-        <p className="mb-4">{group.description}</p>
-        
-        <h4 className="mb-2">정보</h4>
-        <ul>
-          <li>미팅 방식: {group.meetingType}</li>
-          <li>최대 인원: {group.maxMembers}명</li>
-          <li>현재 인원: {group.memberCount || 1}명</li>
-        </ul>
-      </Card.Body>
-    </Card>
-  );
-};
-
-// 가입 요청 모달 컴포넌트
-const JoinRequestModal = ({ show, onHide, onSubmit, group }) => {
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (message.trim().length > 300) {
-      setError('메시지는 300자 이내로 작성해주세요.');
-      return;
-    }
-    
-    onSubmit(message);
-    setMessage('');
-    setError('');
-  };
-  
-  return (
-    <Modal show={show} onHide={onHide} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>"{group?.name}" 그룹 가입 요청</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
-        
-        <p>그룹 관리자에게 가입 요청을 보냅니다.</p>
-        
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>가입 요청 메시지 (선택사항)</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="자기소개나 그룹에 가입하려는 이유를 적어주세요."
-            />
-            <Form.Text className="text-muted">
-              {message.length}/300자
-            </Form.Text>
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
-          취소
-        </Button>
-        <Button variant="primary" onClick={handleSubmit}>
-          요청 보내기
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
-};
-
-// 멤버 목록 컴포넌트
-const GroupMembersList = ({ members, currentUser }) => {
-  return (
-    <Card className="shadow-sm mb-4">
-      <Card.Body>
-        <h3 className="mb-3">멤버 ({members.length})</h3>
-        
-        {members.length > 0 ? (
-          <div className="list-group">
-            {members.map((member) => (
-              <div 
-                key={member.userId}
-                className="list-group-item d-flex justify-content-between align-items-center"
-              >
-                <div>
-                  <strong>{member.userId}</strong>
-                  {currentUser && member.userId === currentUser.uid && <span className="ms-2">(나)</span>}
-                </div>
-                
-                <Badge bg={member.role === 'admin' ? 'danger' : 'info'}>
-                  {member.role === 'admin' ? '관리자' : '멤버'}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-muted">멤버 정보를 불러오는 중이거나 멤버가 없습니다.</p>
-        )}
-      </Card.Body>
-    </Card>
-  );
-};
+// 기존 컴포넌트들 import
+import GroupInfo from '../components/groups/GroupInfo';
+import GroupMembersList from '../components/groups/GroupMembersList';
+import JoinRequestModal from '../components/groups/JoinRequestModal';
 
 const GroupDetailPage = () => {
   const { groupId } = useParams();
@@ -128,6 +26,7 @@ const GroupDetailPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [loadError, setLoadError] = useState(false); // 로드 오류 상태 추가
   
   // 현재 사용자의 그룹 멤버십 상태
   const [userStatus, setUserStatus] = useState({
@@ -143,6 +42,7 @@ const GroupDetailPage = () => {
     const fetchGroupData = async () => {
       try {
         setIsLoading(true);
+        setLoadError(false);
         console.log("Fetching group data for ID:", groupId);
         
         // 그룹 정보 가져오기 시도
@@ -155,37 +55,17 @@ const GroupDetailPage = () => {
           if (groupData) {
             setGroup(groupData);
           } else {
-            // 임시 데이터 사용
-            setGroup({
-              id: groupId,
-              name: '데이터 로드 실패 (임시 데이터)',
-              description: '그룹 정보를 불러오지 못했습니다.',
-              subject: ['Test'],
-              tags: ['Test'],
-              maxMembers: 10,
-              memberCount: 1,
-              meetingType: '알 수 없음',
-              createdAt: new Date(),
-              joinRequests: []
-            });
+            setLoadError(true);
+            setError('그룹 정보를 불러오지 못했습니다.');
+            return;
           }
         } catch (groupError) {
           console.error("Error fetching group:", groupError);
           if (!isMounted) return;
           
-          // 임시 데이터 사용
-          setGroup({
-            id: groupId,
-            name: '데이터 로드 실패 (임시 데이터)',
-            description: '그룹 정보를 불러오지 못했습니다.',
-            subject: ['Test'],
-            tags: ['Test'],
-            maxMembers: 10,
-            memberCount: 1,
-            meetingType: '알 수 없음',
-            createdAt: new Date(),
-            joinRequests: []
-          });
+          setLoadError(true);
+          setError('그룹 정보를 불러오는 중 오류가 발생했습니다.');
+          return;
         }
         
         // 그룹 멤버 정보 가져오기
@@ -222,6 +102,7 @@ const GroupDetailPage = () => {
       } catch (error) {
         console.error('Error in fetchGroupData:', error);
         if (!isMounted) return;
+        setLoadError(true);
         setError('그룹 정보를 불러오는 중 오류가 발생했습니다.');
       } finally {
         if (isMounted) {
@@ -264,12 +145,38 @@ const GroupDetailPage = () => {
     );
   }
   
-  if (!group && !isLoading) {
+  // 데이터 로드 실패 시 친절한 오류 메시지와 이미지 표시
+  if (loadError || (!group && !isLoading)) {
     return (
       <Container className="mt-5">
-        <Alert variant="danger">
-          그룹을 찾을 수 없습니다. <Link to="/groups">그룹 목록으로 돌아가기</Link>
-        </Alert>
+        <Card className="shadow-sm text-center p-4">
+          <Card.Body>
+            <Image 
+              src={logoQuestion} 
+              alt="오류" 
+              style={{ width: '150px', height: 'auto', margin: '0 auto 2rem' }}
+              className="d-block"
+            />
+            <h3 className="mb-3">그룹 정보를 불러오지 못했습니다</h3>
+            <p className="text-muted mb-4">
+              요청하신 그룹을 찾을 수 없거나 데이터를 불러오는 도중 문제가 발생했습니다.
+              <br />잠시 후 다시 시도해 주세요.
+            </p>
+            <Button 
+              variant="primary" 
+              onClick={() => navigate('/groups')}
+              className="me-2"
+            >
+              그룹 목록으로 돌아가기
+            </Button>
+            <Button 
+              variant="outline-secondary"
+              onClick={() => window.location.reload()}
+            >
+              새로고침
+            </Button>
+          </Card.Body>
+        </Card>
       </Container>
     );
   }
@@ -372,12 +279,13 @@ const GroupDetailPage = () => {
       
       <Tabs defaultActiveKey="info" className="mb-4">
         <Tab eventKey="info" title="그룹 정보">
-          <GroupInfo group={group} />
+          <GroupInfo group={group} isAdmin={userStatus.isAdmin} />
         </Tab>
         
         <Tab eventKey="members" title="멤버">
           <GroupMembersList 
             members={members} 
+            isAdmin={userStatus.isAdmin}
             currentUser={currentUser} 
           />
         </Tab>
