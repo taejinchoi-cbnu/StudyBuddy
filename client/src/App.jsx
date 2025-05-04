@@ -10,6 +10,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
+import GroupsPage from './pages/GroupsPage';
+import GroupDetailPage from './pages/GroupDetailPage';
+import CreateGroupPage from './pages/CreateGroupPage';
+import TestDataPage from './pages/TestDataPage';
 
 // Import Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -49,16 +53,45 @@ const AppWithNavbar = () => {
           } 
         />
         
-        {/* 그룹 및 스케줄 페이지는 2주차, 3주차에 구현 예정 */}
+        {/* 그룹 라우트 추가 */}
         <Route 
-          path="/groups/*" 
+          path="/groups" 
           element={
             <ProtectedRoute>
-              <DashboardPage /> {/* 임시로 대시보드로 리다이렉트 */}
+              <GroupsPage />
             </ProtectedRoute>
           } 
         />
         
+        <Route 
+          path="/groups/create" 
+          element={
+            <ProtectedRoute>
+              <CreateGroupPage />
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/groups/:groupId" 
+          element={
+            <ProtectedRoute>
+              <GroupDetailPage />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* 테스트 데이터 생성 페이지 */}
+        <Route 
+          path="/test-data" 
+          element={
+            <ProtectedRoute>
+              <TestDataPage />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* 채팅 및 스케줄 페이지 (향후 구현 예정) */}
         <Route 
           path="/chat/*" 
           element={

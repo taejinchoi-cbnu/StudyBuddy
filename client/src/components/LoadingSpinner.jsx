@@ -1,3 +1,4 @@
+import React from 'react';
 import logoBook from '../assets/logoBook.png';
 import '../styles/LoadingSpinner.css';
 

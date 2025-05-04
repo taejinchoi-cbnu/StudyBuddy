@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useDarkMode } from '../contexts/DarkModeContext'; // DarkModeContext 사용
-import useLoading from '../hooks/useLoading';
+import { useDarkMode } from '../contexts/DarkModeContext'; 
+import useLoading from '../hooks/UseLoading';
 import LoadingSpinner from '../components/LoadingSpinner';
 import '../styles/DashboardStyles.css';
 

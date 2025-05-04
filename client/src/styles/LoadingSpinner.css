@@ -23,7 +23,31 @@
     100% { opacity: 1; }
 }
 
+/* 인라인 로더용 스타일 */
+.loading-inline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    flex-direction: column;
+}
+
+.loading-inline .loading-logo {
+    width: 40px;
+    height: 40px;
+}
+
+.loading-text {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #666;
+}
+
 /* 다크모드 지원 */
 .dark-mode .loading-overlay {
     background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dark-mode .loading-text {
+    color: #ccc;
 }

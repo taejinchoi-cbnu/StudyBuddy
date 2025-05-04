@@ -173,3 +173,136 @@ code {
   color: var(--success-color);
   margin-bottom: 1rem;
 }
+
+/*테스트용*/
+.white-space-pre-wrap {
+  white-space: pre-wrap;
+}
+
+/* NavBar 아래 여백을 위한 스타일 */
+.navbar-spacer {
+  height: 60px;
+  width: 100%;
+}
+
+.page-container {
+  padding-top: 20px;
+  min-height: 100vh;
+}
+
+/* 그룹 페이지 스타일 */
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.tag-badge {
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.tag-badge:hover {
+  transform: translateY(-2px);
+}
+
+.create-group-btn {
+  white-space: nowrap;
+  padding: 8px 16px;
+  font-size: 0.95rem;
+}
+
+/* 그룹 생성 페이지 스타일 */
+.create-group-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 15px;
+}
+
+.create-group-card {
+  border-radius: 10px;
+  border: none;
+}
+
+.selected-subjects, 
+.meeting-types,
+.available-tags,
+.selected-tags {
+  margin-top: 10px;
+}
+
+.subject-badge {
+  transition: all 0.2s ease;
+}
+
+.subject-badge:hover {
+  background-color: #dc3545;
+}
+
+.meeting-type-radio {
+  margin-right: 15px;
+}
+
+.create-group-button {
+  transition: all 0.3s ease;
+  height: 48px;
+  font-size: 1.1rem;
+}
+
+.create-group-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 다크 모드 대응 스타일 */
+.dark-mode .create-group-card {
+  background-color: #333;
+  color: #f8f9fa;
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+  background-color: #444;
+  color: #f8f9fa;
+  border-color: #555;
+}
+
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus {
+  background-color: #4a4a4a;
+  color: #fff;
+}
+
+.dark-mode .form-label {
+  color: #e0e0e0;
+}
+
+.dark-mode .text-muted {
+  color: #aaa !important;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .create-group-container {
+    padding: 10px;
+  }
+  
+  .create-group-btn {
+    font-size: 0.85rem;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .meeting-types {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .create-group-button {
+    height: 44px;
+    font-size: 1rem;
+  }
+}
