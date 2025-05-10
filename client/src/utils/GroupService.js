@@ -15,7 +15,8 @@ import {
   arrayUnion,
   arrayRemove,
   deleteDoc,
-  increment
+  increment,
+  writeBatch // 추가된 import
 } from 'firebase/firestore';
 
 // 그룹 관련 컬렉션 레퍼런스
@@ -137,7 +138,7 @@ export const searchGroupsByTags = async (tags, subject = null) => {
   }
 };
 
-// 그룹 가입 요청 보내기
+// 그룹 가입 요청 보내기 (수정됨)
 export const sendJoinRequest = async (groupId, userId, message = '') => {
   try {
     // 이미 가입 요청을 보냈는지 확인
@@ -160,9 +161,10 @@ export const sendJoinRequest = async (groupId, userId, message = '') => {
     }
     
     // 가입 요청 추가
+    // serverTimestamp() 대신 JavaScript Date 객체 사용
     const joinRequest = {
       uid: userId,
-      requestedAt: serverTimestamp(),
+      requestedAt: new Date(),
       message: message || ''
     };
     
@@ -378,6 +380,79 @@ export const updateGroup = async (groupId, groupData, userId) => {
   }
 };
 
+// 그룹 관리자가 멤버 제거하기
+export const removeMember = async (groupId, memberUserId, currentUserId) => {
+  try {
+    // 현재 사용자가 관리자인지 확인
+    const adminDoc = await getDoc(doc(groupMembersCollection, `${groupId}_${currentUserId}`));
+    if (!adminDoc.exists() || adminDoc.data().role !== 'admin') {
+      throw new Error('Permission denied: Not a group admin');
+    }
+    
+    // 제거할 멤버가 존재하는지 확인
+    const memberDoc = await getDoc(doc(groupMembersCollection, `${groupId}_${memberUserId}`));
+    if (!memberDoc.exists()) {
+      throw new Error('Member not found');
+    }
+    
+    // 제거할 멤버가 관리자인지 확인 (관리자는 제거할 수 없음)
+    const memberData = memberDoc.data();
+    if (memberData.role === 'admin') {
+      throw new Error('Cannot remove an admin member');
+    }
+    
+    // 멤버 문서 삭제
+    await deleteDoc(doc(groupMembersCollection, `${groupId}_${memberUserId}`));
+    
+    // 그룹 문서 멤버 수 감소
+    await updateDoc(doc(groupsCollection, groupId), {
+      memberCount: increment(-1)
+    });
+    
+    return true;
+  } catch (error) {
+    console.error('Error removing member:', error);
+    throw error;
+  }
+};
+
+// 그룹 삭제하기 (관리자만 가능)
+export const deleteGroup = async (groupId, userId) => {
+  try {
+    // 현재 사용자가 관리자인지 확인
+    const adminDoc = await getDoc(doc(groupMembersCollection, `${groupId}_${userId}`));
+    if (!adminDoc.exists() || adminDoc.data().role !== 'admin') {
+      throw new Error('Permission denied: Not a group admin');
+    }
+    
+    // 모든 그룹 멤버 가져오기
+    const membersQuery = query(
+      groupMembersCollection,
+      where('groupId', '==', groupId)
+    );
+    
+    const memberSnapshot = await getDocs(membersQuery);
+    
+    // 모든 멤버 문서 삭제 (배치 작업)
+    const batch = writeBatch(firestore);
+    
+    memberSnapshot.forEach((memberDoc) => {
+      batch.delete(memberDoc.ref);
+    });
+    
+    // 그룹 문서 삭제
+    batch.delete(doc(groupsCollection, groupId));
+    
+    // 배치 작업 실행
+    await batch.commit();
+    
+    return true;
+  } catch (error) {
+    console.error('Error deleting group:', error);
+    throw error;
+  }
+};
+
 export default {
   createGroup,
   getGroupById,
@@ -389,5 +464,7 @@ export default {
   leaveGroup,
   getGroupMembers,
   getUserGroups,
-  updateGroup
+  updateGroup,
+  removeMember,
+  deleteGroup
 };

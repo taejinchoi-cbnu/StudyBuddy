@@ -5,13 +5,17 @@ import { getGroupById, getGroupMembers, sendJoinRequest } from '../utils/GroupSe
 import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import useLoading from '../hooks/useLoading';
+import useLoading from '../hooks/UseLoading';
 import logoQuestion from '../assets/logoQuestion.png'; // 로고 이미지 import 추가
 
 // 기존 컴포넌트들 import
 import GroupInfo from '../components/groups/GroupInfo';
 import GroupMembersList from '../components/groups/GroupMembersList';
 import JoinRequestModal from '../components/groups/JoinRequestModal';
+import JoinRequestsList from '../components/groups/JoinRequestsList';
+import LeaveGroupModal from '../components/groups/LeaveGroupModal';
+import GroupSettings from '../components/groups/GroupSettings';
+import MemberManagement from '../components/groups/MemberManagement';
 
 const GroupDetailPage = () => {
   const { groupId } = useParams();
@@ -26,6 +30,7 @@ const GroupDetailPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [loadError, setLoadError] = useState(false); // 로드 오류 상태 추가
   
   // 현재 사용자의 그룹 멤버십 상태
@@ -120,8 +125,57 @@ const GroupDetailPage = () => {
     };
   }, [groupId, currentUser]);
   
+  // 가입 요청 처리 후 그룹 데이터 새로고침 함수
+  const reloadGroupData = async () => {
+    setIsLoading(true);
+    try {
+      const updatedGroup = await getGroupById(groupId);
+      setGroup(updatedGroup);
+      
+      // 멤버 정보도 다시 로드
+      const updatedMembers = await getGroupMembers(groupId);
+      setMembers(updatedMembers);
+      
+      // 현재 사용자 상태 업데이트
+      if (currentUser) {
+        const isMember = updatedMembers.some(member => member.userId === currentUser.uid);
+        const isAdmin = updatedMembers.some(
+          member => member.userId === currentUser.uid && member.role === 'admin'
+        );
+        
+        const hasPendingRequest = updatedGroup && updatedGroup.joinRequests && 
+          updatedGroup.joinRequests.some(request => request.uid === currentUser.uid);
+        
+        setUserStatus({ isMember, isAdmin, hasPendingRequest });
+      }
+      
+      setSuccess('그룹 정보가 업데이트되었습니다.');
+    } catch (error) {
+      console.error('Error reloading group data:', error);
+      setError('그룹 정보를 새로고침하는 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   // 가입 요청 모달 토글
   const toggleJoinModal = () => setShowJoinModal(!showJoinModal);
+  
+  // 탈퇴 모달 토글
+  const toggleLeaveModal = () => setShowLeaveModal(!showLeaveModal);
+  
+  // 그룹 탈퇴 성공 처리
+  const handleLeaveSuccess = () => {
+    setShowLeaveModal(false);
+    setSuccess('그룹에서 성공적으로 탈퇴했습니다.');
+    navigate('/groups'); // 그룹 목록 페이지로 이동
+  };
+  
+  // 그룹 삭제 성공 처리
+  const handleDeleteSuccess = () => {
+    setSuccess('그룹이 성공적으로 삭제되었습니다.');
+    navigate('/groups'); // 그룹 목록 페이지로 이동
+  };
   
   // 가입 요청 제출
   const handleJoinRequest = async (message) => {
@@ -265,7 +319,7 @@ const GroupDetailPage = () => {
                       variant="outline-danger" 
                       size="sm"
                       className="w-100"
-                      // 그룹 탈퇴 기능 추가 (향후 구현)
+                      onClick={toggleLeaveModal}
                     >
                       그룹 탈퇴
                     </Button>
@@ -290,14 +344,36 @@ const GroupDetailPage = () => {
           />
         </Tab>
         
+        {userStatus.isAdmin && (
+          <Tab eventKey="settings" title="설정">
+            <Row className="mt-3">
+              <Col lg={6} className="mb-4">
+                <GroupSettings 
+                  group={group} 
+                  currentUser={currentUser} 
+                  onUpdateSuccess={reloadGroupData}
+                  onDeleteSuccess={handleDeleteSuccess}
+                />
+              </Col>
+              <Col lg={6}>
+                <MemberManagement 
+                  group={group} 
+                  members={members} 
+                  currentUser={currentUser}
+                  onMemberRemoved={reloadGroupData}
+                />
+              </Col>
+            </Row>
+          </Tab>
+        )}
+        
         {userStatus.isAdmin && group.joinRequests && group.joinRequests.length > 0 && (
           <Tab eventKey="requests" title={`가입 요청 (${group.joinRequests.length})`}>
-            <Card className="shadow-sm mb-4">
-              <Card.Body>
-                <h3 className="mb-3">가입 요청</h3>
-                <p>가입 요청 관리 기능은 아직 구현되지 않았습니다.</p>
-              </Card.Body>
-            </Card>
+            <JoinRequestsList 
+              group={group} 
+              currentUser={currentUser}
+              onRequestProcessed={reloadGroupData}
+            />
           </Tab>
         )}
       </Tabs>
@@ -309,6 +385,17 @@ const GroupDetailPage = () => {
         onSubmit={handleJoinRequest}
         group={group}
       />
+      
+      {/* 그룹 탈퇴 모달 */}
+      {group && currentUser && (
+        <LeaveGroupModal
+          show={showLeaveModal}
+          onHide={toggleLeaveModal}
+          group={group}
+          userId={currentUser.uid}
+          onLeaveSuccess={handleLeaveSuccess}
+        />
+      )}
     </Container>
   );
 };

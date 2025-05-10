@@ -5,9 +5,9 @@ import {
   Form, Button, Card, Alert, Row, Col, 
   InputGroup, Badge, FormSelect 
 } from 'react-bootstrap';
-import { GROUP_SUBJECTS, GROUP_TAGS, MEETING_TYPES } from '../../utils/groupConstants';
+import { GROUP_SUBJECTS, GROUP_TAGS, MEETING_TYPES } from '../../utils/GroupConstants';
 import { createGroup } from '../../utils/GroupService';
-import useLoading from '../../hooks/useLoading';
+import useLoading from '../../hooks/UseLoading';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 const CreateGroupForm = () => {

@@ -282,6 +282,144 @@ code {
   color: #aaa !important;
 }
 
+/* 다크 모드 - 리스트 아이템 */
+.dark-mode .list-group-item {
+  background-color: #444;
+  color: #f8f9fa;
+  border-color: #555;
+}
+
+.dark-mode .join-request-message {
+  background-color: #555 !important;
+  color: #e0e0e0;
+}
+
+/* 가입 요청 처리 중 스타일 */
+.processing-item {
+  background-color: rgba(0, 123, 255, 0.05) !important;
+  transition: background-color 0.3s ease;
+}
+
+.dark-mode .processing-item {
+  background-color: rgba(0, 123, 255, 0.15) !important;
+}
+
+/* 가입 요청 목록 아이템에 호버 효과 추가 */
+.list-group-item {
+  transition: all 0.2s ease;
+}
+
+.list-group-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .list-group-item:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* 가입 요청 처리 성공/실패 알림 애니메이션 */
+.alert-success, .alert-danger {
+  animation: fadeIn 0.3s ease;
+}
+
+/* 가입 요청 처리 중 스타일 */
+.processing-item {
+  background-color: rgba(0, 123, 255, 0.05) !important;
+  transition: background-color 0.3s ease;
+}
+
+.dark-mode .processing-item {
+  background-color: rgba(0, 123, 255, 0.15) !important;
+}
+
+/* 가입 요청 목록 아이템에 호버 효과 추가 */
+.list-group-item {
+  transition: all 0.2s ease;
+}
+
+.list-group-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .list-group-item:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* 가입 요청 처리 성공/실패 알림 애니메이션 */
+.alert-success, .alert-danger {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 다크 모드 - 리스트 아이템 */
+.dark-mode .list-group-item {
+  background-color: #444;
+  color: #f8f9fa;
+  border-color: #555;
+}
+
+.dark-mode .join-request-message {
+  background-color: #555 !important;
+  color: #e0e0e0;
+}
+
+/* 가입 요청 메시지 스타일 */
+.join-request-message {
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* 설정 페이지 위험 영역 스타일 */
+.danger-zone {
+  background-color: rgba(220, 53, 69, 0.05);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.dark-mode .danger-zone {
+  background-color: rgba(220, 53, 69, 0.15);
+}
+
+/* 설정 탭 스타일 */
+.tab-pane {
+  padding-top: 1rem;
+}
+
+/* 삭제 모달 스타일 */
+.dark-mode .modal-content {
+  background-color: #333;
+  color: #f8f9fa;
+}
+
+.dark-mode .modal-header {
+  border-bottom-color: #555;
+}
+
+.dark-mode .modal-footer {
+  border-top-color: #555;
+}
+
+.dark-mode .form-control {
+  background-color: #444;
+  color: #f8f9fa;
+  border-color: #555;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .create-group-container {
