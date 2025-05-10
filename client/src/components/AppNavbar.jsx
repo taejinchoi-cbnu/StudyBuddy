@@ -3,20 +3,14 @@ import { Navbar, Nav, Container, Button, Form, Modal, Alert } from 'react-bootst
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
-import useLoading from '../hooks/useLoading'; 
 import LoadingSpinner from './LoadingSpinner'; 
 import logoSmall from '../assets/logoSmall.png';
 
 const AppNavbar = forwardRef(({ transparent = false }, ref) => {
-  const { currentUser, logout, login, signup, resetPassword } = useAuth();
+  const { currentUser, logout, login, signup, resetPassword, authLoading } = useAuth();
   const { darkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const location = useLocation();
-
-  // useLoading 적용
-  const [isLoggingIn, startLoginLoading] = useLoading();
-  const [isSigningUp, startSignupLoading] = useLoading();
-  const [isResettingPassword, startResetPasswordLoading] = useLoading();
   
   // 모달 상태
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -95,7 +89,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     
     try {
       setError('');
-      await startLoginLoading(login(email, password));
+      await login(email, password);
       handleLoginModalClose();
       navigate('/dashboard');
     } catch (error) {
@@ -119,7 +113,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     
     try {
       setError('');
-      await startSignupLoading(signup(email, password, displayName));
+      await signup(email, password, displayName);
       handleSignupModalClose();
       navigate('/dashboard');
     } catch (error) {
@@ -139,7 +133,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     try {
       setMessage('');
       setError('');
-      await startResetPasswordLoading(resetPassword(email));
+      await resetPassword(email);
       setMessage('이메일로 비밀번호 재설정 안내가 발송되었습니다.');
       setTimeout(() => {
         handleForgotPasswordModalClose();
@@ -169,7 +163,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   return (
     <>
       {/* 로딩 오버레이 추가 */}
-      {(isLoggingIn || isSigningUp || isResettingPassword) && <LoadingSpinner />}
+      {(authLoading.login || authLoading.signup || authLoading.resetPassword) && <LoadingSpinner />}
       
       <Navbar 
         variant={transparent && !darkMode && isHomePage ? "light" : "dark"} 
@@ -223,8 +217,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                         variant={transparent && !darkMode && isHomePage ? "outline-dark" : "outline-light"} 
                         onClick={handleLogout}
                         className="logout-button"
+                        disabled={authLoading.logout}
                       >
-                        로그아웃
+                        {authLoading.logout ? '로그아웃 중...' : '로그아웃'}
                       </Button>
                     </>
                   ) : (
@@ -289,9 +284,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
               variant="primary" 
               type="submit" 
               className="w-100 mt-4" 
-              disabled={isLoggingIn}
+              disabled={authLoading.login}
             >
-              {isLoggingIn ? '로그인 중...' : '로그인'}
+              {authLoading.login ? '로그인 중...' : '로그인'}
             </Button>
             <div className="text-center mt-3">
               <Button 
@@ -375,9 +370,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
               variant="primary" 
               type="submit" 
               className="w-100 mt-4" 
-              disabled={isSigningUp}
+              disabled={authLoading.signup}
             >
-              {isSigningUp ? '회원가입 중...' : '회원가입'}
+              {authLoading.signup ? '회원가입 중...' : '회원가입'}
             </Button>
           </Form>
         </Modal.Body>
@@ -426,9 +421,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
               variant="primary" 
               type="submit" 
               className="w-100 mt-3" 
-              disabled={isResettingPassword}
+              disabled={authLoading.resetPassword}
             >
-              {isResettingPassword ? '전송 중...' : '재설정 링크 발송'}
+              {authLoading.resetPassword ? '전송 중...' : '재설정 링크 발송'}
             </Button>
           </Form>
         </Modal.Body>

@@ -8,6 +8,7 @@ import {
   onAuthStateChanged
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import UseLoading from '../hooks/UseLoading';
 
 const AuthContext = createContext();
 
@@ -19,10 +20,17 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // UseLoading 커스텀 훅을 각 인증 작업별로 적용
+  const [isSigningUp, startSignupLoading] = UseLoading();
+  const [isLoggingIn, startLoginLoading] = UseLoading();
+  const [isLoggingOut, startLogoutLoading] = UseLoading();
+  const [isResettingPassword, startResetPasswordLoading] = UseLoading();
+  const [isUpdatingProfile, startUpdateProfileLoading] = UseLoading();
 
   // 회원가입 함수
   async function signup(email, password, displayName) {
-    try {
+    return startSignupLoading(async () => {
       // 사용자 계정 생성
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -34,30 +42,27 @@ export function AuthProvider({ children }) {
         displayName: displayName,
         department: "",
         interests: [],
-        profileImageUrl: "",
         groups: [],
         createdAt: serverTimestamp()
       });
       
       return user;
-    } catch (error) {
-      throw error;
-    }
+    });
   }
 
   // 로그인 함수
   function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
+    return startLoginLoading(signInWithEmailAndPassword(auth, email, password));
   }
 
   // 로그아웃 함수
   function logout() {
-    return signOut(auth);
+    return startLogoutLoading(signOut(auth));
   }
 
   // 비밀번호 재설정 함수
   function resetPassword(email) {
-    return sendPasswordResetEmail(auth, email);
+    return startResetPasswordLoading(sendPasswordResetEmail(auth, email));
   }
 
   // 사용자 프로필 데이터 가져오기
@@ -82,7 +87,7 @@ export function AuthProvider({ children }) {
 
   // 사용자 프로필 업데이트
   async function updateUserProfile(profileData) {
-    try {
+    return startUpdateProfileLoading(async () => {
       if (!currentUser) throw new Error('No authenticated user');
       
       const userDocRef = doc(firestore, 'users', currentUser.uid);
@@ -95,10 +100,7 @@ export function AuthProvider({ children }) {
       }));
       
       return true;
-    } catch (error) {
-      console.error('Error updating user profile:', error);
-      throw error;
-    }
+    });
   }
 
   // 인증 상태 변경 감지
@@ -118,6 +120,7 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
+  // context value에 로딩 상태들 추가
   const value = {
     currentUser,
     userProfile,
@@ -127,7 +130,15 @@ export function AuthProvider({ children }) {
     resetPassword,
     fetchUserProfile,
     updateUserProfile,
-    loading
+    loading,
+    // 각 작업별 로딩 상태 추가
+    authLoading: {
+      signup: isSigningUp,
+      login: isLoggingIn,
+      logout: isLoggingOut,
+      resetPassword: isResettingPassword,
+      updateProfile: isUpdatingProfile
+    }
   };
 
   return (

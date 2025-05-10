@@ -2,21 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Alert, Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
-import useLoading from '../hooks/useLoading';
 import LoadingSpinner from '../components/LoadingSpinner'; 
 
 const ProfilePage = () => {
-  const { currentUser, userProfile, updateUserProfile, logout } = useAuth();
+  const { currentUser, userProfile, updateUserProfile, logout, authLoading } = useAuth();
   const [displayName, setDisplayName] = useState('');
   const [department, setDepartment] = useState('');
   const [interests, setInterests] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
-  
-  // useLoading 적용
-  const [isUpdating, startUpdateLoading] = useLoading();
-  const [isLoggingOut, startLogoutLoading] = useLoading();
 
   useEffect(() => {
     if (userProfile) {
@@ -29,11 +24,11 @@ const ProfilePage = () => {
   // 로그아웃 핸들러 수정
   const handleLogout = async () => {
     try {
-      await startLogoutLoading(logout());
+      await logout();
       navigate('/login');
     } catch (error) {
       console.error('Logout error:', error);
-      setError('Failed to log out');
+      setError('로그아웃에 실패했습니다');
     }
   };
 
@@ -50,48 +45,48 @@ const ProfilePage = () => {
         .map(item => item.trim())
         .filter(item => item !== '');
       
-      await startUpdateLoading(updateUserProfile({
+      await updateUserProfile({
         displayName,
         department,
         interests: interestsArray
-      }));
+      });
       
-      setSuccess('Profile updated successfully!');
+      setSuccess('프로필이 성공적으로 업데이트되었습니다!');
     } catch (error) {
       console.error('Profile update error:', error);
-      setError('Failed to update profile');
+      setError('프로필 업데이트에 실패했습니다');
     }
   };
 
   return (
     <>
       {/* 로딩 오버레이 추가 */}
-      {(isUpdating || isLoggingOut) && <LoadingSpinner />}
+      {(authLoading.updateProfile || authLoading.logout) && <LoadingSpinner />}
       
       <Container className="mt-5">
         <Row className="justify-content-center">
           <Col md={8}>
             <Card>
               <Card.Body>
-                <h2 className="text-center mb-4">Profile</h2>
+                <h2 className="text-center mb-4">프로필</h2>
                 {error && <Alert variant="danger">{error}</Alert>}
                 {success && <Alert variant="success">{success}</Alert>}
                 
                 <Form onSubmit={handleSubmit}>
                   <Form.Group id="email" className="mb-3">
-                    <Form.Label>Email</Form.Label>
+                    <Form.Label>이메일</Form.Label>
                     <Form.Control 
                       type="email" 
                       value={currentUser?.email || ''} 
                       disabled 
                     />
                     <Form.Text className="text-muted">
-                      You cannot change your email address.
+                      이메일 주소는 변경할 수 없습니다.
                     </Form.Text>
                   </Form.Group>
                   
                   <Form.Group id="displayName" className="mb-3">
-                    <Form.Label>Display Name</Form.Label>
+                    <Form.Label>이름</Form.Label>
                     <Form.Control 
                       type="text" 
                       value={displayName} 
@@ -101,7 +96,7 @@ const ProfilePage = () => {
                   </Form.Group>
                   
                   <Form.Group id="department" className="mb-3">
-                    <Form.Label>Department</Form.Label>
+                    <Form.Label>학과</Form.Label>
                     <Form.Control 
                       type="text" 
                       value={department} 
@@ -110,7 +105,7 @@ const ProfilePage = () => {
                   </Form.Group>
                   
                   <Form.Group id="interests" className="mb-3">
-                    <Form.Label>Interests (comma separated)</Form.Label>
+                    <Form.Label>관심 분야 (쉼표로 구분)</Form.Label>
                     <Form.Control 
                       as="textarea" 
                       rows={3} 
@@ -118,16 +113,16 @@ const ProfilePage = () => {
                       onChange={(e) => setInterests(e.target.value)} 
                     />
                     <Form.Text className="text-muted">
-                      Example: React, Node.js, Data Science
+                      예시: React, Node.js, 데이터 사이언스
                     </Form.Text>
                   </Form.Group>
                   
                   <Button 
-                    disabled={isUpdating} 
+                    disabled={authLoading.updateProfile} 
                     className="w-100 mb-3" 
                     type="submit"
                   >
-                    {isUpdating ? 'Updating...' : 'Update Profile'}
+                    {authLoading.updateProfile ? '업데이트 중...' : '프로필 업데이트'}
                   </Button>
                 </Form>
                 
@@ -135,9 +130,9 @@ const ProfilePage = () => {
                   <Button 
                     variant="link" 
                     onClick={handleLogout} 
-                    disabled={isLoggingOut}
+                    disabled={authLoading.logout}
                   >
-                    {isLoggingOut ? 'Logging out...' : 'Log Out'}
+                    {authLoading.logout ? '로그아웃 중...' : '로그아웃'}
                   </Button>
                 </div>
               </Card.Body>

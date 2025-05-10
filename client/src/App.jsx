@@ -13,13 +13,10 @@ import ProfilePage from './pages/ProfilePage';
 import GroupsPage from './pages/GroupsPage';
 import GroupDetailPage from './pages/GroupDetailPage';
 import CreateGroupPage from './pages/CreateGroupPage';
-import TestDataPage from './pages/TestDataPage';
 
-// Import Bootstrap CSS
+// Styles
 import 'bootstrap/dist/css/bootstrap.min.css';
-// Import Bootstrap Icons CSS
 import 'bootstrap-icons/font/bootstrap-icons.css';
-// Import custom styles
 import './index.css';
 
 // NavBar 렌더링을 위한 래퍼 컴포넌트
@@ -77,16 +74,6 @@ const AppWithNavbar = () => {
           element={
             <ProtectedRoute>
               <GroupDetailPage />
-            </ProtectedRoute>
-          } 
-        />
-        
-        {/* 테스트 데이터 생성 페이지 */}
-        <Route 
-          path="/test-data" 
-          element={
-            <ProtectedRoute>
-              <TestDataPage />
             </ProtectedRoute>
           } 
         />

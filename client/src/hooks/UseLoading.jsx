@@ -1,15 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
 
-const useLoading = () => {
+const UseLoading = () => {
   const [isLoading, setIsLoading] = useState(false);
   const mounted = useRef(true);
   
+  // 컴포넌트 마운트 상태 관리
   useEffect(() => {
     return () => {
       mounted.current = false;
     };
   }, []);
   
+  // 비동기 작업 관리 함수
   const startLoading = async (promise) => {
     if (!mounted.current) return;
     
@@ -27,4 +29,4 @@ const useLoading = () => {
   return [isLoading, startLoading];
 };
 
-export default useLoading;
+export default UseLoading;

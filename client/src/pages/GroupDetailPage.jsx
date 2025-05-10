@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import useLoading from '../hooks/UseLoading';
-import logoQuestion from '../assets/logoQuestion.png'; // 로고 이미지 import 추가
+import logoQuestion from '../assets/logoQuestion.png';
 
 // 기존 컴포넌트들 import
 import GroupInfo from '../components/groups/GroupInfo';
