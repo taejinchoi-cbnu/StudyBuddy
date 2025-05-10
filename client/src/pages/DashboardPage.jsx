@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext'; 
@@ -8,11 +8,11 @@ import '../styles/DashboardStyles.css';
 
 const DashboardPage = () => {
   const { currentUser, userProfile } = useAuth();
-  const { darkMode } = useDarkMode(); // darkMode를 context에서 가져옴
+  const { darkMode } = useDarkMode();
   const [error, setError] = useState('');
   const navigate = useNavigate();
   
-  // useLoading 적용 (여기서는 필요한 경우만)
+  // useLoading 적용
   const [isLoading, startLoading] = useLoading();
 
   if (!currentUser || !userProfile) {

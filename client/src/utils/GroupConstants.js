@@ -1,5 +1,3 @@
-// src/utils/groupConstants.js
-
 // 그룹 주제
 export const GROUP_SUBJECTS = [
   "Programming",

@@ -7,17 +7,18 @@ import LoadingSpinner from './LoadingSpinner';
 import logoSmall from '../assets/logoSmall.png';
 
 const AppNavbar = forwardRef(({ transparent = false }, ref) => {
+  // 컨텍스트 훅 사용
   const { currentUser, logout, login, signup, resetPassword, authLoading } = useAuth();
   const { darkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const location = useLocation();
   
-  // 모달 상태
+  // 모달 상태 관리
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   
-  // 폼 상태
+  // 폼 상태 관리
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
