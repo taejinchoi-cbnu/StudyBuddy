@@ -17,7 +17,6 @@ import CreateGroupPage from './pages/CreateGroupPage';
 // Styles
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './index.css';
 
 // NavBar 렌더링을 위한 래퍼 컴포넌트
 const AppWithNavbar = () => {

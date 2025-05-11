@@ -1,0 +1,254 @@
+/* ======================================================
+   네비게이션 바 관련 스타일
+   ====================================================== */
+
+@import './Variables.css';
+
+/* 기본 네비게이션 바 */
+.dashboard-navbar {
+  background-color: var(--primary-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: var(--navbar-height);
+  padding: 0;
+  transition: background-color var(--transition-normal);
+}
+
+/* 투명 네비게이션 바 (홈페이지용) */
+.transparent-navbar {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.transparent-navbar-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+  transition: background-color var(--transition-normal);
+}
+
+/* 홈페이지 특수 네비게이션 바 */
+.transparent-navbar.home-navbar {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  box-shadow: none !important;
+}
+
+/* 다크모드에서 홈페이지 네비게이션 바 */
+.dark-mode .transparent-navbar.home-navbar {
+  background-color: rgba(51, 51, 51, 0.8) !important;
+}
+
+/* 네비게이션 바 컴포넌트들 */
+.navbar-brand-container {
+  display: flex;
+  align-items: center;
+  margin-right: 30px;
+}
+
+.navbar-brand {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+.nav-links-container {
+  margin-left: 10px;
+}
+
+/* 네비게이션 링크 */
+.nav-link-item {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  margin: 0 5px;
+  color: #333 !important;
+  transition: all var(--transition-fast);
+}
+
+.nav-link-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+/* 네비게이션 바 오른쪽 영역 */
+.navbar-right-items {
+  display: flex;
+  align-items: center;
+}
+
+.nav-button-group {
+  display: flex;
+  align-items: center;
+}
+
+/* 다크모드 토글 */
+.toggle-switch-wrapper {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.dark-mode-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.dark-mode-toggle .form-check-input {
+  height: 22px;
+  width: 40px;
+}
+
+.dark-mode-toggle .form-check-input:checked {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.dark-mode-toggle .form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(204, 153, 145, 0.25);
+}
+
+.dark-mode-toggle .form-check-label {
+  font-size: 1.2rem;
+  margin-left: 8px;
+}
+
+/* 네비게이션 바 버튼들 */
+.profile-link {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333 !important; 
+  margin: 0 20px 0 0;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px;
+  transition: all var(--transition-fast);
+}
+
+.login-button, .logout-button, .signup-button {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.5rem 1rem !important;
+  transition: all var(--transition-fast);
+}
+
+.login-button {
+  margin-right: 10px;
+}
+
+.signup-button {
+  color: white !important;
+}
+
+.profile-link:hover,
+.login-button:hover,
+.logout-button:hover,
+.signup-button:hover {
+  transform: translateY(-2px);
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: var(--hover-shadow);
+}
+
+/* 색상 변형 */
+.transparent-navbar .signup-button {
+  color: white !important;
+  background-color: var(--accent-color);
+}
+
+.transparent-navbar:not(.dark-mode) .btn-outline-dark {
+  color: #333;
+  border-color: #333;
+}
+
+.transparent-navbar:not(.dark-mode) .btn-dark {
+  background-color: #333;
+  color: #fff;
+}
+
+.transparent-navbar:not(.dark-mode) .navbar-brand,
+.transparent-navbar:not(.dark-mode) .nav-link-item {
+  color: #333 !important;
+}
+
+/* 다크모드 스타일 */
+.dark-mode .nav-link-item,
+.dark-mode .profile-link {
+  color: #fff !important;
+}
+
+.dark-mode .transparent-navbar .navbar-brand,
+.dark-mode .transparent-navbar .nav-link-item {
+  color: #fff !important;
+}
+
+.dark-mode .btn-outline-dark {
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .btn-outline-light {
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .btn-dark {
+  background-color: #fff;
+  color: #333;
+}
+
+.dark-mode .signup-button {
+  color: #333 !important;
+  background-color: #e6e6e6;
+}
+
+/* 반응형 네비게이션 바 */
+@media (max-width: 992px) {
+  .navbar-right-items {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 15px;
+  }
+  
+  .nav-button-group {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .toggle-switch-wrapper,
+  .profile-link,
+  .login-button,
+  .logout-button,
+  .signup-button {
+    margin: 5px 0;
+  }
+  
+  .login-button {
+    margin-right: 5px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-right-items {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .nav-button-group {
+    margin-left: 0;
+    margin-top: 10px;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .profile-link,
+  .toggle-switch-wrapper,
+  .logout-button {
+    margin: 5px 0;
+  }
+}

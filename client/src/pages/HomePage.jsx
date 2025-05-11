@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import AppNavbar from '../components/AppNavbar';
-import '../styles/MainStyles.css';
 import logoHome from '../assets/logoHome.png';
 
 const HomePage = () => {

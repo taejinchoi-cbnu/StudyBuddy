@@ -1,0 +1,53 @@
+/* ======================================================
+   공통 변수 (모든 스타일시트에서 import 해야함!!)
+   ====================================================== */
+
+/* 폰트 불러오기 */
+@import url('https://fonts.googleapis.com/css2?family=Poor+Story&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+/* 디자인 시스템 변수 */
+:root {
+  /* 주요 색상 */
+  --primary-color: #ffccc4;
+  --primary-dark: #cc9991;
+  --accent-color: #cc6659;
+  --text-color: #4d4d4d;
+  
+  /* 배경 및 기본 색상 */
+  --light-bg: #fafafa;
+  --white: #ffffff;
+  
+  /* 효과 */
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  --hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  --border-color: #ffccc4;
+  
+  /* 레이아웃 */
+  --navbar-height: 60px;
+  --container-max-width: 1200px;
+  
+  /* 반응형 중단점 */
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  
+  /* 애니메이션 */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* 다크모드 변수 재정의 */
+.dark-mode {
+  --primary-color: #664d4a;
+  --primary-dark: #50403e;
+  --accent-color: #994d42;
+  --text-color: #e6e6e6;
+  --light-bg: #333333;
+  --white: #404040;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  --hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  --border-color: #50403e;
+}

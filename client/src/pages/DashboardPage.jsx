@@ -4,7 +4,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext'; 
 import useLoading from '../hooks/UseLoading';
 import LoadingSpinner from '../components/LoadingSpinner';
-import '../styles/DashboardStyles.css';
 
 const DashboardPage = () => {
   const { currentUser, userProfile } = useAuth();

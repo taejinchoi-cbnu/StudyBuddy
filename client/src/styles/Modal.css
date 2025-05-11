@@ -1,0 +1,132 @@
+/* ======================================================
+   모달 관련 스타일
+   ====================================================== */
+
+@import './Variables.css';
+
+/* 인증 모달 기본 스타일 */
+.auth-modal .modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: var(--shadow);
+}
+
+.auth-modal .modal-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+.auth-modal .modal-title {
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-weight: 600;
+  color: #333;
+}
+
+.auth-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.auth-modal .modal-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+/* 모달 폼 요소 */
+.auth-modal .form-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.auth-modal .form-control {
+  border-radius: 8px;
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.auth-modal .form-control:focus {
+  box-shadow: 0 0 0 3px rgba(255, 204, 196, 0.25);
+  border-color: var(--primary-color);
+}
+
+/* 모달 버튼 */
+.auth-modal .btn-primary {
+  background-color: var(--accent-color);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.75rem;
+}
+
+.auth-modal .btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.auth-modal .btn-link {
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
+.auth-modal .btn-link:hover {
+  color: var(--primary-dark);
+}
+
+/* 다크모드 모달 스타일 */
+.dark-mode .auth-modal .modal-content {
+  background-color: #404040;
+}
+
+.dark-mode .auth-modal .modal-title,
+.dark-mode .auth-modal .form-label {
+  color: #e6e6e6;
+}
+
+.dark-mode .auth-modal .form-control {
+  background-color: #505050;
+  color: #e6e6e6;
+  border-color: #606060;
+}
+
+.dark-mode .auth-modal .btn-link {
+  color: #ffb3a7;
+}
+
+/* 알림 메시지 */
+.modal-alert {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.modal-alert.success {
+  background-color: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.modal-alert.error {
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+}
+
+/* 모달 애니메이션 */
+.modal-enter {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.modal-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.modal-exit {
+  opacity: 1;
+}
+
+.modal-exit-active {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 300ms, transform 300ms;
+}

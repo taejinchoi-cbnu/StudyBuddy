@@ -1,5 +1,4 @@
 import logoBook from '../assets/logoBook.png';
-import '../styles/LoadingSpinner.css';
 
 const LoadingSpinner = () => {
   return (
