@@ -12,4 +12,5 @@ dist/
 .DS_Store
 .env
 client/.env
+server/.env
 server/config/serviceAccountKey.json

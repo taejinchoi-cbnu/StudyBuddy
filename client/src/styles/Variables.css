@@ -39,7 +39,7 @@
   --transition-slow: 0.5s ease;
 }
 
-/* 다크모드 변수 재정의 */
+/* 다크모드 변수 */
 .dark-mode {
   --primary-color: #664d4a;
   --primary-dark: #50403e;
@@ -50,4 +50,13 @@
   --shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   --hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
   --border-color: #50403e;
+}
+
+/* 테마 전환 애니메이션을 위한 CSS */
+.theme-transition,
+.theme-transition *,
+.theme-transition *:before,
+.theme-transition *:after {
+  transition: all 0.4s ease-in-out !important;
+  transition-delay: 0 !important;
 }

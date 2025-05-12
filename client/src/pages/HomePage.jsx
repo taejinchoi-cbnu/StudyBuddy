@@ -59,9 +59,9 @@ const HomePage = () => {
         {/* 히어로 섹션 */}
         <section className="hero-section">
           <div className="hero-content">
-            <h1 className="hero-title">함께 공부하고, 더 나은 결과를</h1>
+            <h1 className="hero-title">제목</h1>
             <p className="hero-text">
-              스터디버디는 다른 학생들과 연결하여 스터디 그룹을 형성하고, 공통된 스케줄을 찾아 더 나은 학습 결과를 얻을 수 있도록 도와줍니다!
+              프로젝트를 설명하는 짧은 글
             </p>
             {currentUser ? (
               <button 
@@ -95,7 +95,7 @@ const HomePage = () => {
               src={logoHome} 
               alt="스터디버디 일러스트레이션" 
               className="hero-image"
-              loading="eager" // 중요 이미지 빠르게 로딩
+              loading="eager"
             />
           </div>
         </section>
@@ -105,13 +105,13 @@ const HomePage = () => {
           <FeatureCard 
             icon="👥" 
             title="스터디 파트너 찾기" 
-            description="학업적 관심사와 목표를 공유하는 학생들과 연결하세요"
+            description="목표를 공유하는 학생들과 팀을 만들어보아요"
           />
           
           <FeatureCard 
             icon="📅" 
             title="일정 조율" 
-            description="공통된 가능 시간을 쉽게 찾고 스터디 세션을 예약하세요"
+            description="알고리즘을 통해 빠르게 미팅 시간을 정해보세요"
           />
           
           <FeatureCard 
@@ -124,7 +124,7 @@ const HomePage = () => {
         {/* CTA 섹션 - 로그인 상태가 아닐 때만 표시 */}
         {!currentUser && (
           <section className="cta-section">
-            <h2 className="cta-title">학업 성공을 높일 준비가 되셨나요?</h2>
+            <h2 className="cta-title">CTA 섹션 타이틀</h2>
             <p className="cta-text">오늘 스터디버디에 가입하고 협업을 시작하세요!</p>
             <button 
               type="button" 

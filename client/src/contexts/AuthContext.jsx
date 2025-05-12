@@ -76,11 +76,11 @@ export function AuthProvider({ children }) {
         setUserProfile(userData);
         return userData;
       } else {
-        console.error('User document does not exist');
+        console.error('사용자 파일이 존재하지 않습니다.');
         return null;
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('유저 프로필을 가져오는데 문제가 발생했습니다:', error);
       return null;
     }
   }
