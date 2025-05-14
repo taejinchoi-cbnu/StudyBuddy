@@ -19,6 +19,9 @@ const UseLoading = () => {
     try {
       const result = await promise;
       return result;
+    } catch (error) {
+      console.error('UseLoading 오류:', error);
+      throw error; // 에러를 다시 throw하여 상위로 전파
     } finally {
       if (mounted.current) {
         setIsLoading(false);

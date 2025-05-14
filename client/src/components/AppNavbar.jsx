@@ -103,6 +103,8 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   const handleSignup = async (e) => {
     e.preventDefault();
     
+    console.log("회원가입 시도:", { email, password, displayName });
+    
     // 잘못된 입력들
     if (password !== passwordConfirm) {
       return setError('비밀번호가 일치하지 않습니다.');
@@ -114,7 +116,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     
     try {
       setError('');
+      console.log("회원가입 요청 전");
       await signup(email, password, displayName);
+      console.log("회원가입 요청 후 성공");
       handleSignupModalClose();
       navigate('/dashboard');
     } catch (error) {
@@ -122,7 +126,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
       if (error.code === 'auth/email-already-in-use') {
         setError('이미 사용 중인 이메일입니다.');
       } else {
-        setError('계정 생성에 실패했습니다.');
+        setError('계정 생성에 실패했습니다. 오류: ' + error.message);
       }
     }
   };
