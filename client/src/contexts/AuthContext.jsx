@@ -6,7 +6,7 @@ import {
   signOut, 
   sendPasswordResetEmail,
   onAuthStateChanged,
-  updateEmail as firebaseUpdateEmail // 이름 명확히 변경
+  updateEmail as firebaseUpdateEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import UseLoading from '../hooks/UseLoading';
@@ -29,16 +29,18 @@ export function AuthProvider({ children }) {
   const [isResettingPassword, startResetPasswordLoading] = UseLoading();
   const [isUpdatingProfile, startUpdateProfileLoading] = UseLoading();
 
-  // 회원가입 함수
-  async function signup(email, password, displayName) {
-    console.log("AuthContext - signup 함수 호출됨:", { email, displayName });
+  // 회원가입 함수 수정 - 이메일 인증 상태 저장 매개변수 추가
+  async function signup(email, password, displayName, isVerified = false, certifiedDate = null) {
+    console.log("AuthContext - signup 함수 호출됨:", { email, displayName, isVerified });
     
     try {
       console.log("Firebase Auth - 계정 생성 시도");
       setLoading(true);
       
       // 사용자 계정 생성
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await startSignupLoading(
+        createUserWithEmailAndPassword(auth, email, password)
+      );
       const user = userCredential.user;
       console.log("Firebase Auth - 계정 생성 성공:", user.uid);
       
@@ -51,11 +53,14 @@ export function AuthProvider({ children }) {
         department: "",
         interests: [],
         groups: [],
-        certified_email: false,  // 이메일 인증 상태 필드 추가
-        certified_date: null,    // 인증 날짜 필드 추가
+        certified_email: isVerified,  // 인증 상태 업데이트
+        certified_date: certifiedDate || (isVerified ? new Date().toISOString() : null),
         createdAt: serverTimestamp()
       });
       console.log("Firestore - 사용자 프로필 생성 성공");
+      
+      // 임시 데이터 정리
+      clearTempUserData();
       
       return user;
     } catch (error) {
@@ -202,6 +207,35 @@ export function AuthProvider({ children }) {
     });
   }
 
+  // 로컬 스토리지에서 임시 사용자 데이터 가져오기
+  function getTempUserData() {
+    try {
+      const data = localStorage.getItem('tempUserData');
+      if (!data) return null;
+      
+      const parsedData = JSON.parse(data);
+      
+      // 만료 확인
+      const now = Date.now();
+      if (now - parsedData.timestamp > parsedData.expiresIn) {
+        // 만료된 데이터는 삭제
+        localStorage.removeItem('tempUserData');
+        return null;
+      }
+      
+      return parsedData;
+    } catch (error) {
+      console.error('임시 데이터 파싱 오류:', error);
+      localStorage.removeItem('tempUserData');
+      return null;
+    }
+  }
+
+  // 임시 사용자 데이터 제거
+  function clearTempUserData() {
+    localStorage.removeItem('tempUserData');
+  }
+
   // 인증 상태 변경 감지
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -219,6 +253,33 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
+  // 페이지 로드 시 만료된 임시 데이터 정리
+  useEffect(() => {
+    const cleanUpTempData = () => {
+      try {
+        const data = localStorage.getItem('tempUserData');
+        if (!data) return;
+        
+        const parsedData = JSON.parse(data);
+        const now = Date.now();
+        
+        if (now - parsedData.timestamp > parsedData.expiresIn) {
+          localStorage.removeItem('tempUserData');
+        }
+      } catch (error) {
+        // 손상된 데이터 제거
+        localStorage.removeItem('tempUserData');
+      }
+    };
+    
+    cleanUpTempData();
+    
+    // 주기적으로 확인 (선택 사항)
+    const interval = setInterval(cleanUpTempData, 60 * 1000); // 1분마다
+    
+    return () => clearInterval(interval);
+  }, []);
+
   // context value에 로딩 상태들 추가
   const value = {
     currentUser,
@@ -229,7 +290,9 @@ export function AuthProvider({ children }) {
     resetPassword,
     fetchUserProfile,
     updateUserProfile,
-    updateEmail, // 함수명은 그대로 유지
+    updateEmail,
+    getTempUserData,
+    clearTempUserData,
     loading,
     // 각 작업별 로딩 상태 추가
     authLoading: {

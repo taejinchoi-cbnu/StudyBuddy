@@ -3,43 +3,17 @@ const router = express.Router();
 const axios = require('axios');
 const { firestore } = require('../config/firebase');
 
-// 개선된 이메일 검증 로직
 // 기존 도메인 검증 함수
 const isValidChungbukEmail = (email) => {
   return email.endsWith('@chungbuk.ac.kr');
 };
 
-// 추가적인 이메일 검증 함수 - 테스트용 이메일 필터링
-const isRealStudentEmail = (email) => {
-  // 도메인 확인
-  if (!isValidChungbukEmail(email)) return false;
-  
-  // 테스트 또는 관리자 계정 필터링
-  const username = email.split('@')[0].toLowerCase();
-  const blockedUsernames = ['admin', 'test', 'demo', 'example', 'sample'];
-  
-  // 차단된 사용자 이름 확인
-  if (blockedUsernames.includes(username)) {
-    console.log(`[테스트 계정 감지] 이메일: ${email}은 테스트 계정으로 간주됩니다.`);
-    return false;
-  }
-  
-  // 특정 형식 확인 (학번 형식 등)
-  // 이메일 사용자명이 숫자로 시작하는지 확인 (학번 형식)
-  if (!/^\d/.test(username)) {
-    console.log(`[비학번 이메일 감지] 이메일: ${email}의 사용자명이 숫자로 시작하지 않습니다.`);
-    return false;
-  }
-  
-  return true;
-};
-
-// 이메일 인증 요청 API
+// 이메일 인증 요청 API - UnivCert API에 맞게 수정
 router.post('/verify-email', async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, univName } = req.body;
     
-    console.log(`[인증 요청] 이메일: ${email}, 시간: ${new Date().toISOString()}`);
+    console.log(`[인증 요청] 이메일: ${email}, 대학: ${univName || '충북대학교'}, 시간: ${new Date().toISOString()}`);
     
     // 기본 이메일 형식 검증
     if (!email || !isValidChungbukEmail(email)) {
@@ -50,21 +24,12 @@ router.post('/verify-email', async (req, res) => {
       });
     }
     
-    // 추가 검증 - 실제 학생 이메일인지 확인 (테스트 계정 필터링)
-    if (!isRealStudentEmail(email)) {
-      console.log(`[인증 실패] 유효하지 않은 학생 이메일: ${email}`);
-      return res.status(400).json({
-        success: false,
-        message: '유효한 충북대학교 학번 이메일을 입력해주세요.'
-      });
-    }
-    
     try {
       // API 요청 객체 미리 생성하여 로깅
       const requestData = {
         key: process.env.UNIVCERT_API_KEY,
         email: email,
-        univName: '충북대학교',
+        univName: univName || '충북대학교',
         univ_check: true // 대학 재학 여부까지 확인
       };
       
@@ -84,8 +49,7 @@ router.post('/verify-email', async (req, res) => {
         console.log(`[인증 성공] 이메일: ${email}, 인증 완료`);
         return res.status(200).json({
           success: true,
-          directVerified: true, // 직접 인증 완료 표시
-          message: '충북대학교 이메일 인증이 완료되었습니다.'
+          message: '인증번호가 발송되었습니다. 이메일을 확인해주세요.'
         });
       } else {
         console.log(`[인증 실패] 이메일: ${email}, 원인: API 성공 응답 아님`);
@@ -165,12 +129,12 @@ router.post('/verify-email', async (req, res) => {
   }
 });
 
-// 인증 코드 확인 API
+// 인증 코드 확인 API - UnivCert API에 맞게 수정
 router.post('/verify-code', async (req, res) => {
   try {
-    const { email, code, uid } = req.body;
+    const { email, code, univName, uid } = req.body;
     
-    console.log(`[인증 코드 확인 요청] 이메일: ${email}, 코드: ${code}, 사용자ID: ${uid || 'N/A'}, 시간: ${new Date().toISOString()}`);
+    console.log(`[인증 코드 확인 요청] 이메일: ${email}, 코드: ${code}, 대학: ${univName || '충북대학교'}, 사용자ID: ${uid || 'N/A'}, 시간: ${new Date().toISOString()}`);
     
     // 입력값 검증
     if (!email || !code) {
@@ -193,12 +157,16 @@ router.post('/verify-code', async (req, res) => {
     try {
       console.log(`[인증 코드 API 호출] 이메일: ${email}, 코드: ${code}`);
       
-      // UnivCert API 호출하여 인증 코드 확인
-      const response = await axios.post('https://univcert.com/api/v1/certifycode', {
+      // UnivCert API 요청 객체 생성
+      const requestData = {
         key: process.env.UNIVCERT_API_KEY,
         email: email,
-        code: parseInt(code)
-      });
+        univName: univName || '충북대학교',
+        code: parseInt(code) // 문자열을 정수로 변환
+      };
+      
+      // UnivCert API 호출하여 인증 코드 확인
+      const response = await axios.post('https://univcert.com/api/v1/certifycode', requestData);
       
       console.log(`[인증 코드 API 응답] 상태: ${response.status}, 데이터:`, response.data);
       
@@ -212,7 +180,7 @@ router.post('/verify-code', async (req, res) => {
             const userRef = firestore.collection('users').doc(uid);
             await userRef.update({
               certified_email: true,
-              certified_date: new Date().toISOString()
+              certified_date: response.data.certified_date || new Date().toISOString()
             });
             console.log(`[Firestore 업데이트 성공] 사용자ID: ${uid}`);
           } catch (dbError) {
