@@ -14,5 +14,6 @@
 /* 페이지별 스타일 */
 @import './Home.css';
 @import './Dashboard.css';
+@import './Schedule.css';
 
 /* 추가 스타일이 필요할 경우 css파일 작성 후 여기에 import */

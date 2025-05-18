@@ -16,6 +16,7 @@ import JoinRequestsList from '../components/groups/JoinRequestsList';
 import LeaveGroupModal from '../components/groups/LeaveGroupModal';
 import GroupSettings from '../components/groups/GroupSettings';
 import MemberManagement from '../components/groups/MemberManagement';
+import GroupScheduleComponent from '../components/schedule/GroupScheduleComponent';
 
 const GroupDetailPage = () => {
   const { groupId } = useParams();
@@ -341,6 +342,13 @@ const GroupDetailPage = () => {
             members={members} 
             isAdmin={userStatus.isAdmin}
             currentUser={currentUser} 
+          />
+        </Tab>
+
+        <Tab eventKey="schedule" title="스케줄">
+          <GroupScheduleComponent 
+              group={group} 
+              members={members}
           />
         </Tab>
         
