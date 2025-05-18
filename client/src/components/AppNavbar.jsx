@@ -436,7 +436,6 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                 <>
                   <Nav.Link as={Link} to="/dashboard" className="nav-link-item">대시보드</Nav.Link>
                   <Nav.Link as={Link} to="/groups" className="nav-link-item">그룹</Nav.Link>
-                  <Nav.Link as={Link} to="/chat" className="nav-link-item">채팅</Nav.Link>
                   <Nav.Link as={Link} to="/schedule" className="nav-link-item">일정</Nav.Link>
                 </>
               )}

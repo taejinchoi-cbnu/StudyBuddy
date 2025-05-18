@@ -1,6 +1,16 @@
-import { Table, Alert } from 'react-bootstrap';
+import { useState } from 'react';
+import { Table, Alert, Button, Form, Badge, Modal } from 'react-bootstrap';
 
-const AvailableTimesDisplay = ({ availableTimeSlots }) => {
+const AvailableTimesDisplay = ({ 
+  availableTimeSlots, 
+  isAdmin = false,
+  onSelectAppointment,
+  existingAppointments = []
+}) => {
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [appointmentTitle, setAppointmentTitle] = useState('');
+  
   // 가능한 시간이 없는 경우
   if (!availableTimeSlots || availableTimeSlots.length === 0) {
     return (
@@ -23,6 +33,42 @@ const AvailableTimesDisplay = ({ availableTimeSlots }) => {
       </Alert>
     );
   }
+  
+  // 시간 선택 핸들러
+  const handleSelectTime = (day, timeBlock) => {
+    setSelectedTime({
+      day,
+      start: timeBlock.start,
+      end: timeBlock.end
+    });
+    setShowAppointmentModal(true);
+  };
+  
+  // 일정 저장 핸들러
+  const handleSaveAppointment = () => {
+    if (!appointmentTitle.trim()) return;
+    
+    const appointmentData = {
+      id: `appointment_${Date.now()}`, // 고유 ID 생성
+      title: appointmentTitle,
+      day: selectedTime.day,
+      start: selectedTime.start,
+      end: selectedTime.end,
+      createdAt: new Date().toISOString()
+    };
+    
+    onSelectAppointment(appointmentData);
+    setShowAppointmentModal(false);
+    setAppointmentTitle('');
+    setSelectedTime(null);
+  };
+  
+  // 일정이 이미 있는지 확인하는 함수
+  const isTimeBlockScheduled = (day, start, end) => {
+    return existingAppointments.some(
+      app => app.day === day && app.start === start && app.end === end
+    );
+  };
 
   return (
     <div>
@@ -30,11 +76,40 @@ const AvailableTimesDisplay = ({ availableTimeSlots }) => {
         아래는 모든 멤버가 참여 가능한 시간입니다. 최소 1시간 이상 가능한 시간만 표시됩니다.
       </p>
       
+      {existingAppointments.length > 0 && (
+        <div className="mb-4">
+          <h5>확정된 일정:</h5>
+          {existingAppointments.map((app, idx) => (
+            <Alert key={idx} variant="success">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>{app.title}</strong> - {app.day} {app.start} - {app.end}
+                  <br />
+                  <small className="text-muted">
+                    {calculateDuration(app.start, app.end)}
+                  </small>
+                </div>
+                {isAdmin && (
+                  <Button 
+                    variant="outline-danger" 
+                    size="sm"
+                    onClick={() => onSelectAppointment(app, 'delete')}
+                  >
+                    삭제
+                  </Button>
+                )}
+              </div>
+            </Alert>
+          ))}
+        </div>
+      )}
+      
       <Table bordered hover responsive>
         <thead>
           <tr>
             <th>요일</th>
             <th>가능한 시간대</th>
+            {isAdmin && <th width="150">작업</th>}
           </tr>
         </thead>
         <tbody>
@@ -42,17 +117,47 @@ const AvailableTimesDisplay = ({ availableTimeSlots }) => {
             <tr key={index}>
               <td width="20%"><strong>{dayData.day}</strong></td>
               <td>
-                {dayData.availableBlocks.map((block, blockIndex) => (
-                  <div key={blockIndex} className="mb-1">
-                    <span className="badge bg-success me-2">
-                      {block.start} - {block.end}
-                    </span>
-                    <small className="text-muted">
-                      ({calculateDuration(block.start, block.end)})
-                    </small>
-                  </div>
-                ))}
+                {dayData.availableBlocks.map((block, blockIndex) => {
+                  const isScheduled = isTimeBlockScheduled(dayData.day, block.start, block.end);
+                  
+                  return (
+                    <div key={blockIndex} className="mb-1 d-flex align-items-center">
+                      <Badge 
+                        bg={isScheduled ? "secondary" : "success"} 
+                        className="me-2"
+                      >
+                        {block.start} - {block.end}
+                      </Badge>
+                      <small className="text-muted me-2">
+                        ({calculateDuration(block.start, block.end)})
+                      </small>
+                      {isScheduled && (
+                        <Badge bg="info" className="me-2">확정됨</Badge>
+                      )}
+                    </div>
+                  );
+                })}
               </td>
+              {isAdmin && (
+                <td>
+                  {dayData.availableBlocks.map((block, blockIndex) => {
+                    const isScheduled = isTimeBlockScheduled(dayData.day, block.start, block.end);
+                    
+                    return (
+                      <div key={blockIndex} className="mb-1">
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => handleSelectTime(dayData.day, block)}
+                          disabled={isScheduled}
+                        >
+                          {isScheduled ? '확정됨' : '선택'}
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
@@ -60,9 +165,51 @@ const AvailableTimesDisplay = ({ availableTimeSlots }) => {
       
       <div className="mt-3">
         <small className="text-muted">
-          tip: 위 결과를 그룹 채팅방에 공유하여 최종 일정을 결정하세요.
+          tip: 그룹 관리자가 일정을 확정하면 모든 멤버에게 표시됩니다.
         </small>
       </div>
+      
+      {/* 일정 추가 모달 */}
+      <Modal show={showAppointmentModal} onHide={() => setShowAppointmentModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>일정 추가</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedTime && (
+            <div className="mb-3">
+              <p>
+                <strong>선택된 시간:</strong> {selectedTime.day} {selectedTime.start} - {selectedTime.end}
+                <br />
+                <small>({calculateDuration(selectedTime.start, selectedTime.end)})</small>
+              </p>
+            </div>
+          )}
+          <Form>
+            <Form.Group>
+              <Form.Label>일정 제목</Form.Label>
+              <Form.Control
+                type="text"
+                value={appointmentTitle}
+                onChange={(e) => setAppointmentTitle(e.target.value)}
+                placeholder="예: 팀 프로젝트 미팅"
+                required
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowAppointmentModal(false)}>
+            취소
+          </Button>
+          <Button 
+            variant="primary" 
+            onClick={handleSaveAppointment}
+            disabled={!appointmentTitle.trim()}
+          >
+            일정 확정
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

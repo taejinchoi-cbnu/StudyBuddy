@@ -1,5 +1,3 @@
-<img width="677" alt="image" src="https://github.com/user-attachments/assets/f7ee32f2-1ae3-47ce-9dce-5329dec6bb5e" />
-
 [한국어](README.md) | **English**
 
 # StudyBuddy 🎓✨

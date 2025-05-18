@@ -114,11 +114,6 @@ const HomePage = () => {
             description="알고리즘을 통해 빠르게 미팅 시간을 정해보세요"
           />
           
-          <FeatureCard 
-            icon="💬" 
-            title="실시간 협업" 
-            description="스터디 그룹과 실시간으로 채팅하고 자료를 공유하세요"
-          />
         </section>
 
         {/* CTA 섹션 - 로그인 상태가 아닐 때만 표시 */}

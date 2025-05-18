@@ -13,6 +13,7 @@ import ProfilePage from './pages/ProfilePage';
 import GroupsPage from './pages/GroupsPage';
 import GroupDetailPage from './pages/GroupDetailPage';
 import CreateGroupPage from './pages/CreateGroupPage';
+import SchedulePage from './pages/SchedulePage';
 
 // Styles
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -77,21 +78,11 @@ const AppWithNavbar = () => {
           } 
         />
         
-        {/* 채팅 및 스케줄 페이지 (향후 구현 예정) */}
         <Route 
-          path="/chat/*" 
+          path="/schedule" 
           element={
             <ProtectedRoute>
-              <DashboardPage /> {/* 임시로 대시보드로 리다이렉트 */}
-            </ProtectedRoute>
-          } 
-        />
-        
-        <Route 
-          path="/schedule/*" 
-          element={
-            <ProtectedRoute>
-              <DashboardPage /> {/* 임시로 대시보드로 리다이렉트 */}
+              <SchedulePage />
             </ProtectedRoute>
           } 
         />

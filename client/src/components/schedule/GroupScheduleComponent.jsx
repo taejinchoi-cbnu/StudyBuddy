@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { Card, Container, Row, Col, Button, Alert, Table, ProgressBar } from 'react-bootstrap';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContext';
+import { getGroupById, saveGroupAppointment, deleteGroupAppointment } from '../../utils/GroupService';
 import UnavailabilitySelector from './UnavailabilitySelector';
 import AvailableTimesDisplay from './AvailableTimesDisplay';
+import useLoading from '../../hooks/UseLoading';
 
-// 요일 데이터
-const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-// 시간 데이터 (오전 9시부터 오후 9시까지)
+// 요일 및 시간 데이터
+const DAYS_OF_WEEK = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
 const TIME_SLOTS = [];
 for (let hour = 9; hour <= 21; hour++) {
   const formattedHour = hour.toString().padStart(2, '0');
@@ -23,6 +23,9 @@ const GroupScheduleComponent = ({ group, members }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [calculationDone, setCalculationDone] = useState(false);
+  const [appointments, setAppointments] = useState([]);
+  const [isSaving, startSaving] = useLoading();
+  const [showConfirmedSchedules, setShowConfirmedSchedules] = useState(true);
   
   // 사용자 권한 확인
   const [userStatus, setUserStatus] = useState({
@@ -41,6 +44,11 @@ const GroupScheduleComponent = ({ group, members }) => {
     );
     
     setUserStatus({ isMember, isAdmin });
+    
+    // 그룹에 저장된 일정 가져오기
+    if (group.appointments && Array.isArray(group.appointments)) {
+      setAppointments(group.appointments);
+    }
     
     // 멤버 데이터로 초기 가용성 데이터 구조 생성
     if (members.length > 0) {
@@ -255,6 +263,32 @@ const GroupScheduleComponent = ({ group, members }) => {
   const allMembersSubmitted = () => {
     return getSubmissionPercentage() === 100;
   };
+  
+  // 일정 처리 핸들러
+  const handleAppointment = async (appointmentData, action = 'save') => {
+    try {
+      setError('');
+      
+      if (action === 'save') {
+        // 일정 저장
+        await startSaving(saveGroupAppointment(group.id, appointmentData, currentUser.uid));
+        
+        // 로컬 상태 업데이트
+        setAppointments(prev => [...prev, appointmentData]);
+        setSuccess('일정이 성공적으로 추가되었습니다.');
+      } else if (action === 'delete') {
+        // 일정 삭제
+        await startSaving(deleteGroupAppointment(group.id, appointmentData.id, currentUser.uid));
+        
+        // 로컬 상태 업데이트
+        setAppointments(prev => prev.filter(app => app.id !== appointmentData.id));
+        setSuccess('일정이 삭제되었습니다.');
+      }
+    } catch (error) {
+      console.error('일정 처리 오류:', error);
+      setError(`일정 처리 중 오류가 발생했습니다: ${error.message}`);
+    }
+  };
 
   // 그룹 멤버가 아닌 경우 접근 제한
   if (!userStatus.isMember) {
@@ -282,6 +316,52 @@ const GroupScheduleComponent = ({ group, members }) => {
             먼저 각자 참여할 수 <strong>없는</strong> 시간을 입력해주세요.
           </p>
         </div>
+        
+        {/* 확정된 일정 섹션 */}
+        {appointments.length > 0 && (
+          <Card className="mb-4">
+            <Card.Header>
+              <div className="d-flex justify-content-between align-items-center">
+                <h4 className="mb-0">확정된 그룹 일정</h4>
+                <Button 
+                  variant="link"
+                  onClick={() => setShowConfirmedSchedules(!showConfirmedSchedules)}
+                  className="p-0"
+                >
+                  {showConfirmedSchedules ? '숨기기' : '보이기'}
+                </Button>
+              </div>
+            </Card.Header>
+            {showConfirmedSchedules && (
+              <Card.Body>
+                {appointments.map((appointment, idx) => (
+                  <Alert key={idx} variant="success" className="mb-2">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h5 className="mb-1">{appointment.title}</h5>
+                        <p className="mb-0">
+                          <strong>일시:</strong> {appointment.day}, {appointment.start} - {appointment.end}
+                        </p>
+                        <small className="text-muted">
+                          {appointment.createdAt ? `등록일: ${new Date(appointment.createdAt).toLocaleDateString()}` : ''}
+                        </small>
+                      </div>
+                      {userStatus.isAdmin && (
+                        <Button 
+                          variant="outline-danger" 
+                          size="sm"
+                          onClick={() => handleAppointment(appointment, 'delete')}
+                        >
+                          삭제
+                        </Button>
+                      )}
+                    </div>
+                  </Alert>
+                ))}
+              </Card.Body>
+            )}
+          </Card>
+        )}
         
         {/* 진행 상황 표시 - 관리자만 볼 수 있음 */}
         {userStatus.isAdmin && (
@@ -372,7 +452,12 @@ const GroupScheduleComponent = ({ group, members }) => {
           <Card>
             <Card.Body>
               <h4 className="mb-3">모두가 가능한 시간</h4>
-              <AvailableTimesDisplay availableTimeSlots={availableTimeSlots} />
+              <AvailableTimesDisplay 
+                availableTimeSlots={availableTimeSlots} 
+                isAdmin={userStatus.isAdmin}
+                onSelectAppointment={handleAppointment}
+                existingAppointments={appointments}
+              />
             </Card.Body>
           </Card>
         )}

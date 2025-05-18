@@ -23,6 +23,58 @@ import {
 const groupsCollection = collection(firestore, 'groups');
 const groupMembersCollection = collection(firestore, 'groupMembers');
 
+// 그룹에 일정 저장 함수
+export const saveGroupAppointment = async (groupId, appointmentData, userId) => {
+  try {
+    // 현재 사용자가 관리자인지 확인
+    const adminDoc = await getDoc(doc(groupMembersCollection, `${groupId}_${userId}`));
+    if (!adminDoc.exists() || adminDoc.data().role !== 'admin') {
+      throw new Error('Permission denied: Not a group admin');
+    }
+    
+    // 그룹 문서 업데이트
+    await updateDoc(doc(groupsCollection, groupId), {
+      appointments: arrayUnion(appointmentData)
+    });
+    
+    return true;
+  } catch (error) {
+    console.error('Error saving group appointment:', error);
+    throw error;
+  }
+};
+
+// 특정 일정 ID로 일정 삭제 함수
+export const deleteGroupAppointment = async (groupId, appointmentId, userId) => {
+  try {
+    // 현재 사용자가 관리자인지 확인
+    const adminDoc = await getDoc(doc(groupMembersCollection, `${groupId}_${userId}`));
+    if (!adminDoc.exists() || adminDoc.data().role !== 'admin') {
+      throw new Error('Permission denied: Not a group admin');
+    }
+    
+    // 먼저 그룹 문서 가져오기
+    const groupDoc = await getDoc(doc(groupsCollection, groupId));
+    
+    if (!groupDoc.exists()) {
+      throw new Error('Group not found');
+    }
+    
+    const appointments = groupDoc.data().appointments || [];
+    const updatedAppointments = appointments.filter(app => app.id !== appointmentId);
+    
+    // 그룹 문서 업데이트
+    await updateDoc(doc(groupsCollection, groupId), {
+      appointments: updatedAppointments
+    });
+    
+    return true;
+  } catch (error) {
+    console.error('Error deleting group appointment:', error);
+    throw error;
+  }
+};
+
 // 새 그룹 생성
 export const createGroup = async (groupData, userId) => {
   try {
@@ -466,5 +518,7 @@ export default {
   getUserGroups,
   updateGroup,
   removeMember,
-  deleteGroup
+  deleteGroup,
+  saveGroupAppointment,
+  deleteGroupAppointment
 };
