@@ -47,7 +47,7 @@ const GroupsPage = () => {
           setLastGroup(fetchedGroups[fetchedGroups.length - 1]);
           setHasMore(fetchedGroups.length >= 10);
         } else {
-          // 테스트용 임시 데이터
+          // 그룹 데이터가 없는 경우 보여주는 test 그룹
           console.log("No groups found or empty array, using fallback data");
           const tempGroups = [
             {
@@ -90,7 +90,7 @@ const GroupsPage = () => {
         if (!isMounted) return;
         
         setError('그룹 정보를 불러오는 데 실패했습니다.');
-        // 오류 발생 시에도 임시 데이터 표시
+        // 오류 발생 시 보여주는 임시 데이터
         const tempGroups = [
           {
             id: 'temp-error',

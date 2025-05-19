@@ -1,6 +1,4 @@
-/* ======================================================
-   네비게이션 바 관련 스타일
-   ====================================================== */
+/* 네비게이션 바 관련 스타일 */
 
 @import './Variables.css';
 
@@ -13,10 +11,21 @@
   transition: background-color var(--transition-normal);
 }
 
-/* 투명 네비게이션 바 (홈페이지용) */
+/* 투명 네비게이션 바 */
 .transparent-navbar {
-  background-color: transparent !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
   box-shadow: none !important;
+  transition: background-color var(--transition-normal);
+}
+
+/* 홈페이지 네비게이션 바 */
+.transparent-navbar.home-navbar {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 일반 페이지 네비게이션 바 */
+.transparent-navbar.page-navbar {
+  background-color: rgba(255, 255, 255, 0.95) !important;
 }
 
 .transparent-navbar-wrapper {
@@ -28,14 +37,18 @@
   transition: background-color var(--transition-normal);
 }
 
-.transparent-navbar.home-navbar {
-  background-color: rgba(255, 255, 255, 0.8) !important;
-  box-shadow: none !important;
+/* 다크모드에서 투명 네비게이션 바 */
+.dark-mode .transparent-navbar {
+  background-color: rgba(51, 51, 51, 0.9) !important;
+  border-bottom: 2px solid #664d4a !important;
 }
 
-/* 다크모드에서 홈페이지 네비게이션 바 */
 .dark-mode .transparent-navbar.home-navbar {
   background-color: rgba(51, 51, 51, 0.8) !important;
+}
+
+.dark-mode .transparent-navbar.page-navbar {
+  background-color: rgba(51, 51, 51, 0.95) !important;
 }
 
 /* 네비게이션 바 컴포넌트들 */

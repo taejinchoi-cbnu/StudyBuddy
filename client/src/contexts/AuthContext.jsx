@@ -29,38 +29,45 @@ export function AuthProvider({ children }) {
   const [isResettingPassword, startResetPasswordLoading] = UseLoading();
   const [isUpdatingProfile, startUpdateProfileLoading] = UseLoading();
 
-  // 회원가입 함수 수정 - 이메일 인증 상태 저장 매개변수 추가
-  async function signup(email, password, displayName, isVerified = false, certifiedDate = null) {
+  // 회원가입 함수 - UseLoading 훅을 사용하지 않는 버전
+  async function signup(email, password, displayName, isVerified = true, certifiedDate = null) {
     console.log("AuthContext - signup 함수 호출됨:", { email, displayName, isVerified });
     
     try {
       console.log("Firebase Auth - 계정 생성 시도");
       setLoading(true);
       
-      // 사용자 계정 생성
-      const userCredential = await startSignupLoading(
-        createUserWithEmailAndPassword(auth, email, password)
-      );
+      // Firebase 인증 - UseLoading 훅을 사용하지 않고 직접 호출
+      console.log("Firebase 인증 직접 호출");
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      
+      if (!user || !user.uid) {
+        console.error("Firebase 인증은 성공했지만 유효한 사용자 객체를 받지 못했습니다.");
+        throw new Error("사용자 계정 생성에 실패했습니다.");
+      }
+      
       console.log("Firebase Auth - 계정 생성 성공:", user.uid);
       
       // Firestore에 사용자 프로필 문서 생성
       console.log("Firestore - 사용자 프로필 생성 시도");
-      await setDoc(doc(firestore, 'users', user.uid), {
-        uid: user.uid,
-        email: email,
-        displayName: displayName,
-        department: "",
-        interests: [],
-        groups: [],
-        certified_email: isVerified,  // 인증 상태 업데이트
-        certified_date: certifiedDate || (isVerified ? new Date().toISOString() : null),
-        createdAt: serverTimestamp()
-      });
-      console.log("Firestore - 사용자 프로필 생성 성공");
-      
-      // 임시 데이터 정리
-      clearTempUserData();
+      try {
+        await setDoc(doc(firestore, 'users', user.uid), {
+          uid: user.uid,
+          email: email,
+          displayName: displayName,
+          department: "",
+          interests: [],
+          groups: [],
+          certified_email: true,  // 항상 true로 설정
+          certified_date: certifiedDate || new Date().toISOString(),
+          createdAt: serverTimestamp()
+        });
+        console.log("Firestore - 사용자 프로필 생성 성공");
+      } catch (firestoreError) {
+        console.error("Firestore 프로필 생성 오류:", firestoreError);
+        // Firestore 오류가 발생해도 인증은 성공했으므로 사용자 객체 반환
+      }
       
       return user;
     } catch (error) {
@@ -68,22 +75,40 @@ export function AuthProvider({ children }) {
       throw error; // 에러를 다시 throw
     } finally {
       setLoading(false);
+      // isSigningUp 상태는 UseLoading 훅을 사용하지 않으므로 수동으로 업데이트
+      // 이 부분은 필요하지 않을 수 있음
     }
   }
 
   // 로그인 함수
-  function login(email, password) {
-    return startLoginLoading(signInWithEmailAndPassword(auth, email, password));
+  async function login(email, password) {
+    try {
+      const result = await startLoginLoading(signInWithEmailAndPassword(auth, email, password));
+      return result;
+    } catch (error) {
+      console.error("로그인 오류:", error);
+      throw error;
+    }
   }
 
   // 로그아웃 함수
-  function logout() {
-    return startLogoutLoading(signOut(auth));
+  async function logout() {
+    try {
+      await startLogoutLoading(signOut(auth));
+    } catch (error) {
+      console.error("로그아웃 오류:", error);
+      throw error;
+    }
   }
 
   // 비밀번호 재설정 함수
-  function resetPassword(email) {
-    return startResetPasswordLoading(sendPasswordResetEmail(auth, email));
+  async function resetPassword(email) {
+    try {
+      await startResetPasswordLoading(sendPasswordResetEmail(auth, email));
+    } catch (error) {
+      console.error("비밀번호 재설정 오류:", error);
+      throw error;
+    }
   }
 
   // 사용자 프로필 데이터 가져오기
@@ -97,10 +122,10 @@ export function AuthProvider({ children }) {
         
         // 이메일 인증 필드가 없으면 기본값 추가
         if (userData.certified_email === undefined) {
-          userData.certified_email = false;
+          userData.certified_email = true; // 기본값을 true로 변경
         }
         if (userData.certified_date === undefined) {
-          userData.certified_date = null;
+          userData.certified_date = userData.createdAt || new Date().toISOString();
         }
         
         setUserProfile(userData);
@@ -117,8 +142,8 @@ export function AuthProvider({ children }) {
             department: "",
             interests: [],
             groups: [],
-            certified_email: false,
-            certified_date: null,
+            certified_email: true, // 기본값을 true로 변경
+            certified_date: new Date().toISOString(),
             createdAt: serverTimestamp()
           };
           
@@ -136,23 +161,26 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // 이메일 업데이트 함수 - 함수명은 유지하되 내부에서 Firebase 함수는 다른 이름으로 사용
+  // 이메일 업데이트 함수
   async function updateEmail(newEmail) {
     if (!currentUser) throw new Error('No authenticated user');
     
     try {
       console.log(`이메일 업데이트 시작: ${currentUser.email} -> ${newEmail}`);
       
-      // Firebase Authentication 이메일 업데이트 - firebaseUpdateEmail 사용
+      // Firebase Authentication 이메일 업데이트
       await firebaseUpdateEmail(auth.currentUser, newEmail);
       console.log('Firebase Auth 이메일 업데이트 성공');
+      
+      // 충북대 이메일인지 확인
+      const isChungbukEmail = newEmail.endsWith('@chungbuk.ac.kr');
       
       // Firestore에 이메일 업데이트
       const userDocRef = doc(firestore, 'users', currentUser.uid);
       await setDoc(userDocRef, { 
         email: newEmail,
-        certified_email: false, // 이메일 변경 시 인증 상태 초기화
-        certified_date: null 
+        certified_email: isChungbukEmail, // 충북대 이메일이면 자동 인증
+        certified_date: isChungbukEmail ? new Date().toISOString() : null
       }, { merge: true });
       console.log('Firestore 이메일 업데이트 성공');
       
@@ -160,8 +188,8 @@ export function AuthProvider({ children }) {
       setUserProfile(prev => ({
         ...prev,
         email: newEmail,
-        certified_email: false,
-        certified_date: null
+        certified_email: isChungbukEmail,
+        certified_date: isChungbukEmail ? new Date().toISOString() : null
       }));
       
       return true;
@@ -206,34 +234,11 @@ export function AuthProvider({ children }) {
       return true;
     });
   }
-
-  // 로컬 스토리지에서 임시 사용자 데이터 가져오기
-  function getTempUserData() {
-    try {
-      const data = localStorage.getItem('tempUserData');
-      if (!data) return null;
-      
-      const parsedData = JSON.parse(data);
-      
-      // 만료 확인
-      const now = Date.now();
-      if (now - parsedData.timestamp > parsedData.expiresIn) {
-        // 만료된 데이터는 삭제
-        localStorage.removeItem('tempUserData');
-        return null;
-      }
-      
-      return parsedData;
-    } catch (error) {
-      console.error('임시 데이터 파싱 오류:', error);
-      localStorage.removeItem('tempUserData');
-      return null;
-    }
-  }
-
-  // 임시 사용자 데이터 제거
+  
+  // clearTempUserData 함수는 실제로 사용되지 않지만, 인터페이스 호환성을 위해 유지
   function clearTempUserData() {
-    localStorage.removeItem('tempUserData');
+    // 임시 데이터 저장이 필요 없으므로 빈 함수로 유지
+    console.log("임시 사용자 데이터 관련 함수 호출됨 - 이 함수는 더 이상 사용되지 않습니다.");
   }
 
   // 인증 상태 변경 감지
@@ -253,34 +258,7 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
-  // 페이지 로드 시 만료된 임시 데이터 정리
-  useEffect(() => {
-    const cleanUpTempData = () => {
-      try {
-        const data = localStorage.getItem('tempUserData');
-        if (!data) return;
-        
-        const parsedData = JSON.parse(data);
-        const now = Date.now();
-        
-        if (now - parsedData.timestamp > parsedData.expiresIn) {
-          localStorage.removeItem('tempUserData');
-        }
-      } catch (error) {
-        // 손상된 데이터 제거
-        localStorage.removeItem('tempUserData');
-      }
-    };
-    
-    cleanUpTempData();
-    
-    // 주기적으로 확인 (선택 사항)
-    const interval = setInterval(cleanUpTempData, 60 * 1000); // 1분마다
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  // context value에 로딩 상태들 추가
+  // context value
   const value = {
     currentUser,
     userProfile,
@@ -291,8 +269,7 @@ export function AuthProvider({ children }) {
     fetchUserProfile,
     updateUserProfile,
     updateEmail,
-    getTempUserData,
-    clearTempUserData,
+    clearTempUserData, // 호환성을 위해 유지
     loading,
     // 각 작업별 로딩 상태 추가
     authLoading: {

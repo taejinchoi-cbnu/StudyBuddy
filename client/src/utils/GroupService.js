@@ -16,7 +16,7 @@ import {
   arrayRemove,
   deleteDoc,
   increment,
-  writeBatch // 추가된 import
+  writeBatch
 } from 'firebase/firestore';
 
 // 그룹 관련 컬렉션 레퍼런스

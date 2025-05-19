@@ -6,7 +6,6 @@ import { useDarkMode } from '../contexts/DarkModeContext';
 import LoadingSpinner from './LoadingSpinner'; 
 import logoSmall from '../assets/logoSmall.png';
 import EmailVerificationService from '../utils/EmailVerificationService';
-import { saveTempUserData, getTempUserData, clearTempUserData } from '../utils/TempStorage';
 
 const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   // 컨텍스트 훅 사용
@@ -19,7 +18,6 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
-  const [showVerificationModal, setShowVerificationModal] = useState(false);
   
   // 폼 상태 관리
   const [email, setEmail] = useState('');
@@ -28,14 +26,10 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [success, setSuccess] = useState(''); // 성공 메시지 추가
+  const [success, setSuccess] = useState('');
   
-  // 인증번호 관련 상태
-  const [verificationCode, setVerificationCode] = useState('');
-  const [verificationTimer, setVerificationTimer] = useState(0);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [codeError, setCodeError] = useState('');
-  const [tempUserData, setTempUserData] = useState(null);
+  // 로딩 상태 추가
+  const [isProcessing, setIsProcessing] = useState(false);
   
   // ref를 통해 외부에서 접근 가능한 메서드 노출
   useImperativeHandle(ref, () => ({
@@ -44,63 +38,12 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     handleForgotPasswordModalOpen
   }));
   
-  // 컴포넌트 언마운트 시 정리
-  useEffect(() => {
-    return () => {
-      // 타이머 정리
-      clearVerificationTimer();
-      
-      // 오래된 임시 데이터 정리
-      const userData = getTempUserData();
-      if (!userData) {
-        // 이미 정리되었거나 만료됨
-        return;
-      }
-    };
-  }, []);
-  
-  // 타이머 관리 함수들
-  const startVerificationTimer = () => {
-    // 10분 타이머 설정 (600초)
-    setVerificationTimer(600);
-    const interval = setInterval(() => {
-      setVerificationTimer(prevTimer => {
-        if (prevTimer <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prevTimer - 1;
-      });
-    }, 1000);
-    
-    // interval ID 저장 (정리 용도)
-    window.verificationTimerInterval = interval;
-  };
-
-  const clearVerificationTimer = () => {
-    if (window.verificationTimerInterval) {
-      clearInterval(window.verificationTimerInterval);
-    }
-  };
-  
-  // 타이머 형식화 함수
-  const formatTimer = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-  
   // 모달 핸들러
   const handleLoginModalOpen = () => {
     setError('');
     setSuccess('');
     setEmail('');
     setPassword('');
-    
-    // 오래된 임시 데이터 정리
-    const userData = getTempUserData();
-    // getTempUserData 함수 내부에서 만료된 데이터 처리
-    
     setShowLoginModal(true);
   };
   
@@ -140,15 +83,6 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     setShowForgotPasswordModal(false);
   };
   
-  const handleCloseVerificationModal = () => {
-    // 임시 데이터 삭제
-    clearTempUserData();
-    setTempUserData(null);
-    setShowVerificationModal(false);
-    // 타이머 중지
-    clearVerificationTimer();
-  };
-  
   const handleSwitchToSignup = () => {
     handleLoginModalClose();
     setError('');
@@ -170,7 +104,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     handleForgotPasswordModalOpen();
   };
   
-  // 로그인 핸들러 수정
+  // 로그인 핸들러
   const handleLogin = async (e) => {
     e.preventDefault();
     
@@ -185,7 +119,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     }
   };
   
-  // 회원가입 핸들러 수정
+  // 회원가입 핸들러 - 완전히 수정된 버전
   const handleSignup = async (e) => {
     e.preventDefault();
     
@@ -200,179 +134,79 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
       return setError('비밀번호는 최소 6자 이상이어야 합니다.');
     }
     
+    // 이메일 도메인 체크 (chungbuk.ac.kr)
+    if (!email.endsWith('@chungbuk.ac.kr')) {
+      return setError('충북대학교 이메일(@chungbuk.ac.kr)만 가입할 수 있습니다.');
+    }
+    
     try {
       setError('');
-      console.log("이메일 인증 요청 준비");
+      setSuccess('');
+      setIsProcessing(true); // 로딩 상태 시작
       
-      // 이메일 인증번호 요청
+      console.log("이메일 유효성 확인 요청 준비");
+      
+      // 1. 이메일 유효성 확인 요청
+      let verificationResponse;
       try {
-        // 임시 사용자 데이터 저장 - TempStorage 유틸리티 사용
-        const tempData = {
-          email: email,
-          password: password,
-          displayName: displayName
-        };
+        verificationResponse = await EmailVerificationService.verifyEmail(email);
         
-        const saveResult = saveTempUserData(tempData);
-        if (!saveResult) {
-          throw new Error('임시 데이터 저장에 실패했습니다.');
+        if (!verificationResponse.success) {
+          throw new Error(verificationResponse.message || '유효하지 않은 이메일입니다.');
         }
         
-        // 임시 데이터 상태 업데이트
-        setTempUserData(tempData);
-        
-        // 인증번호 요청 (EmailVerificationService 활용)
-        const response = await EmailVerificationService.requestVerificationCode(email);
-        
-        if (response.success) {
-          // 이미 인증된 이메일인 경우 (directVerified가 true인 경우)
-          if (response.directVerified) {
-            console.log("이미 인증된 이메일:", email);
-            
-            try {
-              // 계정 생성 직행
-              const userCredential = await signup(
-                email,
-                password,
-                displayName,
-                true, // 인증됨
-                response.certified_date || new Date().toISOString()
-              );
-              
-              if (userCredential) {
-                // 임시 데이터 삭제
-                clearTempUserData();
-                setTempUserData(null);
-                
-                // 성공 메시지 표시
-                setSuccess('이미 인증된 이메일입니다. 회원가입이 완료되었습니다.');
-                
-                // 잠시 후 리디렉션
-                setTimeout(() => {
-                  setShowSignupModal(false);
-                  navigate('/dashboard');
-                }, 1500);
-              }
-            } catch (signupError) {
-              console.error('계정 생성 오류:', signupError);
-              // 오류 메시지 설정
-              setError('계정 생성 중 오류가 발생했습니다: ' + (signupError.message || '알 수 없는 오류'));
-              
-              // 임시 데이터 정리
-              clearTempUserData();
-              setTempUserData(null);
-            }
-          } 
-          // 일반적인 경우 - 인증번호 입력 모달 표시
-          else {
-            setShowSignupModal(false);
-            setShowVerificationModal(true);
-            startVerificationTimer();
-            setVerificationCode('');
-            setCodeError('');
-          }
-        } else {
-          throw new Error(response.message || '인증번호 발송에 실패했습니다.');
-        }
+        console.log("이메일 유효성 확인 성공:", email);
       } catch (verificationError) {
-        console.error('이메일 인증 요청 오류:', verificationError);
-        // 임시 데이터 삭제
-        clearTempUserData();
-        setTempUserData(null);
-        
-        setError('이메일 인증 요청에 실패했습니다: ' + verificationError.message);
-      }
-    } catch (error) {
-      console.error('회원가입 준비 오류:', error);
-      setError('회원가입 중 오류가 발생했습니다: ' + error.message);
-    }
-  };
-  
-  // 인증번호 검증 및 최종 회원가입 처리
-  const handleVerifyCode = async (e) => {
-    e.preventDefault();
-    
-    if (!verificationCode.trim()) {
-      return setCodeError('인증번호를 입력해주세요.');
-    }
-    
-    try {
-      setIsVerifying(true);
-      setCodeError('');
-      
-      // 임시 데이터 가져오기 - TempStorage 유틸리티 사용
-      const userData = getTempUserData();
-      
-      if (!userData) {
-        throw new Error('임시 데이터를 찾을 수 없습니다. 다시 시도해주세요.');
+        console.error('이메일 확인 요청 오류:', verificationError);
+        setError('이메일 확인 요청에 실패했습니다: ' + verificationError.message);
+        setIsProcessing(false); // 로딩 상태 종료
+        return;
       }
       
-      // 인증번호 검증
-      const verifyResponse = await EmailVerificationService.verifyCode(userData.email, verificationCode);
-      
-      if (verifyResponse.success) {
-        // 인증 성공 - Firebase 계정 생성 (이메일 인증 상태 및 인증 날짜 추가)
-        const userCredential = await signup(
-          userData.email, 
-          userData.password, 
-          userData.displayName, 
-          true, // 이메일 인증됨
-          verifyResponse.certified_date // 인증 날짜
+      // 2. 계정 생성 시도
+      try {
+        await signup(
+          email,
+          password,
+          displayName,
+          true, // 이메일 인증 완료로 처리
+          verificationResponse.certified_date || new Date().toISOString()
         );
         
-        if (userCredential) {
-          // 임시 데이터 삭제
-          clearTempUserData();
-          setTempUserData(null);
-          
-          // 모달 닫기 및 리디렉션
-          setShowVerificationModal(false);
+        // 여기까지 오면 성공
+        setSuccess('회원가입이 완료되었습니다.');
+        
+        // 잠시 후 리디렉션
+        setTimeout(() => {
+          setShowSignupModal(false);
           navigate('/dashboard');
+        }, 1500);
+      } catch (signupError) {
+        console.error('계정 생성 중 오류:', signupError);
+        
+        // currentUser가 이미 설정되어 있으면 성공으로 처리
+        // onAuthStateChanged가 이미 실행되었을 수 있음
+        if (currentUser) {
+          console.log("이미 로그인된 상태, 성공으로 처리");
+          setSuccess('회원가입이 완료되었습니다.');
+          
+          setTimeout(() => {
+            setShowSignupModal(false);
+            navigate('/dashboard');
+          }, 1500);
+        } else {
+          setError('계정 생성 중 오류가 발생했습니다: ' + (signupError.message || '알 수 없는 오류'));
         }
-      } else {
-        throw new Error(verifyResponse.message || '인증번호가 올바르지 않습니다.');
       }
     } catch (error) {
-      console.error('인증번호 검증 오류:', error);
-      setCodeError(error.message || '인증 과정에서 오류가 발생했습니다.');
+      console.error('회원가입 프로세스 오류:', error);
+      setError('회원가입 중 오류가 발생했습니다: ' + error.message);
     } finally {
-      setIsVerifying(false);
+      setIsProcessing(false); // 로딩 상태 종료
     }
   };
   
-  // 인증번호 재발송
-  const handleResendCode = async () => {
-    if (!tempUserData) {
-      return setCodeError('회원 정보를 찾을 수 없습니다. 다시 시도해주세요.');
-    }
-    
-    try {
-      setIsVerifying(true);
-      setCodeError('');
-      
-      // 인증번호 재요청
-      const response = await EmailVerificationService.requestVerificationCode(tempUserData.email);
-      
-      if (response.success) {
-        // 타이머 재시작
-        clearVerificationTimer();
-        startVerificationTimer();
-        setCodeError('');
-        // 성공 메시지
-        setCodeError('인증번호가 재발송되었습니다.');
-        setTimeout(() => setCodeError(''), 3000);
-      } else {
-        throw new Error(response.message || '인증번호 재발송에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('인증번호 재발송 오류:', error);
-      setCodeError(error.message || '인증번호 재발송 중 오류가 발생했습니다.');
-    } finally {
-      setIsVerifying(false);
-    }
-  };
-  
-  // 비밀번호 재설정 핸들러 수정
+  // 비밀번호 재설정 핸들러
   const handleResetPassword = async (e) => {
     e.preventDefault();
     
@@ -400,19 +234,19 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     }
   };
 
-  // 홈페이지일 경우 투명한 배경에 흐릿한 흰색 배경 추가
+  // isHomePage 확인
   const isHomePage = location.pathname === '/';
-  const navbarClass = `dashboard-navbar ${darkMode ? 'dark-mode' : ''} ${
-    transparent && isHomePage ? 'transparent-navbar home-navbar' : ''
+  const navbarClass = `dashboard-navbar ${darkMode ? 'dark-mode' : ''} transparent-navbar ${
+    isHomePage ? 'home-navbar' : 'page-navbar'
   }`;
 
   return (
     <>
       {/* 로딩 오버레이 추가 */}
-      {(authLoading.login || authLoading.signup || authLoading.resetPassword) && <LoadingSpinner />}
+      {(authLoading.login || isProcessing || authLoading.resetPassword) && <LoadingSpinner />}
       
       <Navbar 
-        variant={transparent && !darkMode && isHomePage ? "light" : "dark"} 
+        variant={darkMode ? "dark" : "light"} 
         expand="lg" 
         className={navbarClass} 
         fixed="top"
@@ -459,7 +293,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                         프로필
                       </Nav.Link>
                       <Button 
-                        variant={transparent && !darkMode && isHomePage ? "outline-dark" : "outline-light"} 
+                        variant={darkMode ? "outline-light" : "outline-dark"} 
                         onClick={handleLogout}
                         className="logout-button"
                         disabled={authLoading.logout}
@@ -470,14 +304,14 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                   ) : (
                     <>
                       <Button 
-                        variant={transparent && !darkMode && isHomePage ? "outline-dark" : "outline-light"} 
+                        variant={darkMode ? "outline-light" : "outline-dark"} 
                         onClick={handleLoginModalOpen}
                         className="login-button"
                       >
                         로그인
                       </Button>
                       <Button 
-                        variant={transparent && !darkMode && isHomePage ? "dark" : "light"}
+                        variant={darkMode ? "light" : "dark"}
                         className="text-white signup-button"
                         onClick={handleSignupModalOpen}
                       >
@@ -580,6 +414,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                 onChange={(e) => setDisplayName(e.target.value)} 
                 required 
                 placeholder="이름을 입력하세요"
+                disabled={isProcessing}
               />
             </Form.Group>
             <Form.Group controlId="signupEmail" className="mt-3">
@@ -590,7 +425,11 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                 onChange={(e) => setEmail(e.target.value)} 
                 required 
                 placeholder="이메일을 입력하세요"
+                disabled={isProcessing}
               />
+              <Form.Text className="text-muted">
+                충북대학교 이메일(@chungbuk.ac.kr)만 가입 가능합니다.
+              </Form.Text>
             </Form.Group>
             <Form.Group controlId="signupPassword" className="mt-3">
               <Form.Label>비밀번호</Form.Label>
@@ -600,6 +439,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                 onChange={(e) => setPassword(e.target.value)} 
                 required 
                 placeholder="비밀번호를 입력하세요"
+                disabled={isProcessing}
               />
             </Form.Group>
             <Form.Group controlId="signupPasswordConfirm" className="mt-3">
@@ -610,15 +450,30 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                 onChange={(e) => setPasswordConfirm(e.target.value)} 
                 required 
                 placeholder="비밀번호를 다시 입력하세요"
+                disabled={isProcessing}
               />
             </Form.Group>
             <Button 
               variant="primary" 
               type="submit" 
               className="w-100 mt-4" 
-              disabled={authLoading.signup || success}
+              disabled={isProcessing || success}
             >
-              {authLoading.signup ? '처리 중...' : '회원가입'}
+              {isProcessing ? (
+                <>
+                  <Spinner 
+                    as="span" 
+                    animation="border" 
+                    size="sm" 
+                    role="status" 
+                    aria-hidden="true" 
+                    className="me-2"
+                  />
+                  처리 중...
+                </>
+              ) : (
+                success ? '회원가입 완료' : '회원가입'
+              )}
             </Button>
           </Form>
         </Modal.Body>
@@ -629,84 +484,12 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
               variant="link" 
               onClick={handleSwitchToLogin} 
               className="p-0 ms-1 text-decoration-none"
+              disabled={isProcessing}
             >
               로그인
             </Button>
           </p>
         </Modal.Footer>
-      </Modal>
-      
-      {/* 인증번호 입력 모달 */}
-      <Modal 
-        show={showVerificationModal} 
-        onHide={handleCloseVerificationModal}
-        centered
-        className={`auth-modal ${darkMode ? 'dark-mode' : ''}`}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>이메일 인증</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {codeError && (
-            <Alert variant={codeError.includes('재발송') ? 'success' : 'danger'}>
-              {codeError}
-            </Alert>
-          )}
-          
-          <p>
-            <strong>{tempUserData?.email}</strong>로 인증번호가 발송되었습니다.
-            이메일에서 인증번호를 확인하고 입력해주세요.
-          </p>
-          
-          <Form onSubmit={handleVerifyCode}>
-            <Form.Group controlId="verificationCode" className="mb-3">
-              <Form.Label>인증번호</Form.Label>
-              <div className="d-flex align-items-center">
-                <Form.Control 
-                  type="text" 
-                  value={verificationCode} 
-                  onChange={(e) => setVerificationCode(e.target.value)} 
-                  placeholder="인증번호 6자리 입력" 
-                  maxLength={6}
-                  required 
-                />
-                <span className="ms-2 text-danger">
-                  {verificationTimer > 0 ? formatTimer(verificationTimer) : '만료됨'}
-                </span>
-              </div>
-            </Form.Group>
-            
-            <div className="d-grid gap-2">
-              <Button 
-                variant="primary" 
-                type="submit" 
-                disabled={isVerifying || verificationTimer === 0}
-              >
-                {isVerifying ? (
-                  <>
-                    <Spinner animation="border" size="sm" className="me-1" />
-                    처리 중...
-                  </>
-                ) : '확인'}
-              </Button>
-              
-              <Button 
-                variant="outline-secondary" 
-                onClick={handleResendCode}
-                disabled={isVerifying}
-              >
-                인증번호 재발송
-              </Button>
-            </div>
-          </Form>
-          
-          <div className="text-center mt-3">
-            <p className="text-muted small">
-              인증번호는 10분간 유효합니다.
-              {verificationTimer === 0 && ' 만료된 경우 재발송 버튼을 클릭하세요.'}
-            </p>
-          </div>
-        </Modal.Body>
       </Modal>
       
       {/* 비밀번호 재설정 모달 */}
