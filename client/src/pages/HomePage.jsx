@@ -63,7 +63,7 @@ const HomePage = () => {
           <div className="hero-content">
             <h1 className="hero-title">STUDDY BUDDY</h1>
             <p className="hero-text">
-              아 시발뭐라고 적어야해
+              스터디 버디 간단 설명
             </p>
             {currentUser ? (
               <button 

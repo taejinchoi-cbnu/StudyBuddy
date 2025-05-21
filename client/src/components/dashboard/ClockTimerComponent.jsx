@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Card, Button, Form, Row, Col, Badge } from "react-bootstrap";
+import { Button, Badge } from "react-bootstrap";
 import { useDarkMode } from "../../contexts/DarkModeContext";
 
 const ClockTimerComponent = () => {
@@ -103,111 +103,94 @@ const ClockTimerComponent = () => {
     setSecondsLeft(timerMode === "work" ? workDuration * 60 : breakDuration * 60);
   };
   
-  // 작업 시간 변경 핸들러
-  const handleWorkDurationChange = (e) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value > 0 && value <= 60) {
-      setWorkDuration(value);
-      if (timerMode === "work" && !timerRunning) {
-        setSecondsLeft(value * 60);
-      }
-    }
-  };
-  
-  // 휴식 시간 변경 핸들러
-  const handleBreakDurationChange = (e) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value > 0 && value <= 30) {
-      setBreakDuration(value);
-      if (timerMode === "break" && !timerRunning) {
-        setSecondsLeft(value * 60);
-      }
-    }
-  };
-  
   return (
-    <Card className={`shadow-sm ${darkMode ? "dark-mode" : ""}`}>
-      <Card.Body className="text-center">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4 className="mb-0">
-            {isTimer ? "포모도로 타이머" : "현재 시간"}
-          </h4>
+    <div className={`clock-component ${darkMode ? "dark-mode" : ""}`}>
+      {!isTimer ? (
+        // 시계 모드
+        <div className="clock-container">
+          <div className="clock-display">
+            <h1 className="clock-time">{formatTime(currentTime)}</h1>
+            <p className="clock-date">{currentTime.toLocaleDateString()}</p>
+          </div>
           <Button 
             variant="outline-secondary" 
             size="sm"
             onClick={toggleMode}
+            className="mode-toggle-btn"
           >
-            {isTimer ? "시계 보기" : "타이머 보기"}
+            <i className="bi bi-alarm"></i> 타이머 보기
           </Button>
         </div>
-        
-        {!isTimer ? (
-          // 시계 모드
-          <div className="my-4">
-            <h1 className="display-3 fw-bold">{formatTime(currentTime)}</h1>
-            <p className="text-muted">{currentTime.toLocaleDateString()}</p>
-          </div>
-        ) : (
-          // 타이머 모드
-          <div className="timer-container my-4">
-            <Badge 
-              bg={timerMode === "work" ? "danger" : "success"} 
-              className="mb-3 p-2"
+      ) : (
+        // 타이머 모드
+        <div className="timer-container">
+          <Badge 
+            bg={timerMode === "work" ? "danger" : "success"} 
+            className="timer-badge"
+          >
+            {timerMode === "work" ? "집중 시간" : "휴식 시간"}
+          </Badge>
+          
+          <h1 className="timer-display">
+            {formatTimerTime(secondsLeft)}
+          </h1>
+          
+          <div className="timer-controls">
+            <Button 
+              variant={timerRunning ? "warning" : "primary"} 
+              onClick={toggleTimer}
+              className="timer-btn"
             >
-              {timerMode === "work" ? "집중 시간" : "휴식 시간"}
-            </Badge>
-            
-            <h1 className="display-1 fw-bold mb-4">
-              {formatTimerTime(secondsLeft)}
-            </h1>
-            
-            <div className="d-flex justify-content-center gap-2 mb-4">
-              <Button 
-                variant={timerRunning ? "warning" : "primary"} 
-                onClick={toggleTimer}
-              >
-                {timerRunning ? "일시정지" : "시작"}
-              </Button>
-              <Button 
-                variant="secondary" 
-                onClick={resetTimer}
-              >
-                리셋
-              </Button>
-            </div>
-            
-            <Row className="mb-3">
-              <Col>
-                <Form.Group>
-                  <Form.Label>집중 시간 (분)</Form.Label>
-                  <Form.Control 
-                    type="number" 
-                    min="1" 
-                    max="60" 
-                    value={workDuration} 
-                    onChange={handleWorkDurationChange}
-                    disabled={timerRunning}
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <Form.Label>휴식 시간 (분)</Form.Label>
-                  <Form.Control 
-                    type="number" 
-                    min="1" 
-                    max="30" 
-                    value={breakDuration} 
-                    onChange={handleBreakDurationChange}
-                    disabled={timerRunning}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+              {timerRunning ? 
+                <><i className="bi bi-pause-fill"></i> 일시정지</> : 
+                <><i className="bi bi-play-fill"></i> 시작</>
+              }
+            </Button>
+            <Button 
+              variant="secondary" 
+              onClick={resetTimer}
+              className="timer-btn"
+            >
+              <i className="bi bi-arrow-counterclockwise"></i> 리셋
+            </Button>
+            <Button 
+              variant="outline-secondary" 
+              onClick={toggleMode}
+              className="timer-btn"
+            >
+              <i className="bi bi-clock"></i> 시계 보기
+            </Button>
           </div>
-        )}
-      </Card.Body>
-    </Card>
+          
+          <div className="timer-settings">
+            <div className="timer-setting-item">
+              <span>집중: {workDuration}분</span>
+              <input 
+                type="range" 
+                min="1" 
+                max="60" 
+                value={workDuration} 
+                onChange={(e) => setWorkDuration(parseInt(e.target.value, 10))}
+                disabled={timerRunning}
+                className="timer-slider"
+              />
+            </div>
+            <div className="timer-setting-item">
+              <span>휴식: {breakDuration}분</span>
+              <input 
+                type="range" 
+                min="1" 
+                max="30" 
+                value={breakDuration} 
+                onChange={(e) => setBreakDuration(parseInt(e.target.value, 10))}
+                disabled={timerRunning}
+                className="timer-slider"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Row, Col, Button, Alert } from "react-bootstrap";
+import { Row, Col, Card, Button, Alert, Spinner } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { useDarkMode } from "../../contexts/DarkModeContext";
 
@@ -8,8 +8,6 @@ const MyGroupsComponent = ({ userGroups = [], onDataChange }) => {
   const { currentUser } = useAuth();
   const { darkMode } = useDarkMode();
   const navigate = useNavigate();
-  const [error, setError] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
   
   // 그룹 페이지로 이동
   const handleGroupClick = useCallback((groupId) => {
@@ -26,47 +24,51 @@ const MyGroupsComponent = ({ userGroups = [], onDataChange }) => {
     navigate("/groups");
   }, [navigate]);
   
+  // 로딩 중이거나 사용자 정보가 없는 경우
+  if (!currentUser) {
+    return (
+      <div className="text-center py-5">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">로딩 중...</span>
+        </Spinner>
+      </div>
+    );
+  }
+  
   return (
-    <Card className={`shadow-sm ${darkMode ? "dark-mode" : ""}`}>
-      <Card.Header className="d-flex justify-content-between align-items-center">
-        <h4 className="mb-0">내 스터디 그룹</h4>
-        <Button 
-          variant="outline-primary" 
-          size="sm" 
-          onClick={handleViewAllGroups}
-        >
-          모든 그룹 보기
-        </Button>
-      </Card.Header>
-      <Card.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
-        
-        {isProcessing ? (
-          <div className="text-center py-3">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">로딩 중...</span>
-            </div>
+    <div className={`my-groups-component ${darkMode ? "dark-mode" : ""}`}>
+      {userGroups.length > 0 ? (
+        <>
+          <div className="my-groups-header d-flex justify-content-between align-items-center mb-3">
+            <div></div> {/* Placeholder for flexbox alignment */}
+            <Button 
+              variant="outline-primary" 
+              size="sm" 
+              onClick={handleViewAllGroups}
+              className="view-all-btn"
+            >
+              <i className="bi bi-list"></i> 모든 그룹 보기
+            </Button>
           </div>
-        ) : userGroups.length > 0 ? (
-          <Row xs={1} md={2} className="g-3">
+          
+          <Row xs={1} md={2} className="g-3 my-groups-grid">
             {userGroups.map((group) => (
               <Col key={group.id}>
                 <Card 
                   className={`h-100 group-card ${darkMode ? "dark-mode" : ""}`}
                   onClick={() => handleGroupClick(group.id)}
-                  style={{ cursor: "pointer" }}
                 >
                   <Card.Body>
-                    <Card.Title>{group.name}</Card.Title>
-                    <Card.Text className="small text-truncate">
+                    <Card.Title className="group-card-title">{group.name}</Card.Title>
+                    <Card.Text className="group-card-description text-truncate">
                       {group.description}
                     </Card.Text>
-                    <div className="d-flex justify-content-between align-items-center">
+                    <div className="d-flex justify-content-between align-items-center mt-2">
                       <small className="text-muted">
-                        {group.memberCount || 1}/{group.maxMembers} 명
+                        <i className="bi bi-people"></i> {group.memberCount || 1}/{group.maxMembers}
                       </small>
                       <small className="text-muted">
-                        {group.meetingType}
+                        <i className="bi bi-geo-alt"></i> {group.meetingType}
                       </small>
                     </div>
                   </Card.Body>
@@ -74,19 +76,31 @@ const MyGroupsComponent = ({ userGroups = [], onDataChange }) => {
               </Col>
             ))}
           </Row>
-        ) : (
-          <div className="text-center py-3">
-            <p>참여 중인 스터디 그룹이 없습니다.</p>
+          
+          <div className="text-center mt-4">
             <Button 
               variant="primary" 
               onClick={handleCreateGroup}
+              className="create-group-btn"
             >
-              새 그룹 만들기
+              <i className="bi bi-plus-circle"></i> 새 그룹 만들기
             </Button>
           </div>
-        )}
-      </Card.Body>
-    </Card>
+        </>
+      ) : (
+        <div className="text-center py-5 empty-groups">
+          <i className="bi bi-people" style={{ fontSize: "3rem", color: "var(--text-muted)" }}></i>
+          <p className="mt-3 text-muted">참여 중인 스터디 그룹이 없습니다.</p>
+          <Button 
+            variant="primary" 
+            onClick={handleCreateGroup}
+            className="mt-2"
+          >
+            <i className="bi bi-plus-circle"></i> 새 그룹 만들기
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };
 

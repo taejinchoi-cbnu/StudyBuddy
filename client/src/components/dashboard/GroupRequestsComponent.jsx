@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, ListGroup, Badge, Alert } from "react-bootstrap";
+import { ListGroup, Badge, Alert, Spinner } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { useDarkMode } from "../../contexts/DarkModeContext";
 
@@ -45,7 +45,7 @@ const GroupRequestsComponent = ({ userGroups = [], onDataChange }) => {
     };
     
     filterAdminGroups();
-  }, [currentUser, userGroups]); // 의존성 배열 수정
+  }, [currentUser, userGroups]);
   
   // 그룹 페이지로 이동
   const handleGroupClick = useCallback((groupId) => {
@@ -59,60 +59,62 @@ const GroupRequestsComponent = ({ userGroups = [], onDataChange }) => {
     }, 0);
   }, [adminGroups]);
   
-  // 그룹별 요청 개수 표시
-  const renderRequestCount = useCallback((count) => {
+  // 로딩 중인 경우
+  if (isProcessing) {
     return (
-      <Badge bg="danger" pill>
-        {count}
-      </Badge>
+      <div className="text-center py-5">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">로딩 중...</span>
+        </Spinner>
+        <p className="mt-3">가입 요청 정보를 처리하는 중...</p>
+      </div>
     );
-  }, []);
+  }
   
   return (
-    <Card className={`shadow-sm ${darkMode ? "dark-mode" : ""}`}>
-      <Card.Header className="d-flex justify-content-between align-items-center">
-        <h4 className="mb-0">그룹 가입 요청</h4>
-        {getTotalRequests() > 0 && (
-          <Badge bg="danger" pill>
-            {getTotalRequests()}
-          </Badge>
-        )}
-      </Card.Header>
-      <Card.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
-        
-        {isProcessing ? (
-          <div className="text-center py-3">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">로딩 중...</span>
+    <div className={`group-requests-component ${darkMode ? "dark-mode" : ""}`}>
+      {error && <Alert variant="danger">{error}</Alert>}
+      
+      {adminGroups.length > 0 ? (
+        <>
+          <div className="group-requests-header mb-3">
+            <div className="d-flex justify-content-between align-items-center">
+              <Badge bg="danger" pill className="total-requests-badge">
+                총 {getTotalRequests()}개 요청
+              </Badge>
             </div>
           </div>
-        ) : adminGroups.length > 0 ? (
-          <ListGroup variant="flush">
+          
+          <ListGroup variant="flush" className="group-requests-list">
             {adminGroups.map((group) => (
               <ListGroup.Item 
                 key={group.id}
                 action
                 onClick={() => handleGroupClick(group.id)}
-                className={`d-flex justify-content-between align-items-center ${darkMode ? "dark-mode" : ""}`}
+                className={`group-request-item ${darkMode ? "dark-mode" : ""}`}
               >
-                <div>
-                  <h5 className="mb-1">{group.name}</h5>
-                  <small className="text-muted">
-                    처리가 필요한 요청이 있습니다
-                  </small>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 className="mb-1">{group.name}</h5>
+                    <small className="text-muted">
+                      처리가 필요한 요청이 있습니다
+                    </small>
+                  </div>
+                  <Badge bg="danger" pill className="request-count-badge">
+                    {group.joinRequests?.length || 0}
+                  </Badge>
                 </div>
-                {renderRequestCount(group.joinRequests?.length || 0)}
               </ListGroup.Item>
             ))}
           </ListGroup>
-        ) : (
-          <p className="text-center text-muted py-3">
-            관리자인 그룹의 가입 요청이 없습니다.
-          </p>
-        )}
-      </Card.Body>
-    </Card>
+        </>
+      ) : (
+        <div className="text-center py-5 empty-requests">
+          <i className="bi bi-envelope-check" style={{ fontSize: "3rem", color: "var(--text-muted)" }}></i>
+          <p className="mt-3 text-muted">관리자인 그룹의 가입 요청이 없습니다.</p>
+        </div>
+      )}
+    </div>
   );
 };
 

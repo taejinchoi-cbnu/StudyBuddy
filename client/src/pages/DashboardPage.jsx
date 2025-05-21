@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Container, Row, Col, Alert } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import { getUserGroups } from "../utils/GroupService";
@@ -8,9 +8,8 @@ import LoadingSpinner from "../components/LoadingSpinner";
 // 대시보드 컴포넌트들 임포트
 import ClockTimerComponent from "../components/dashboard/ClockTimerComponent";
 import WelcomeMessageComponent from "../components/dashboard/WelcomeMessageComponent";
-import UpcomingEventsComponent from "../components/dashboard/UpcomingEventsComponent";
-import GroupRequestsComponent from "../components/dashboard/GroupRequestsComponent";
-import MyGroupsComponent from "../components/dashboard/MyGroupsComponent";
+import DashboardModal from "../components/dashboard/DashboardModal";
+import BottomButtonsComponent from "../components/dashboard/BottomButtonsComponent";
 
 const DashboardPage = () => {
   const { currentUser, userProfile } = useAuth();
@@ -19,6 +18,21 @@ const DashboardPage = () => {
   const [error, setError] = useState("");
   const [userGroups, setUserGroups] = useState([]);
   const [hasAdminGroups, setHasAdminGroups] = useState(false);
+  
+  // 모달 상태 관리
+  const [showModal, setShowModal] = useState(false);
+  const [activeComponent, setActiveComponent] = useState(""); // 현재 활성화된 컴포넌트
+  
+  // 모달 열기 함수
+  const openModal = (componentName) => {
+    setActiveComponent(componentName);
+    setShowModal(true);
+  };
+  
+  // 모달 닫기 함수
+  const closeModal = () => {
+    setShowModal(false);
+  };
   
   // 사용자 그룹 데이터 가져오기
   const fetchUserGroupsData = useCallback(async () => {
@@ -107,52 +121,34 @@ const DashboardPage = () => {
         
         <main className="dashboard-content">
           {error && (
-            <Alert 
-              variant="danger" 
-              dismissible 
-              onClose={() => setError("")}
-            >
+            <div className="alert alert-danger mt-3" role="alert">
               {error}
-            </Alert>
+            </div>
           )}
           
-          {/* 환영 메시지 섹션 */}
-          <WelcomeMessageComponent />
+          <div className="dashboard-center-content">
+            {/* 환영 메시지 컴포넌트 */}
+            <WelcomeMessageComponent />
+
+            {/* 시계 컴포넌트 */}
+            <ClockTimerComponent />
+          </div>
           
-          <Row className="mb-4">
-            {/* 왼쪽 컬럼 - 시계/타이머 */}
-            <Col lg={6} className="mb-4 mb-lg-0">
-              <ClockTimerComponent />
-            </Col>
-            
-            {/* 오른쪽 컬럼 - 다가오는 일정 */}
-            <Col lg={6}>
-              <UpcomingEventsComponent 
-                userGroups={userGroups}
-                onDataChange={refreshData}
-              />
-            </Col>
-          </Row>
+          {/* 하단 버튼 그룹 */}
+          <BottomButtonsComponent 
+            openModal={openModal} 
+            hasAdminGroups={hasAdminGroups}
+          />
           
-          <Row>
-            {/* 왼쪽 컬럼 - 내 그룹 */}
-            <Col lg={6} className="mb-4 mb-lg-0">
-              <MyGroupsComponent 
-                userGroups={userGroups}
-                onDataChange={refreshData}
-              />
-            </Col>
-            
-            {/* 오른쪽 컬럼 - 그룹 가입 요청 */}
-            <Col lg={6}>
-              {hasAdminGroups && (
-                <GroupRequestsComponent 
-                  userGroups={userGroups}
-                  onDataChange={refreshData}
-                />
-              )}
-            </Col>
-          </Row>
+          {/* 대시보드 모달 */}
+          <DashboardModal
+            show={showModal}
+            onHide={closeModal}
+            activeComponent={activeComponent}
+            userGroups={userGroups}
+            hasAdminGroups={hasAdminGroups}
+            onDataChange={refreshData}
+          />
         </main>
       </div>
     </Container>
