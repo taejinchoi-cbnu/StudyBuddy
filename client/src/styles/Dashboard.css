@@ -1,226 +1,255 @@
-/* ======================================================
-   대시보드 특화 스타일
-   ====================================================== */
+/* 대시보드 디자인 */
 
-@import './Variables.css';
+   @import './Variables.css';
 
-/* 대시보드 기본 레이아웃 */
-.dashboard-layout {
-  display: flex;
-  min-height: 100vh;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  color: var(--text-color);
-  background-color: var(--light-bg);
-}
-
-.main-area-full {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.dashboard-content {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-}
-
-/* 대시보드 그리드 레이아웃 */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-}
-
-/* 대시보드 카드 스타일 */
-.dashboard-card {
-  background-color: var(--white);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border-color);
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-  height: 250px;
-}
-
-.dashboard-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--hover-shadow);
-}
-
-.card-title {
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: #333;
-  text-align: center;
-}
-
-.card-content {
-  display: flex;
-  flex-direction: column;
-  height: calc(100% - 2.5rem);
-}
-
-.card-content p {
-  margin-bottom: 0.75rem;
-  text-align: center;
-}
-
-/* 대시보드 카드 버튼 */
-.card-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--white);
-  color: #000;
-  border: 2px solid var(--primary-dark);
-  border-radius: 12px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 1.1rem;
-  text-decoration: none;
-  align-self: center;
-  margin-top: auto;
-  transition: all var(--transition-normal);
-  box-shadow: 0 4px 8px rgba(204, 153, 145, 0.3);
-}
-
-.card-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(204, 153, 145, 0.4);
-}
-
-.card-button.accent {
-  background-color: var(--accent-color);
-  color: var(--white);
-  border: none;
-  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
-}
-
-.card-button.accent:hover {
-  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
-}
-
-/* 차트 컴포넌트 */
-.study-chart-container {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto 2rem;
-}
-
-.chart-card {
-  background-color: var(--white);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border-color);
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-  height: 300px;
-  display: flex;
-  flex-direction: column;
-}
-
-.chart-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  margin-top: 1rem;
-}
-
-/* 대시보드 다크모드 스타일 */
-.dark-mode .dashboard-card,
-.dark-mode .chart-card {
-  background-color: var(--white);
-  border-color: var(--border-color);
-}
-
-.dark-mode .card-button {
-  background-color: #505050;
-  color: #e6e6e6;
-  border-color: #807070;
-}
-
-.dark-mode .card-title {
-  color: #e6e6e6;
-}
-
-/* 환영 메시지 (선택적 구현) */
-.welcome-message {
-  background-color: var(--white);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: var(--shadow);
-  text-align: center;
-  max-width: var(--container-max-width);
-  margin: 0 auto 2rem;
-  border: 1px solid var(--border-color);
-  animation: fadeIn 0.5s ease;
-}
-
-.welcome-message h2 {
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.welcome-message button {
-  margin-top: 1rem;
-  padding: 0.5rem 1.5rem;
-  background-color: var(--accent-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.welcome-message button:hover {
-  background-color: var(--primary-dark);
-}
-
-.dark-mode .welcome-message {
-  background-color: var(--white);
-}
-
-.dark-mode .welcome-message h2 {
-  color: #e6e6e6;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* 반응형 디자인 */
-@media (max-width: 1200px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(3, 1fr);
-    padding: 0 1rem;
-  }
-}
-
-@media (max-width: 992px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .dashboard-content {
-    padding: 1rem;
-  }
-  
-  .chart-card {
-    height: 250px;
-  }
-}
+   /* 대시보드 기본 레이아웃 */
+   .dashboard-layout {
+     display: flex;
+     min-height: 100vh;
+     font-family: 'Poor Story', 'Noto Sans KR', cursive;
+     color: var(--text-color);
+     background-color: var(--light-bg);
+   }
+   
+   .main-area-full {
+     width: 100%;
+     display: flex;
+     flex-direction: column;
+   }
+   
+   .dashboard-content {
+     flex: 1;
+     padding: 2rem;
+     overflow-y: auto;
+   }
+   
+   /* 대시보드 그리드 레이아웃 */
+   .dashboard-grid {
+     display: grid;
+     grid-template-columns: repeat(3, 1fr);
+     gap: 2rem;
+     max-width: var(--container-max-width);
+     margin: 0 auto;
+   }
+   
+   /* 대시보드 카드 스타일 */
+   .dashboard-card {
+     background-color: var(--white);
+     border-radius: 12px;
+     padding: 1.5rem;
+     box-shadow: var(--shadow);
+     border: 1px solid var(--border-color);
+     transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+     height: 250px;
+   }
+   
+   .dashboard-card:hover {
+     transform: translateY(-5px);
+     box-shadow: var(--hover-shadow);
+   }
+   
+   .card-title {
+     font-family: 'Poor Story', 'Noto Sans KR', cursive;
+     font-size: 1.5rem;
+     margin-bottom: 1rem;
+     color: #333;
+     text-align: center;
+   }
+   
+   .card-content {
+     display: flex;
+     flex-direction: column;
+     height: calc(100% - 2.5rem);
+   }
+   
+   .card-content p {
+     margin-bottom: 0.75rem;
+     text-align: center;
+   }
+   
+   /* 대시보드 카드 버튼 */
+   .card-button {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     padding: 0.75rem 1.5rem;
+     background-color: var(--white);
+     color: #000;
+     border: 2px solid var(--primary-dark);
+     border-radius: 12px;
+     font-family: 'Poor Story', 'Noto Sans KR', cursive;
+     font-size: 1.1rem;
+     text-decoration: none;
+     align-self: center;
+     margin-top: auto;
+     transition: all var(--transition-normal);
+     box-shadow: 0 4px 8px rgba(204, 153, 145, 0.3);
+   }
+   
+   .card-button:hover {
+     transform: translateY(-3px);
+     box-shadow: 0 6px 12px rgba(204, 153, 145, 0.4);
+   }
+   
+   .card-button.accent {
+     background-color: var(--accent-color);
+     color: var(--white);
+     border: none;
+     box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+   }
+   
+   .card-button.accent:hover {
+     box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+   }
+   
+   /* 새로운 대시보드 스타일 추가 */
+   
+   /* 시계/타이머 컴포넌트 */
+   .timer-container {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+   }
+   
+   /* 환영 메시지 컴포넌트 */
+   .welcome-message {
+     font-size: 2rem;
+     font-weight: bold;
+     margin-bottom: 0.5rem;
+   }
+   
+   .user-name {
+     color: var(--accent-color);
+   }
+   
+   .time-greeting {
+     font-size: 1.5rem;
+     margin-bottom: 1rem;
+   }
+   
+   /* 그룹 카드 스타일 */
+   .group-card {
+     transition: transform 0.3s ease, box-shadow 0.3s ease;
+     border: 1px solid var(--border-color);
+   }
+   
+   .group-card:hover {
+     transform: translateY(-5px);
+     box-shadow: var(--hover-shadow);
+   }
+   
+   /* 카운트다운 뱃지 */
+   .countdown-badge {
+     font-size: 0.8rem;
+     padding: 0.5rem 0.75rem;
+   }
+   
+   /* 다크모드 스타일 */
+   .dark-mode .dashboard-card,
+   .dark-mode .chart-card {
+     background-color: var(--white);
+     border-color: var(--border-color);
+   }
+   
+   .dark-mode .group-card {
+     background-color: var(--white);
+     border-color: var(--border-color);
+   }
+   
+   .dark-mode .card-button {
+     background-color: #505050;
+     color: #e6e6e6;
+     border-color: #807070;
+   }
+   
+   .dark-mode .card-title {
+     color: #e6e6e6;
+   }
+   
+   .dark-mode .user-name {
+     color: #ffb3a7;
+   }
+   
+   /* 환영 메시지 (선택적 구현) */
+   .welcome-message {
+     background-color: var(--white);
+     border-radius: 12px;
+     padding: 1.5rem;
+     margin-bottom: 2rem;
+     box-shadow: var(--shadow);
+     text-align: center;
+     max-width: var(--container-max-width);
+     margin: 0 auto 2rem;
+     border: 1px solid var(--border-color);
+     animation: fadeIn 0.5s ease;
+   }
+   
+   .welcome-message h2 {
+     color: #333;
+     margin-bottom: 0.5rem;
+   }
+   
+   .welcome-message button {
+     margin-top: 1rem;
+     padding: 0.5rem 1.5rem;
+     background-color: var(--accent-color);
+     color: white;
+     border: none;
+     border-radius: 8px;
+     cursor: pointer;
+     transition: all var(--transition-fast);
+   }
+   
+   .welcome-message button:hover {
+     background-color: var(--primary-dark);
+   }
+   
+   .dark-mode .welcome-message {
+     background-color: var(--white);
+   }
+   
+   .dark-mode .welcome-message h2 {
+     color: #e6e6e6;
+   }
+   
+   @keyframes fadeIn {
+     from { opacity: 0; transform: translateY(-20px); }
+     to { opacity: 1; transform: translateY(0); }
+   }
+   
+   /* 반응형 디자인 */
+   @media (max-width: 1200px) {
+     .dashboard-grid {
+       grid-template-columns: repeat(3, 1fr);
+       padding: 0 1rem;
+     }
+   }
+   
+   @media (max-width: 992px) {
+     .dashboard-grid {
+       grid-template-columns: repeat(2, 1fr);
+     }
+   }
+   
+   @media (max-width: 768px) {
+     .dashboard-grid {
+       grid-template-columns: 1fr;
+     }
+     
+     .dashboard-content {
+       padding: 1rem;
+     }
+     
+     .chart-card {
+       height: 250px;
+     }
+     
+     .welcome-message {
+       font-size: 1.5rem;
+     }
+     
+     .time-greeting {
+       font-size: 1.2rem;
+     }
+   }
