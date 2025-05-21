@@ -1,225 +1,274 @@
-/* ======================================================
-   홈페이지 특화 스타일
-   ====================================================== */
+/* 홈페이지 디자인 */
 
 @import './Variables.css';
 
 /* 히어로 섹션 */
 .hero-section {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4rem 2rem;
-  max-width: var(--container-max-width);
-  margin: 0 auto;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     padding: 4rem 2rem;
+     max-width: var(--container-max-width);
+     margin: 0 auto;
 }
-
+   
 .hero-content {
-  flex: 1;
-  max-width: 600px;
+     flex: 1;
+     max-width: 600px;
 }
-
+   
 .hero-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #333;
+     font-size: 4.4rem;
+     font-weight: 700;
+     margin-bottom: 1.5rem;
+     color: #333;
 }
-
+   
 .hero-text {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-  line-height: 1.6;
+     font-size: 1.2rem;
+     margin-bottom: 2rem;
+     line-height: 1.6;
 }
-
-.hero-buttons {
-  display: flex;
-  gap: 1rem;
-}
-
-.hero-image-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.hero-image {
-  max-width: 100%;
-  height: auto;
-  max-height: 400px;
-}
-
-/* 홈페이지 버튼 스타일 */
-.hero-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--white);
-  color: #333;
-  border: 2px solid var(--primary-dark);
-  border-radius: 12px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 1.1rem;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  box-shadow: 0 4px 8px rgba(204, 153, 145, 0.3);
-}
-
-.hero-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(204, 153, 145, 0.4);
-}
-
-.hero-button.accent {
-  background-color: var(--accent-color);
-  color: var(--white);
-  border: none;
-  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
-}
-
-.hero-button.accent:hover {
-  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
-}
-
-/* 특징 섹션 */
-.features-section {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  padding: 4rem 2rem;
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-}
-
-.feature-card {
-  text-align: center;
-}
-
-.feature-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.feature-text {
-  font-size: 1.1rem;
-  line-height: 1.5;
-}
-
-/* CTA(Call To Action) 섹션 */
-.cta-section {
-  text-align: center;
-  padding: 6rem 2rem;
-  max-width: 800px;
-  margin: 4rem auto;
-}
-
-.cta-title {
-  font-size: 2.2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #333;
-}
-
-.cta-text {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-}
-
-.cta-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 2rem;
-  background-color: var(--accent-color);
-  color: var(--white);
-  border: none;
-  border-radius: 12px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 1.2rem;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
-}
-
-.cta-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
-}
-
-/* 다크모드 스타일 */
-.dark-mode .hero-title,
-.dark-mode .feature-title,
-.dark-mode .cta-title {
-  color: #e6e6e6;
-}
-
-.dark-mode .hero-button {
-  background-color: #505050;
-  color: #e6e6e6;
-  border-color: #807070;
-}
-
-.dark-mode .features-section {
-  background-color: transparent;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 1200px) {
-  .hero-section,
-  .features-section {
-    padding: 3rem 1.5rem;
-  }
-}
-
-@media (max-width: 992px) {
-  /* 히어로 섹션 */
-  .hero-section {
-    flex-direction: column;
-    text-align: center;
-    gap: 2rem;
-  }
-  
-  .hero-content {
-    max-width: 100%;
-  }
-  
-  .hero-buttons {
-    justify-content: center;
-  }
-  
-  /* 특징 섹션 */
-  .features-section {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  /* 특징 섹션 */
-  .features-section {
-    grid-template-columns: 1fr;
-  }
-  
-  /* 히어로 섹션 */
-  .hero-title {
-    font-size: 2rem;
-  }
-  
-  .hero-text {
-    font-size: 1.1rem;
-  }
-  
-  /* CTA 섹션 */
-  .cta-title {
-    font-size: 1.8rem;
-  }
-  
-  .cta-text {
-    font-size: 1.1rem;
-  }
-}
+   
+   .hero-buttons {
+     display: flex;
+     gap: 1rem;
+   }
+   
+   .hero-image-container {
+     flex: 1;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+   }
+   
+   .hero-image {
+     max-width: 100%;
+     height: auto;
+     max-height: 400px;
+   }
+   
+   /* 홈페이지 버튼 스타일 */
+   .hero-button {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     padding: 0.8rem 1.8rem;
+     background-color: var(--white);
+     color: #333;
+     border: 2px solid var(--primary-dark);
+     border-radius: 25px;
+     font-family: 'Poor Story', 'Noto Sans KR', cursive;
+     font-size: 1.1rem;
+     font-weight: 500;
+     text-decoration: none;
+     cursor: pointer;
+     transition: all var(--transition-normal);
+     box-shadow: 0 4px 8px rgba(204, 153, 145, 0.3);
+   }
+   
+   .hero-button:hover {
+     transform: translateY(-3px);
+     box-shadow: 0 6px 12px rgba(204, 153, 145, 0.4);
+   }
+   
+   .hero-button.accent {
+     background-color: var(--accent-color);
+     color: var(--white);
+     border: none;
+     box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+   }
+   
+   .hero-button.accent:hover {
+     box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+   }
+   
+   /* 특징 섹션 - 수정됨 */
+   .features-section {
+     display: flex;
+     flex-direction: column;
+     gap: 4rem;
+     padding: 4rem 2rem;
+     max-width: var(--container-max-width);
+     margin: 0 auto;
+   }
+   
+   .feature-item {
+     display: flex;
+     align-items: center;
+     gap: 3rem;
+     background-color: var(--white);
+     border-radius: 16px;
+     padding: 2rem;
+     box-shadow: var(--shadow);
+     transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+   }
+   
+   .feature-item:hover {
+     transform: translateY(-5px);
+     box-shadow: var(--hover-shadow);
+   }
+   
+   .feature-image-container {
+     flex: 1;
+     max-width: 40%;
+   }
+   
+   .feature-image {
+     width: 80%;
+     height: auto;
+     border-radius: 12px;
+     object-fit: cover;
+   }
+   
+   .feature-text-container {
+     flex: 1;
+     max-width: 60%;
+   }
+   
+   .feature-title {
+     font-size: 2rem;
+     font-weight: 700;
+     margin-bottom: 1rem;
+     color: #333;
+   }
+   
+   .feature-description {
+     font-size: 1.1rem;
+     line-height: 1.6;
+     color: var(--text-color);
+   }
+   
+   /* CTA(Call To Action) 섹션 */
+   .cta-section {
+     text-align: center;
+     padding: 6rem 2rem;
+     max-width: 800px;
+     margin: 4rem auto;
+   }
+   
+   .cta-title {
+     font-size: 2.2rem;
+     font-weight: 700;
+     margin-bottom: 1.5rem;
+     color: #333;
+   }
+   
+   .cta-text {
+     font-size: 1.2rem;
+     margin-bottom: 2rem;
+   }
+   
+   .cta-button {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     padding: 0.75rem 2rem;
+     background-color: var(--accent-color);
+     color: var(--white);
+     border: none;
+     border-radius: 12px;
+     font-family: 'Poor Story', 'Noto Sans KR', cursive;
+     font-size: 1.2rem;
+     font-weight: 500;
+     text-decoration: none;
+     cursor: pointer;
+     transition: all var(--transition-normal);
+     box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+   }
+   
+   .cta-button:hover {
+     transform: translateY(-3px);
+     box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+   }
+   
+   /* 다크모드 스타일 */
+   .dark-mode .hero-title,
+   .dark-mode .feature-title,
+   .dark-mode .cta-title {
+     color: #e6e6e6;
+   }
+   
+   .dark-mode .hero-button {
+     background-color: #505050;
+     color: #e6e6e6;
+     border-color: #807070;
+   }
+   
+   .dark-mode .feature-item {
+     background-color: #404040;
+   }
+   
+   .dark-mode .feature-title {
+     color: #e6e6e6;
+   }
+   
+   .dark-mode .feature-description {
+     color: #ccc;
+   }
+   
+   /* 반응형 디자인 */
+   @media (max-width: 1200px) {
+     .hero-section,
+     .features-section {
+       padding: 3rem 1.5rem;
+     }
+   }
+   
+   @media (max-width: 992px) {
+     /* 히어로 섹션 */
+     .hero-section {
+       flex-direction: column;
+       text-align: center;
+       gap: 2rem;
+     }
+     
+     .hero-content {
+       max-width: 100%;
+     }
+     
+     .hero-buttons {
+       justify-content: center;
+     }
+     
+     /* 특징 아이템 - 반응형 수정 */
+     .feature-item {
+       flex-direction: column;
+       text-align: center;
+       gap: 1.5rem;
+     }
+     
+     .feature-image-container,
+     .feature-text-container {
+       max-width: 100%;
+     }
+   }
+   
+   @media (max-width: 768px) {
+     /* 히어로 섹션 */
+     .hero-title {
+       font-size: 2rem;
+     }
+     
+     .hero-text {
+       font-size: 1.1rem;
+     }
+     
+     /* 특징 섹션 */
+     .feature-title {
+       font-size: 1.6rem;
+     }
+     
+     .feature-description {
+       font-size: 1rem;
+     }
+     
+     /* CTA 섹션 */
+     .cta-title {
+       font-size: 1.8rem;
+     }
+     
+     .cta-text {
+       font-size: 1.1rem;
+     }
+   }

@@ -82,7 +82,7 @@
 
 .nav-link-item:hover {
   background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  border-radius: 25px;
 }
 
 /* 네비게이션 바 오른쪽 영역 */
@@ -135,7 +135,7 @@
   color: #333 !important; 
   margin: 0 20px 0 0;
   padding: 0.5rem 1rem !important;
-  border-radius: 8px;
+  border-radius: 25px;
   transition: all var(--transition-fast);
 }
 
@@ -143,7 +143,7 @@
   font-family: 'Poor Story', 'Noto Sans KR', cursive;
   font-size: 1.1rem;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: 25px;
   padding: 0.5rem 1rem !important;
   transition: all var(--transition-fast);
 }
