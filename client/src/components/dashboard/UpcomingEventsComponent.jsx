@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, ListGroup, Badge, Alert } from "react-bootstrap";
+import { ListGroup, Badge, Alert, Spinner } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { useDarkMode } from "../../contexts/DarkModeContext";
 
@@ -148,55 +148,52 @@ const UpcomingEventsComponent = ({ userGroups = [], onDataChange }) => {
   }, []);
   
   return (
-    <Card className={`shadow-sm ${darkMode ? "dark-mode" : ""}`}>
-      <Card.Header>
-        <h4 className="mb-0">다가오는 일정</h4>
-      </Card.Header>
-      <Card.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
-        
-        {isProcessing ? (
-          <div className="text-center py-3">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">로딩 중...</span>
-            </div>
-          </div>
-        ) : upcomingEvents.length > 0 ? (
-          <ListGroup variant="flush">
-            {upcomingEvents.map((event, index) => (
-              <ListGroup.Item 
-                key={`${event.groupId}_${index}`}
-                action
-                onClick={() => handleEventClick(event.groupId)}
-                className={darkMode ? "dark-mode" : ""}
-              >
-                <div className="d-flex justify-content-between align-items-start">
-                  <div>
-                    <h5 className="mb-1">{event.title}</h5>
-                    <p className="mb-1">
-                      <Badge bg="primary" className="me-2">
-                        {event.groupName}
-                      </Badge>
-                      {event.day} {event.start}-{event.end}
-                    </p>
-                  </div>
-                  <Badge 
-                    bg={index === 0 ? "danger" : "info"}
-                    className="countdown-badge"
-                  >
-                    {getTimeRemaining(event.eventDate)}
-                  </Badge>
+    <div className={`upcoming-events-component ${darkMode ? "dark-mode" : ""}`}>
+      {error && <Alert variant="danger">{error}</Alert>}
+      
+      {isProcessing ? (
+        <div className="text-center py-5">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">로딩 중...</span>
+          </Spinner>
+          <p className="mt-3">일정 정보를 처리하는 중...</p>
+        </div>
+      ) : upcomingEvents.length > 0 ? (
+        <ListGroup variant="flush" className="upcoming-events-list">
+          {upcomingEvents.map((event, index) => (
+            <ListGroup.Item 
+              key={`${event.groupId}_${index}`}
+              action
+              onClick={() => handleEventClick(event.groupId)}
+              className={`upcoming-event-item ${darkMode ? "dark-mode" : ""}`}
+            >
+              <div className="d-flex justify-content-between align-items-start">
+                <div>
+                  <h5 className="mb-1">{event.title}</h5>
+                  <p className="mb-1">
+                    <Badge bg="primary" className="me-2">
+                      {event.groupName}
+                    </Badge>
+                    {event.day} {event.start}-{event.end}
+                  </p>
                 </div>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        ) : (
-          <p className="text-center text-muted py-3">
-            24시간 이내 예정된 일정이 없습니다.
-          </p>
-        )}
-      </Card.Body>
-    </Card>
+                <Badge 
+                  bg={index === 0 ? "danger" : "info"}
+                  className="countdown-badge"
+                >
+                  {getTimeRemaining(event.eventDate)}
+                </Badge>
+              </div>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      ) : (
+        <div className="text-center py-5">
+          <i className="bi bi-calendar-x" style={{ fontSize: "3rem", color: "var(--text-muted)" }}></i>
+          <p className="mt-3 text-muted">24시간 이내 예정된 일정이 없습니다.</p>
+        </div>
+      )}
+    </div>
   );
 };
 

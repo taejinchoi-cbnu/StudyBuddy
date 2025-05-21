@@ -63,7 +63,7 @@ const HomePage = () => {
           <div className="hero-content">
             <h1 className="hero-title">STUDY BUDDY</h1>
             <p className="hero-text">
-              같은 꿈을 꾸는 우리가 만나는 곳, StudyBuddy에서
+            같은 꿈을 꾸는 우리가 만나는 곳, StudyBuddy에서
             </p>
             {currentUser ? (
               <button 

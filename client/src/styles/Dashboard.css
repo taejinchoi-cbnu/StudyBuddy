@@ -1,255 +1,337 @@
 /* 대시보드 디자인 */
 
-   @import './Variables.css';
+@import './Variables.css';
 
-   /* 대시보드 기본 레이아웃 */
-   .dashboard-layout {
-     display: flex;
-     min-height: 100vh;
-     font-family: 'Poor Story', 'Noto Sans KR', cursive;
-     color: var(--text-color);
-     background-color: var(--light-bg);
-   }
-   
-   .main-area-full {
-     width: 100%;
-     display: flex;
-     flex-direction: column;
-   }
-   
-   .dashboard-content {
-     flex: 1;
-     padding: 2rem;
-     overflow-y: auto;
-   }
-   
-   /* 대시보드 그리드 레이아웃 */
-   .dashboard-grid {
-     display: grid;
-     grid-template-columns: repeat(3, 1fr);
-     gap: 2rem;
-     max-width: var(--container-max-width);
-     margin: 0 auto;
-   }
-   
-   /* 대시보드 카드 스타일 */
-   .dashboard-card {
-     background-color: var(--white);
-     border-radius: 12px;
-     padding: 1.5rem;
-     box-shadow: var(--shadow);
-     border: 1px solid var(--border-color);
-     transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-     height: 250px;
-   }
-   
-   .dashboard-card:hover {
-     transform: translateY(-5px);
-     box-shadow: var(--hover-shadow);
-   }
-   
-   .card-title {
-     font-family: 'Poor Story', 'Noto Sans KR', cursive;
-     font-size: 1.5rem;
-     margin-bottom: 1rem;
-     color: #333;
-     text-align: center;
-   }
-   
-   .card-content {
-     display: flex;
-     flex-direction: column;
-     height: calc(100% - 2.5rem);
-   }
-   
-   .card-content p {
-     margin-bottom: 0.75rem;
-     text-align: center;
-   }
-   
-   /* 대시보드 카드 버튼 */
-   .card-button {
-     display: inline-flex;
-     align-items: center;
-     justify-content: center;
-     padding: 0.75rem 1.5rem;
-     background-color: var(--white);
-     color: #000;
-     border: 2px solid var(--primary-dark);
-     border-radius: 12px;
-     font-family: 'Poor Story', 'Noto Sans KR', cursive;
-     font-size: 1.1rem;
-     text-decoration: none;
-     align-self: center;
-     margin-top: auto;
-     transition: all var(--transition-normal);
-     box-shadow: 0 4px 8px rgba(204, 153, 145, 0.3);
-   }
-   
-   .card-button:hover {
-     transform: translateY(-3px);
-     box-shadow: 0 6px 12px rgba(204, 153, 145, 0.4);
-   }
-   
-   .card-button.accent {
-     background-color: var(--accent-color);
-     color: var(--white);
-     border: none;
-     box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
-   }
-   
-   .card-button.accent:hover {
-     box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
-   }
-   
-   /* 새로운 대시보드 스타일 추가 */
-   
-   /* 시계/타이머 컴포넌트 */
-   .timer-container {
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-     justify-content: center;
-   }
-   
-   /* 환영 메시지 컴포넌트 */
-   .welcome-message {
-     font-size: 2rem;
-     font-weight: bold;
-     margin-bottom: 0.5rem;
-   }
-   
-   .user-name {
-     color: var(--accent-color);
-   }
-   
-   .time-greeting {
-     font-size: 1.5rem;
-     margin-bottom: 1rem;
-   }
-   
-   /* 그룹 카드 스타일 */
-   .group-card {
-     transition: transform 0.3s ease, box-shadow 0.3s ease;
-     border: 1px solid var(--border-color);
-   }
-   
-   .group-card:hover {
-     transform: translateY(-5px);
-     box-shadow: var(--hover-shadow);
-   }
-   
-   /* 카운트다운 뱃지 */
-   .countdown-badge {
-     font-size: 0.8rem;
-     padding: 0.5rem 0.75rem;
-   }
-   
-   /* 다크모드 스타일 */
-   .dark-mode .dashboard-card,
-   .dark-mode .chart-card {
-     background-color: var(--white);
-     border-color: var(--border-color);
-   }
-   
-   .dark-mode .group-card {
-     background-color: var(--white);
-     border-color: var(--border-color);
-   }
-   
-   .dark-mode .card-button {
-     background-color: #505050;
-     color: #e6e6e6;
-     border-color: #807070;
-   }
-   
-   .dark-mode .card-title {
-     color: #e6e6e6;
-   }
-   
-   .dark-mode .user-name {
-     color: #ffb3a7;
-   }
-   
-   /* 환영 메시지 (선택적 구현) */
-   .welcome-message {
-     background-color: var(--white);
-     border-radius: 12px;
-     padding: 1.5rem;
-     margin-bottom: 2rem;
-     box-shadow: var(--shadow);
-     text-align: center;
-     max-width: var(--container-max-width);
-     margin: 0 auto 2rem;
-     border: 1px solid var(--border-color);
-     animation: fadeIn 0.5s ease;
-   }
-   
-   .welcome-message h2 {
-     color: #333;
-     margin-bottom: 0.5rem;
-   }
-   
-   .welcome-message button {
-     margin-top: 1rem;
-     padding: 0.5rem 1.5rem;
-     background-color: var(--accent-color);
-     color: white;
-     border: none;
-     border-radius: 8px;
-     cursor: pointer;
-     transition: all var(--transition-fast);
-   }
-   
-   .welcome-message button:hover {
-     background-color: var(--primary-dark);
-   }
-   
-   .dark-mode .welcome-message {
-     background-color: var(--white);
-   }
-   
-   .dark-mode .welcome-message h2 {
-     color: #e6e6e6;
-   }
-   
-   @keyframes fadeIn {
-     from { opacity: 0; transform: translateY(-20px); }
-     to { opacity: 1; transform: translateY(0); }
-   }
-   
-   /* 반응형 디자인 */
-   @media (max-width: 1200px) {
-     .dashboard-grid {
-       grid-template-columns: repeat(3, 1fr);
-       padding: 0 1rem;
-     }
-   }
-   
-   @media (max-width: 992px) {
-     .dashboard-grid {
-       grid-template-columns: repeat(2, 1fr);
-     }
-   }
-   
-   @media (max-width: 768px) {
-     .dashboard-grid {
-       grid-template-columns: 1fr;
-     }
-     
-     .dashboard-content {
-       padding: 1rem;
-     }
-     
-     .chart-card {
-       height: 250px;
-     }
-     
-     .welcome-message {
-       font-size: 1.5rem;
-     }
-     
-     .time-greeting {
-       font-size: 1.2rem;
-     }
-   }
+/* 대시보드 기본 레이아웃 */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  color: var(--text-color);
+  background-color: var(--light-bg);
+}
+
+.main-area-full {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: calc(100vh - var(--navbar-height));
+}
+
+/* 대시보드 중앙 컨텐츠 */
+.dashboard-center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+}
+
+/* 시계 컴포넌트 스타일 */
+.clock-component {
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
+
+.clock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.clock-time {
+  font-size: 5rem;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.clock-date {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
+.mode-toggle-btn {
+  margin-top: 0.3rem;
+}
+
+/* 타이머 컴포넌트 스타일 */
+.timer-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  border-radius: 15px;
+  background-color: var(--white);
+  box-shadow: var(--shadow);
+  animation: fadeIn 0.8s ease;
+}
+
+.timer-badge {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.timer-display {
+  font-size: 4rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.timer-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timer-settings {
+  width: 100%;
+  max-width: 300px;
+}
+
+.timer-setting-item {
+  margin-bottom: 1rem;
+}
+
+.timer-slider {
+  width: 100%;
+}
+
+/* 환영 메시지 컴포넌트 */
+.welcome-message-component {
+  text-align: center;
+  margin-bottom: 1rem;
+  animation: fadeIn 1s ease;
+}
+
+.welcome-message {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.user-name {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.time-greeting {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
+/* 하단 버튼 스타일 */
+.bottom-buttons-container {
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.bottom-buttons-wrapper {
+  display: flex;
+  gap: 1rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--primary-color);
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.dark-mode .bottom-buttons-wrapper {
+  background-color: rgba(51, 51, 51, 0.8);
+}
+
+.bottom-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--white);
+  color: var(--primary-dark);
+  padding: 0.75rem 1.2rem;
+  border: none;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+}
+
+.bottom-button i {
+  font-size: 1.5rem;
+}
+
+.bottom-button:hover {
+  background-color: var(--white);
+  color: var(--accent-color);
+  transform: translateY(-5px);
+}
+
+/* 모달 스타일 */
+.dashboard-modal .modal-content {
+  border-radius: 15px;
+  overflow: hidden;
+  border: none;
+}
+
+.dashboard-modal .modal-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1.25rem 1.5rem;
+}
+
+.dashboard-modal .modal-title {
+  font-weight: bold;
+}
+
+/* 모달 내부 컴포넌트 스타일 */
+.upcoming-events-component,
+.my-groups-component,
+.group-requests-component {
+  padding: 1rem;
+}
+
+/* 빈 상태 컴포넌트 */
+.empty-groups,
+.empty-requests {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 그룹 카드 스타일 */
+.group-card {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.group-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+
+.group-card-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.group-card-description {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  height: 2.4rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* 이벤트 리스트 아이템 */
+.upcoming-event-item,
+.group-request-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.upcoming-event-item:hover,
+.group-request-item:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.dark-mode .upcoming-event-item:hover,
+.dark-mode .group-request-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.countdown-badge {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
+}
+
+/* 애니메이션 정의 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .clock-time {
+    font-size: 3.5rem;
+  }
+  
+  .timer-display {
+    font-size: 3rem;
+  }
+  
+  .welcome-message {
+    font-size: 1.5rem;
+  }
+  
+  .bottom-buttons-wrapper {
+    width: 90%;
+    justify-content: space-around;
+  }
+  
+  .bottom-button {
+    padding: 0.5rem 0.8rem;
+  }
+  
+  .bottom-button span {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .clock-time {
+    font-size: 2.5rem;
+  }
+  
+  .timer-display {
+    font-size: 2.2rem;
+  }
+  
+  .welcome-message {
+    font-size: 1.2rem;
+  }
+  
+  .time-greeting {
+    font-size: 1rem;
+  }
+  
+  .bottom-buttons-wrapper {
+    width: 95%;
+  }
+  
+  .bottom-button {
+    padding: 0.5rem;
+  }
+}
