@@ -61,9 +61,9 @@ const HomePage = () => {
         {/* 히어로 섹션 */}
         <section className="hero-section">
           <div className="hero-content">
-            <h1 className="hero-title">Find your teammate <br/> in STUDDYBUDDY !!</h1>
+            <h1 className="hero-title">STUDDY BUDDY</h1>
             <p className="hero-text">
-              프로젝트를 설명하는 짧은 글
+              아 시발뭐라고 적어야해
             </p>
             {currentUser ? (
               <button 
@@ -105,14 +105,14 @@ const HomePage = () => {
         {/* 특징 섹션 */}
         <section className="features-section">
           <FeatureItem 
-            imgSrc={calendar} 
+            imgSrc={peoples}
             imgAlt="팀원 찾기" 
             title="스터디 파트너 찾기" 
-            description="목표를 공유하는 학생들과 팀을 만들어보아요. 같은 관심사와 목표를 가진 스터디 메이트를 쉽게 찾고 함께 성장할 수 있는 환경을 제공합니다."
+            description="목표를 공유하는 학생들과 팀을 만들어보아요. 같은 관심사와 목표를 가진 팀원을 쉽게 찾고 함께 성장할 수 있는 환경을 제공합니다."
           />
           
           <FeatureItem 
-            imgSrc={peoples}
+            imgSrc={calendar} 
             imgAlt="일정 조율" 
             title="일정 조율" 
             description="알고리즘을 통해 빠르게 미팅 시간을 정해보세요. 모든 팀원의 스케줄을 고려해 최적의 미팅 시간을 자동으로 제안하여 효율적인 스터디 진행을 도와드립니다."
