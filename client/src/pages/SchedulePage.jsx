@@ -233,57 +233,63 @@ const SchedulePage = () => {
   }
 
   return (
-    <Container fluid className={`schedule-page ${darkMode ? 'dark-mode' : ''}`}>
-      <Row className="my-4">
-        <Col>
-          <h1 className="mb-4">내 캘린더</h1>
-          
-          {error && (
-            <div className="alert alert-danger" role="alert">
-              {error}
+    <div className={`schedule-page ${darkMode ? 'dark-mode' : ''}`}>
+      <Container fluid>
+        <Row className="mb-4">
+          <Col>
+            <div className="d-flex justify-content-between align-items-center schedule-header">
+              <h1 className="mb-0">내 캘린더</h1>
+              <Button 
+                variant="primary" 
+                onClick={handleNewEvent}
+                className="add-schedule-btn"
+              >
+                <i className="bi bi-plus-circle me-2"></i>
+                새 일정 추가
+              </Button>
             </div>
-          )}
-          
-          {success && (
-            <div className="alert alert-success" role="alert">
-              {success}
-            </div>
-          )}
-          
-          <Button 
-            variant="primary" 
-            onClick={handleNewEvent}
-            className="mb-3"
-          >
-            새 일정 추가
-          </Button>
-        </Col>
-      </Row>
-      
-      <Row>
-        <Col md={showEventForm ? 8 : 12}>
-          <Card className="shadow-sm">
-            <Card.Body>
-              <CalendarView 
-                events={events} 
-                onSelectEvent={handleSelectEvent}
-              />
-            </Card.Body>
-          </Card>
-        </Col>
-        
-        {showEventForm && (
-          <Col md={4}>
-            <EventForm 
-              event={selectedEvent}
-              onSave={selectedEvent && !selectedEvent.isGroupEvent ? handleUpdateEvent : handleAddEvent}
-              onDelete={selectedEvent && !selectedEvent.isGroupEvent ? handleDeleteEvent : null}
-              onCancel={handleCloseForm}
-            />
+            
+            {error && (
+              <div className="alert alert-danger mt-3" role="alert">
+                {error}
+              </div>
+            )}
+            
+            {success && (
+              <div className="alert alert-success mt-3" role="alert">
+                {success}
+              </div>
+            )}
           </Col>
-        )}
-      </Row>
-    </Container>
+        </Row>
+        
+        <Row>
+          <Col md={showEventForm ? 8 : 12}>
+            <Card className="schedule-card">
+              <Card.Body className="p-0">
+                <CalendarView 
+                  events={events} 
+                  onSelectEvent={handleSelectEvent}
+                />
+              </Card.Body>
+            </Card>
+          </Col>
+          
+          {showEventForm && (
+            <Col md={4}>
+              <div className="event-form-container">
+                <EventForm 
+                  event={selectedEvent}
+                  onSave={selectedEvent && !selectedEvent.isGroupEvent ? handleUpdateEvent : handleAddEvent}
+                  onDelete={selectedEvent && !selectedEvent.isGroupEvent ? handleDeleteEvent : null}
+                  onCancel={handleCloseForm}
+                />
+              </div>
+            </Col>
+          )}
+        </Row>
+      </Container>
+    </div>
   );
 };
 

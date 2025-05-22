@@ -1,301 +1,341 @@
+/* 일정 페이지 디자인 */
+
 @import './Variables.css';
 
-.schedule-card {
-    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-}
-  
-.schedule-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--hover-shadow);
-}
-  
-.time-slot-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-  
-.time-slot-badge {
-    cursor: pointer;
-    padding: 0.5rem 0.75rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-  
-.time-slot-badge:hover {
-    opacity: 0.8;
-    transform: translateY(-2px);
-}
-  
-.time-table {
-    border-collapse: separate;
-    border-spacing: 3px;
-}
-  
-.time-table th, .time-table td {
-    text-align: center;
-    padding: 8px;
-    border-radius: 4px;
-}
-  
-.time-table th {
-    background-color: #f8f9fa;
-    font-weight: 500;
-}
-  
-.time-table td.available {
-    background-color: rgba(40, 167, 69, 0.2);
-}
-  
-.time-table td.unavailable {
-    background-color: rgba(220, 53, 69, 0.2);
-}
-  
-.progress-container {
-    margin: 1.5rem 0;
-}
-  
-.member-status-table {
-    margin-top: 1rem;
-}
-  
-.member-status-table th {
-    font-weight: 500;
+/* 페이지 레이아웃 기본 설정 */
+.schedule-page {
+  padding-top: 80px;
+  padding: 75px 20px 20px 20px;
+  min-height: 100vh;
+  background-color: var(--light-bg);
 }
 
-/* 캘린더 스타일 덮어쓰기 */
-.rbc-calendar {
-  width: 100%;
-  min-height: 600px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+/* 다크모드 페이지 배경 */
+.dark-mode .schedule-page {
+  background-color: var(--light-bg);
 }
 
-.rbc-header {
-  padding: 10px 3px;
-  font-weight: bold;
-  border-bottom: 1px solid #ddd;
+.schedule-header {
+  margin: 0px 15px;
 }
 
-.rbc-toolbar {
-  margin-bottom: 20px;
-}
-
-.rbc-toolbar button {
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.rbc-toolbar button.rbc-active {
-  background-color: var(--primary-color);
-  color: white;
-  border-color: var(--primary-dark);
-}
-
-.rbc-event {
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 0.9em;
-}
-
-.rbc-event.rbc-selected {
-  background-color: var(--accent-color);
-}
-
-.rbc-today {
-  background-color: rgba(255, 204, 196, 0.2);
-}
-
-/* 다크모드 스타일 */
-.dark-mode .rbc-calendar {
-  background-color: #404040;
-  color: #e6e6e6;
-}
-
-.dark-mode .rbc-header {
-  color: #e6e6e6;
-  border-bottom: 1px solid #606060;
-}
-
-.dark-mode .rbc-toolbar button {
-  color: #e6e6e6;
-  border: 1px solid #606060;
-}
-
-.dark-mode .rbc-month-view,
-.dark-mode .rbc-time-view,
-.dark-mode .rbc-agenda-view {
-  border: 1px solid #606060;
-}
-
-.dark-mode .rbc-month-row + .rbc-month-row,
-.dark-mode .rbc-day-bg + .rbc-day-bg,
-.dark-mode .rbc-time-header-content,
-.dark-mode .rbc-time-content,
-.dark-mode .rbc-time-header.rbc-overflowing,
-.dark-mode .rbc-month-view,
-.dark-mode .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
-  border-color: #606060;
-}
-
-.dark-mode .rbc-off-range-bg {
-  background: #333333;
-}
-
-.dark-mode .rbc-today {
-  background-color: rgba(102, 77, 74, 0.3);
-}
-
-/* 캘린더 스타일 덮어쓰기 */
-.rbc-calendar {
-  width: 100%;
-  min-height: 600px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-}
-
-.rbc-header {
-  padding: 10px 3px;
-  font-weight: bold;
-  border-bottom: 1px solid #ddd;
-}
-
-.rbc-toolbar {
-  margin-bottom: 20px;
-}
-
-.rbc-toolbar button {
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.rbc-toolbar button.rbc-active {
-  background-color: var(--primary-color);
-  color: white;
-  border-color: var(--primary-dark);
-}
-
-.rbc-event {
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 0.9em;
-}
-
-.rbc-event.rbc-selected {
-  background-color: var(--accent-color);
-}
-
-.rbc-today {
-  background-color: rgba(255, 204, 196, 0.2);
-}
-
-/* 다크모드 스타일 */
-.dark-mode .rbc-calendar {
-  background-color: #404040;
-  color: #e6e6e6;
-}
-
-.dark-mode .rbc-header {
-  color: #e6e6e6;
-  border-bottom: 1px solid #606060;
-}
-
-.dark-mode .rbc-toolbar button {
-  color: #e6e6e6;
-  border: 1px solid #606060;
-}
-
-.dark-mode .rbc-month-view,
-.dark-mode .rbc-time-view,
-.dark-mode .rbc-agenda-view {
-  border: 1px solid #606060;
-}
-
-.dark-mode .rbc-month-row + .rbc-month-row,
-.dark-mode .rbc-day-bg + .rbc-day-bg,
-.dark-mode .rbc-time-header-content,
-.dark-mode .rbc-time-content,
-.dark-mode .rbc-time-header.rbc-overflowing,
-.dark-mode .rbc-month-view,
-.dark-mode .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
-  border-color: #606060;
-}
-
-.dark-mode .rbc-off-range-bg {
-  background: #333333;
-}
-
-.dark-mode .rbc-today {
-  background-color: rgba(102, 77, 74, 0.3);
-}
-
-/* 추가 스타일: 로딩 오버레이 */
-.calendar-loading {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  justify-content: center;
+/* 새 일정 추가 버튼 */
+.add-schedule-btn {
+  display: inline-flex;
   align-items: center;
-  z-index: 100;
+  justify-content: center;
+  padding: 0.6rem 1.1rem;
+  background-color: var(--accent-color);
+  color: #ffffff;
+  border: none;
+  border-radius: 25px;
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+  margin: 0.5rem;
 }
 
-.dark-mode .calendar-loading {
-  background-color: rgba(51, 51, 51, 0.7);
+.add-schedule-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+  color: #ffffff;
 }
 
-/* 일정 추가 폼 스타일 */
+/* 다크모드 버튼 스타일 */
+.dark-mode .add-schedule-btn {
+  background-color: var(--accent-color);
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(153, 77, 66, 0.4);
+}
+
+.dark-mode .add-schedule-btn:hover {
+  box-shadow: 0 6px 12px rgba(153, 77, 66, 0.6);
+  color: #ffffff;
+}
+
+/* 스케줄 카드 스타일 */
+.schedule-card {
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  border-radius: 12px;
+  border: 0.2rem solid var(--primary-color);
+  background-color: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.schedule-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--hover-shadow);
+}
+
+.dark-mode .schedule-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+}
+
+/* 캘린더 컨테이너 */
+.calendar-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* 캘린더 기본 스타일 */
+.rbc-calendar {
+  width: 100%;
+  min-height: 600px;
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  background-color: var(--white);
+  color: var(--text-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* 캘린더 헤더 */
+.rbc-header {
+  padding: 12px 8px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--light-bg);
+  color: var(--text-color);
+}
+
+/* 캘린더 툴바 */
+.rbc-toolbar {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.rbc-toolbar button {
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--white);
+  padding: 8px 16px;
+  margin: 0 2px;
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  transition: all var(--transition-fast);
+}
+
+.rbc-toolbar button:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-dark);
+  color: var(--text-color);
+  transform: translateY(-1px);
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: var(--accent-color);
+  color: #ffffff;
+  border-color: var(--accent-color);
+  box-shadow: 0 2px 4px rgba(204, 102, 89, 0.3);
+}
+
+/* 이벤트 스타일 */
+.rbc-event {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: none;
+  color: #ffffff;
+}
+
+.rbc-event.rbc-selected {
+  background-color: var(--accent-color) !important;
+  box-shadow: 0 2px 8px rgba(204, 102, 89, 0.4);
+}
+
+/* 그룹 이벤트와 개인 이벤트 구분 */
+.rbc-event.group-event {
+  background-color: #007bff;
+  border-left: 4px solid #0056b3;
+}
+
+.rbc-event.personal-event {
+  background-color: #28a745;
+  border-left: 4px solid #1e7e34;
+}
+
+/* 오늘 날짜 하이라이트 */
+.rbc-today {
+  background-color: rgba(255, 204, 196, 0.15);
+}
+
+/* 다크모드 캘린더 스타일 */
+.dark-mode .rbc-calendar {
+  background-color: #2d2d2d;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.dark-mode .rbc-header {
+  background-color: #3d3d3d;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dark-mode .rbc-toolbar {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+}
+
+.dark-mode .rbc-toolbar button {
+  background-color: #3d3d3d;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.dark-mode .rbc-toolbar button:hover {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.dark-mode .rbc-toolbar button.rbc-active {
+  background-color: var(--accent-color);
+  color: #ffffff;
+}
+
+/* 다크모드 월간/주간/일간 뷰 */
+.dark-mode .rbc-month-view,
+.dark-mode .rbc-time-view,
+.dark-mode .rbc-agenda-view {
+  background-color: #2d2d2d;
+  border: 1px solid var(--border-color);
+}
+
+/* 다크모드 테두리 */
+.dark-mode .rbc-month-row + .rbc-month-row,
+.dark-mode .rbc-day-bg + .rbc-day-bg,
+.dark-mode .rbc-time-header-content,
+.dark-mode .rbc-time-content,
+.dark-mode .rbc-time-header.rbc-overflowing,
+.dark-mode .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+  border-color: var(--border-color);
+}
+
+/* 다크모드 비활성 날짜 */
+.dark-mode .rbc-off-range-bg {
+  background-color: #1a1a1a;
+}
+
+/* 다크모드 오늘 날짜 */
+.dark-mode .rbc-today {
+  background-color: rgba(102, 77, 74, 0.25);
+}
+
+/* 다크모드 이벤트 팝업 */
+.dark-mode .rbc-overlay {
+  background-color: #3d3d3d;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 이벤트 폼 컨테이너 */
 .event-form-container {
   background-color: var(--white);
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: var(--shadow);
   transition: all var(--transition-normal);
+  border: 1px solid var(--border-color);
 }
 
 .dark-mode .event-form-container {
-  background-color: #404040;
-  color: #e6e6e6;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
 }
 
-/* 캘린더 이벤트 팝업 스타일 */
-.rbc-overlay {
-  background-color: white;
+/* 로딩 오버레이 */
+.calendar-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 8px;
 }
 
-.dark-mode .rbc-overlay {
-  background-color: #404040;
-  color: #e6e6e6;
-  border: 1px solid #606060;
-}
-
-.rbc-event.group-event {
-  background-color: #007bff;
-}
-
-.rbc-event.personal-event {
-  background-color: #28a745;
+.dark-mode .calendar-loading {
+  background-color: rgba(45, 45, 45, 0.8);
 }
 
 /* 반응형 스타일 */
+@media (max-width: 992px) {
+  .schedule-page {
+    padding: 75px 15px 15px 15px;
+  }
+  
+  .rbc-toolbar {
+    padding: 10px;
+  }
+  
+  .rbc-toolbar button {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+}
+
 @media (max-width: 768px) {
+  .schedule-page {
+    padding: 75px 10px 10px 10px;
+  }
+  
+  .rbc-calendar {
+    min-height: 500px;
+  }
+  
   .rbc-toolbar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 10px;
   }
-
+  
+  .rbc-toolbar .rbc-btn-group {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
   .rbc-toolbar button {
-    margin-bottom: 8px;
+    margin: 2px;
+    flex: 1;
+    min-width: 80px;
+  }
+  
+  .add-schedule-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .schedule-page {
+    padding: 75px 8px 8px 8px;
   }
   
   .rbc-calendar {
     min-height: 450px;
+  }
+  
+  .rbc-header {
+    padding: 8px 4px;
+    font-size: 0.9rem;
+  }
+  
+  .rbc-event {
+    font-size: 0.75rem;
+    padding: 2px 4px;
   }
 }
