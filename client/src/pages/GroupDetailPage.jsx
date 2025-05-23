@@ -408,4 +408,4 @@ const GroupDetailPage = () => {
   );
 };
 
-export default GroupDetailPage;
+export default GroupDetailPage;업업

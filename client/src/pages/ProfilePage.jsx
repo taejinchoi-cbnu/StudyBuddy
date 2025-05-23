@@ -266,7 +266,7 @@ const ProfilePage = () => {
         interests
       });
       
-      setSuccess('프로필이 성공적으로 업데이트 되었습니다!' + (updatedEmail ? ' 새 이메일로 인증을 진행해주세요.' : ''));
+      setSuccess('프로필이 성공적으로 업데이트되었습니다!' + (updatedEmail ? ' 새 이메일로 인증을 진행해주세요.' : ''));
     } catch (error) {
       console.error('Profile update error:', error);
       setError('프로필 업데이트에 실패했습니다');
