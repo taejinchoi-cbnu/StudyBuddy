@@ -7,6 +7,7 @@ import LoadingSpinner from './LoadingSpinner';
 import logoSmall from '../assets/logoSmall.png';
 import EmailVerificationService from '../utils/EmailVerificationService';
 import useNotification from '../hooks/useNotification';
+import usemodal from '../hooks/useModal';
 
 const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   // 컨텍스트 훅 사용
@@ -27,9 +28,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   } = useNotification();
   
   // 모달 상태 관리
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showSignupModal, setShowSignupModal] = useState(false);
-  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const {} = usemodal();
   
   // 폼 상태 관리
   const [email, setEmail] = useState('');

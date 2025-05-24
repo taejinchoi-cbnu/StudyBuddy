@@ -5,8 +5,9 @@ import { getGroupById, getGroupMembers, sendJoinRequest } from '../utils/GroupSe
 import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import useLoading from '../hooks/UseLoading';
+import useLoading from '../hooks/useLoading';
 import useNotification from '../hooks/useNotification';
+import useModal from '../hooks/useModal';
 import logoQuestion from '../assets/logoQuestion.png';
 
 // 기존 컴포넌트들 import
@@ -34,12 +35,18 @@ const GroupDetailPage = () => {
     clearAll 
   } = useNotification();
   
+  // 🔥 NEW: useModal 훅 사용 (기존 모달 상태들을 통합)
+  const {
+    openModal,
+    closeModal,
+    isOpen,
+    closeAllModals
+  } = useModal(['join', 'leave']);
+  
   const [group, setGroup] = useState(null);
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isJoining, startJoiningLoading] = useLoading();
-  const [showJoinModal, setShowJoinModal] = useState(false);
-  const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [loadError, setLoadError] = useState(false); // 로드 오류 상태 추가
   
   // 현재 사용자의 그룹 멤버십 상태
@@ -167,15 +174,26 @@ const GroupDetailPage = () => {
     }
   };
   
-  // 가입 요청 모달 토글
-  const toggleJoinModal = () => setShowJoinModal(!showJoinModal);
+  // 🔥 UPDATED: 모달 토글 함수들 - useModal 훅 사용
+  const toggleJoinModal = () => {
+    if (isOpen('join')) {
+      closeModal('join');
+    } else {
+      openModal('join');
+    }
+  };
   
-  // 탈퇴 모달 토글
-  const toggleLeaveModal = () => setShowLeaveModal(!showLeaveModal);
+  const toggleLeaveModal = () => {
+    if (isOpen('leave')) {
+      closeModal('leave');
+    } else {
+      openModal('leave');
+    }
+  };
   
-  // 🔥 UPDATED: 그룹 탈퇴 성공 처리 - useNotification 훅 사용
+  // 🔥 UPDATED: 그룹 탈퇴 성공 처리 - useModal 훅 사용
   const handleLeaveSuccess = () => {
-    setShowLeaveModal(false);
+    closeModal('leave');
     showSuccess('그룹에서 성공적으로 탈퇴했습니다.');
     navigate('/groups'); // 그룹 목록 페이지로 이동
   };
@@ -186,17 +204,26 @@ const GroupDetailPage = () => {
     navigate('/groups'); // 그룹 목록 페이지로 이동
   };
   
-  // 🔥 UPDATED: 가입 요청 제출 - useNotification 훅 사용
+  // 🔥 UPDATED: 가입 요청 제출 - useModal 훅 사용
   const handleJoinRequest = async (message) => {
     try {
       await startJoiningLoading(sendJoinRequest(groupId, currentUser.uid, message));
       showSuccess('가입 요청이 성공적으로 전송되었습니다.');
       setUserStatus({ ...userStatus, hasPendingRequest: true });
-      setShowJoinModal(false);
+      closeModal('join');
     } catch (error) {
       console.error('Error sending join request:', error);
       showError('가입 요청 중 오류가 발생했습니다: ' + error.message);
     }
+  };
+  
+  // 🔥 NEW: 모달 닫기 핸들러 추가
+  const handleJoinModalClose = () => {
+    closeModal('join');
+  };
+  
+  const handleLeaveModalClose = () => {
+    closeModal('leave');
   };
   
   if (isLoading) {
@@ -395,19 +422,19 @@ const GroupDetailPage = () => {
         )}
       </Tabs>
       
-      {/* 가입 요청 모달 */}
+      {/* 🔥 UPDATED: 가입 요청 모달 - useModal 훅 사용 */}
       <JoinRequestModal 
-        show={showJoinModal} 
-        onHide={toggleJoinModal} 
+        show={isOpen('join')} 
+        onHide={handleJoinModalClose} 
         onSubmit={handleJoinRequest}
         group={group}
       />
       
-      {/* 그룹 탈퇴 모달 */}
+      {/* 🔥 UPDATED: 그룹 탈퇴 모달 - useModal 훅 사용 */}
       {group && currentUser && (
         <LeaveGroupModal
-          show={showLeaveModal}
-          onHide={toggleLeaveModal}
+          show={isOpen('leave')}
+          onHide={handleLeaveModalClose}
           group={group}
           userId={currentUser.uid}
           onLeaveSuccess={handleLeaveSuccess}
