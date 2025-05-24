@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Modal, Button, Alert } from 'react-bootstrap';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 import { leaveGroup } from '../../utils/GroupService';
-import useLoading from '../../hooks/UseLoading';
+import useLoading from '../../hooks/useLoading';
 
 const LeaveGroupModal = ({ show, onHide, group, userId, onLeaveSuccess }) => {
   const { darkMode } = useDarkMode();

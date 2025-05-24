@@ -6,7 +6,7 @@ import { GROUP_SUBJECTS, GROUP_TAGS, ALL_TAGS } from '../utils/GroupConstants';
 import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import useLoading from '../hooks/UseLoading';
+import useLoading from '../hooks/useLoading';
 import GroupCard from '../components/groups/GroupCard';
 
 const GroupsPage = () => {

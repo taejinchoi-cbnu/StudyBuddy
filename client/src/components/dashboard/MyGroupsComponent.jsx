@@ -40,7 +40,7 @@ const MyGroupsComponent = ({ userGroups = [], onDataChange }) => {
       {userGroups.length > 0 ? (
         <>
           <div className="my-groups-header d-flex justify-content-between align-items-center mb-3">
-            <div></div> {/* Placeholder for flexbox alignment */}
+            <div></div>
             <Button 
               variant="outline-primary" 
               size="sm" 

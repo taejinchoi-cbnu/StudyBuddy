@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, ListGroup, Button, Badge, Alert, Spinner } from 'react-bootstrap';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 import { approveJoinRequest, rejectJoinRequest } from '../../utils/GroupService';
-import useLoading from '../../hooks/UseLoading';
+import useLoading from '../../hooks/useLoading';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase';
 

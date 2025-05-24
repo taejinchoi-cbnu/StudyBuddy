@@ -4,7 +4,7 @@ import { useDarkMode } from '../../contexts/DarkModeContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase';
 import { removeMember } from '../../utils/GroupService';
-import useLoading from '../../hooks/UseLoading';
+import useLoading from '../../hooks/useLoading';
 
 const MemberManagement = ({ group, members, currentUser, onMemberRemoved }) => {
   const { darkMode } = useDarkMode();

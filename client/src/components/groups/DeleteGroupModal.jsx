@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 import { deleteGroup } from '../../utils/GroupService';
-import useLoading from '../../hooks/UseLoading';
+import useLoading from '../../hooks/useLoading';
 
 const DeleteGroupModal = ({ show, onHide, group, userId, onDeleteSuccess }) => {
   const { darkMode } = useDarkMode();

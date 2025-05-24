@@ -3,7 +3,7 @@ import { Card, Form, Button, Alert, Row, Col, Badge } from 'react-bootstrap';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 import { updateGroup } from '../../utils/GroupService';
 import { GROUP_SUBJECTS, GROUP_TAGS, MEETING_TYPES } from '../../utils/GroupConstants';
-import useLoading from '../../hooks/UseLoading';
+import useLoading from '../../hooks/useLoading';
 import DeleteGroupModal from './DeleteGroupModal';
 
 const GroupSettings = ({ group, currentUser, onUpdateSuccess, onDeleteSuccess }) => {

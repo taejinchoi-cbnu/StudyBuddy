@@ -9,7 +9,7 @@ import {
   updateEmail as firebaseUpdateEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import UseLoading from '../hooks/UseLoading';
+import UseLoading from '../hooks/useLoading';
 
 const AuthContext = createContext();
 

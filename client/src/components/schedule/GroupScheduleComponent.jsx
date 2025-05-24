@@ -5,7 +5,7 @@ import { useDarkMode } from '../../contexts/DarkModeContext';
 import { getGroupById, saveGroupAppointment, deleteGroupAppointment } from '../../utils/GroupService';
 import UnavailabilitySelector from './UnavailabilitySelector';
 import AvailableTimesDisplay from './AvailableTimesDisplay';
-import useLoading from '../../hooks/UseLoading';
+import useLoading from '../../hooks/useLoading';
 
 // 요일 및 시간 데이터
 const DAYS_OF_WEEK = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];

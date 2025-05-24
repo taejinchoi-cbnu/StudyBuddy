@@ -6,7 +6,7 @@ import CalendarView from '../components/schedule/CalendarView';
 import EventForm from '../components/schedule/EventForm';
 import { getUserEvents, addUserEvent, updateUserEvent, deleteUserEvent } from '../utils/ScheduleService';
 import { getUserGroups } from '../utils/GroupService';
-import useLoading from '../hooks/UseLoading';
+import useLoading from '../hooks/useLoading';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const SchedulePage = () => {

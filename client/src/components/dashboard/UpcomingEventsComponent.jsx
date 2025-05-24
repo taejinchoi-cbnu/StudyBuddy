@@ -63,7 +63,7 @@ const UpcomingEventsComponent = ({ userGroups = [], onDataChange }) => {
     };
     
     processUpcomingEvents();
-  }, [currentUser, userGroups]); // 의존성 배열 수정
+  }, [currentUser, userGroups]);
   
   // 그룹 페이지로 이동
   const handleEventClick = (groupId) => {
