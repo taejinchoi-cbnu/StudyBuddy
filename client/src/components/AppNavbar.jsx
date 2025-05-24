@@ -1,4 +1,4 @@
-import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import { useState, forwardRef, useImperativeHandle } from 'react';
 import { Navbar, Nav, Container, Button, Form, Modal, Alert, Spinner } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,6 +6,7 @@ import { useDarkMode } from '../contexts/DarkModeContext';
 import LoadingSpinner from './LoadingSpinner'; 
 import logoSmall from '../assets/logoSmall.png';
 import EmailVerificationService from '../utils/EmailVerificationService';
+import useNotification from '../hooks/useNotification';
 
 const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   // 컨텍스트 훅 사용
@@ -13,6 +14,17 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   const { darkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // UPDATED: useNotification 훅 사용 (기존 error, success, message 상태들을 통합)
+  const { 
+    error, 
+    success, 
+    info,
+    showError, 
+    showSuccess, 
+    showInfo,
+    clearAll 
+  } = useNotification();
   
   // 모달 상태 관리
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -24,9 +36,6 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
-  const [success, setSuccess] = useState('');
   
   // 로딩 상태 추가
   const [isProcessing, setIsProcessing] = useState(false);
@@ -38,18 +47,16 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     handleForgotPasswordModalOpen
   }));
   
-  // 모달 핸들러
+  // UPDATED: 모달 핸들러들 - useNotification 훅 사용
   const handleLoginModalOpen = () => {
-    setError('');
-    setSuccess('');
+    clearAll(); // 모든 알림 메시지 지우기
     setEmail('');
     setPassword('');
     setShowLoginModal(true);
   };
   
   const handleSignupModalOpen = () => {
-    setError('');
-    setSuccess('');
+    clearAll(); // 모든 알림 메시지 지우기
     setEmail('');
     setPassword('');
     setPasswordConfirm('');
@@ -58,68 +65,60 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   };
   
   const handleForgotPasswordModalOpen = () => {
-    setError('');
-    setMessage('');
+    clearAll(); // 모든 알림 메시지 지우기
     setEmail('');
     setShowForgotPasswordModal(true);
   };
   
   const handleLoginModalClose = () => {
-    setError('');
-    setSuccess('');
+    clearAll(); // 모든 알림 메시지 지우기
     setShowLoginModal(false);
   };
   
   const handleSignupModalClose = () => {
-    setError('');
-    setSuccess('');
+    clearAll(); // 모든 알림 메시지 지우기
     setShowSignupModal(false);
   };
   
   const handleForgotPasswordModalClose = () => {
-    setError('');
-    setSuccess('');
-    setMessage('');
+    clearAll(); // 모든 알림 메시지 지우기
     setShowForgotPasswordModal(false);
   };
   
   const handleSwitchToSignup = () => {
     handleLoginModalClose();
-    setError('');
-    setSuccess('');
+    clearAll(); // 알림 메시지 지우기
     handleSignupModalOpen();
   };
   
   const handleSwitchToLogin = () => {
     handleSignupModalClose();
-    setError('');
-    setSuccess('');
+    clearAll(); // 알림 메시지 지우기
     handleLoginModalOpen();
   };
   
   const handleSwitchToForgotPassword = () => {
     handleLoginModalClose();
-    setError('');
-    setSuccess('');
+    clearAll(); // 알림 메시지 지우기
     handleForgotPasswordModalOpen();
   };
   
-  // 로그인 핸들러
+  // UPDATED: 로그인 핸들러 - showError 사용
   const handleLogin = async (e) => {
     e.preventDefault();
     
     try {
-      setError('');
+      clearAll(); // 기존 메시지 지우기
       await login(email, password);
       handleLoginModalClose();
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+      showError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
     }
   };
   
-  // 회원가입 핸들러 - 완전히 수정된 버전
+  // UPDATED: 회원가입 핸들러 - showError, showSuccess 사용
   const handleSignup = async (e) => {
     e.preventDefault();
     
@@ -127,21 +126,20 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     
     // 잘못된 입력 검증
     if (password !== passwordConfirm) {
-      return setError('비밀번호가 일치하지 않습니다.');
+      return showError('비밀번호가 일치하지 않습니다.');
     }
     
     if (password.length < 6) {
-      return setError('비밀번호는 최소 6자 이상이어야 합니다.');
+      return showError('비밀번호는 최소 6자 이상이어야 합니다.');
     }
     
     // 이메일 도메인 체크 (chungbuk.ac.kr)
     if (!email.endsWith('@chungbuk.ac.kr')) {
-      return setError('충북대학교 이메일(@chungbuk.ac.kr)만 가입할 수 있습니다.');
+      return showError('충북대학교 이메일(@chungbuk.ac.kr)만 가입할 수 있습니다.');
     }
     
     try {
-      setError('');
-      setSuccess('');
+      clearAll(); // 기존 메시지 지우기
       setIsProcessing(true); // 로딩 상태 시작
       
       console.log("이메일 유효성 확인 요청 준비");
@@ -158,7 +156,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         console.log("이메일 유효성 확인 성공:", email);
       } catch (verificationError) {
         console.error('이메일 확인 요청 오류:', verificationError);
-        setError('이메일 확인 요청에 실패했습니다: ' + verificationError.message);
+        showError('이메일 확인 요청에 실패했습니다: ' + verificationError.message);
         setIsProcessing(false); // 로딩 상태 종료
         return;
       }
@@ -174,7 +172,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         );
         
         // 여기까지 오면 성공
-        setSuccess('회원가입이 완료되었습니다.');
+        showSuccess('회원가입이 완료되었습니다.');
         
         // 잠시 후 리디렉션
         setTimeout(() => {
@@ -188,40 +186,39 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         // onAuthStateChanged가 이미 실행되었을 수 있음
         if (currentUser) {
           console.log("이미 로그인된 상태, 성공으로 처리");
-          setSuccess('회원가입이 완료되었습니다.');
+          showSuccess('회원가입이 완료되었습니다.');
           
           setTimeout(() => {
             setShowSignupModal(false);
             navigate('/dashboard');
           }, 1500);
         } else {
-          setError('계정 생성 중 오류가 발생했습니다: ' + (signupError.message || '알 수 없는 오류'));
+          showError('계정 생성 중 오류가 발생했습니다: ' + (signupError.message || '알 수 없는 오류'));
         }
       }
     } catch (error) {
       console.error('회원가입 프로세스 오류:', error);
-      setError('회원가입 중 오류가 발생했습니다: ' + error.message);
+      showError('회원가입 중 오류가 발생했습니다: ' + error.message);
     } finally {
       setIsProcessing(false); // 로딩 상태 종료
     }
   };
   
-  // 비밀번호 재설정 핸들러
+  // UPDATED: 비밀번호 재설정 핸들러 - showInfo, showError 사용
   const handleResetPassword = async (e) => {
     e.preventDefault();
     
     try {
-      setMessage('');
-      setError('');
+      clearAll(); // 기존 메시지 지우기
       await resetPassword(email);
-      setMessage('이메일로 비밀번호 재설정 안내가 발송되었습니다.');
+      showInfo('이메일로 비밀번호 재설정 안내가 발송되었습니다.');
       setTimeout(() => {
         handleForgotPasswordModalClose();
         handleLoginModalOpen();
       }, 3000);
     } catch (error) {
       console.error('Password reset error:', error);
-      setError('비밀번호 재설정에 실패했습니다. 이메일 주소를 확인해주세요.');
+      showError('비밀번호 재설정에 실패했습니다. 이메일 주소를 확인해주세요.');
     }
   };
 
@@ -326,7 +323,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Container>
       </Navbar>
 
-      {/* 로그인 모달 */}
+      {/* UPDATED: 로그인 모달 - useNotification 훅 사용 */}
       <Modal 
         show={showLoginModal} 
         onHide={handleLoginModalClose}
@@ -338,6 +335,8 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Modal.Header>
         <Modal.Body>
           {error && <Alert variant="danger">{error}</Alert>}
+          {success && <Alert variant="success">{success}</Alert>}
+          {info && <Alert variant="info">{info}</Alert>}
           <Form onSubmit={handleLogin}>
             <Form.Group controlId="loginEmail">
               <Form.Label>이메일</Form.Label>
@@ -392,7 +391,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Modal.Footer>
       </Modal>
       
-      {/* 회원가입 모달 */}
+      {/* UPDATED: 회원가입 모달 - useNotification 훅 사용 */}
       <Modal 
         show={showSignupModal} 
         onHide={handleSignupModalClose}
@@ -405,6 +404,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         <Modal.Body>
           {error && <Alert variant="danger">{error}</Alert>}
           {success && <Alert variant="success">{success}</Alert>}
+          {info && <Alert variant="info">{info}</Alert>}
           <Form onSubmit={handleSignup}>
             <Form.Group controlId="signupName">
               <Form.Label>이름</Form.Label>
@@ -492,7 +492,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Modal.Footer>
       </Modal>
       
-      {/* 비밀번호 재설정 모달 */}
+      {/* UPDATED: 비밀번호 재설정 모달 - useNotification 훅 사용 */}
       <Modal 
         show={showForgotPasswordModal} 
         onHide={handleForgotPasswordModalClose}
@@ -504,7 +504,8 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Modal.Header>
         <Modal.Body>
           {error && <Alert variant="danger">{error}</Alert>}
-          {message && <Alert variant="success">{message}</Alert>}
+          {success && <Alert variant="success">{success}</Alert>}
+          {info && <Alert variant="info">{info}</Alert>}
           <Form onSubmit={handleResetPassword}>
             <Form.Group controlId="forgotPasswordEmail">
               <Form.Label>이메일</Form.Label>

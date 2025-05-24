@@ -5,28 +5,38 @@ import { Alert, Button, Card, Col, Container, Form, Row, Badge, Dropdown, Spinne
 import LoadingSpinner from '../components/LoadingSpinner';
 import { GROUP_TAGS } from '../utils/GroupConstants';
 import EmailVerificationService from '../utils/EmailVerificationService';
+import useNotification from '../hooks/useNotification';
 
 // 모든 태그를 하나의 배열로 평탄화
 const ALL_TAGS = Object.values(GROUP_TAGS).flat();
 
 const ProfilePage = () => {
   const { currentUser, userProfile, updateUserProfile, logout, authLoading, updateEmail } = useAuth();
+  const navigate = useNavigate();
+  
+  // 🔥 NEW: useNotification 훅 사용 (기존 error, success 상태들을 통합)
+  const { 
+    error, 
+    success, 
+    info,
+    showError, 
+    showSuccess, 
+    showInfo,
+    clearAll 
+  } = useNotification();
+  
+  // 프로필 상태 관리
   const [displayName, setDisplayName] = useState('');
-  const [email, setEmail] = useState(''); // 이메일 상태 추가
+  const [email, setEmail] = useState('');
   const [department, setDepartment] = useState('');
   const [interests, setInterests] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [originalProfile, setOriginalProfile] = useState(null);
-  const navigate = useNavigate();
 
   // 이메일 인증 관련 상태
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isCheckingVerification, setIsCheckingVerification] = useState(false);
   const [isSendingVerification, setIsSendingVerification] = useState(false);
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
-  const [verificationError, setVerificationError] = useState('');
-  const [verificationSuccess, setVerificationSuccess] = useState('');
 
   // 초기 프로필 데이터 로드
   useEffect(() => {
@@ -64,13 +74,13 @@ const ProfilePage = () => {
     }
   }, [currentUser?.email, userProfile]);
 
-  // 이메일 인증 상태 확인
+  // 🔥 UPDATED: 이메일 인증 상태 확인 - useNotification 훅 사용
   const checkEmailVerification = async () => {
     if (!currentUser?.email) return;
     
     try {
       setIsCheckingVerification(true);
-      setVerificationError('');
+      clearAll(); // 기존 메시지 지우기
       
       const response = await EmailVerificationService.checkVerificationStatus(currentUser.email);
       
@@ -78,7 +88,7 @@ const ProfilePage = () => {
       
       if (response.success === true) { // 명시적으로 true와 비교
         setIsEmailVerified(true);
-        setVerificationSuccess('이메일이 인증되었습니다.');
+        showSuccess('이메일이 인증되었습니다.');
         
         // 사용자 프로필 업데이트
         await updateUserProfile({
@@ -89,26 +99,25 @@ const ProfilePage = () => {
         setIsEmailVerified(false);
         // 서버에서 인증되지 않음 메시지 전달
         if (response.message) {
-          setVerificationError(response.message);
+          showError(response.message);
         }
       }
     } catch (error) {
       console.error("인증 상태 확인 오류:", error);
-      setVerificationError(error.message || '인증 상태 확인 중 오류가 발생했습니다.');
+      showError(error.message || '인증 상태 확인 중 오류가 발생했습니다.');
       setIsEmailVerified(false);
     } finally {
       setIsCheckingVerification(false);
     }
   };
 
-  // 이메일 인증 요청 - 단순화된 방식
+  // 🔥 UPDATED: 이메일 인증 요청 - useNotification 훅 사용
   const requestEmailVerification = async () => {
     if (!email) return;
     
     try {
       setIsSendingVerification(true);
-      setVerificationError('');
-      setVerificationSuccess('');
+      clearAll(); // 기존 메시지 지우기
       
       // 이메일이 변경되었는지 확인
       if (email !== currentUser?.email) {
@@ -121,10 +130,10 @@ const ProfilePage = () => {
             certified_date: null
           });
           setIsEmailVerified(false);
-          setVerificationSuccess('이메일이 성공적으로 변경되었습니다. 이제 인증을 진행해주세요.');
+          showSuccess('이메일이 성공적으로 변경되었습니다. 이제 인증을 진행해주세요.');
         } catch (emailError) {
           console.error('이메일 변경 오류:', emailError);
-          setVerificationError('이메일 변경에 실패했습니다: ' + (emailError.message || ''));
+          showError('이메일 변경에 실패했습니다: ' + (emailError.message || ''));
           setIsUpdatingEmail(false);
           setIsSendingVerification(false);
           return;
@@ -141,7 +150,7 @@ const ProfilePage = () => {
         // directVerified가 true인 경우 - 인증 완료
         if (response.directVerified) {
           setIsEmailVerified(true);
-          setVerificationSuccess(response.message || '충북대학교 이메일 인증이 완료되었습니다.');
+          showSuccess(response.message || '충북대학교 이메일 인증이 완료되었습니다.');
           
           // 사용자 프로필 업데이트
           await updateUserProfile({
@@ -151,22 +160,22 @@ const ProfilePage = () => {
         } 
         // 이미 인증 과정이 진행 중인 경우
         else if (response.alreadySent) {
-          setVerificationSuccess(response.message || '이미 인증 절차가 진행 중입니다.');
+          showInfo(response.message || '이미 인증 절차가 진행 중입니다.');
           
           // 최신 상태 확인
           await checkEmailVerification();
         } 
         // 기타 성공 케이스
         else {
-          setVerificationSuccess(response.message || '이메일 인증 요청이 처리되었습니다.');
+          showInfo(response.message || '이메일 인증 요청이 처리되었습니다.');
         }
       } else {
         // 인증 실패
-        setVerificationError(response.message || '이메일 인증에 실패했습니다.');
+        showError(response.message || '이메일 인증에 실패했습니다.');
       }
     } catch (error) {
       console.error('이메일 인증 요청 오류:', error);
-      setVerificationError(error.message || '인증 이메일 발송 중 오류가 발생했습니다.');
+      showError(error.message || '인증 이메일 발송 중 오류가 발생했습니다.');
     } finally {
       setIsSendingVerification(false);
     }
@@ -203,45 +212,36 @@ const ProfilePage = () => {
       navigate('/login');
     } catch (error) {
       console.error('Logout error:', error);
-      setError('로그아웃에 실패했습니다');
+      showError('로그아웃에 실패했습니다');
     }
-  }, [logout, navigate]);
+  }, [logout, navigate, showError]);
 
-  // 프로필 업데이트 핸들러
+  // 🔥 UPDATED: 프로필 업데이트 핸들러 - useNotification 훅 사용
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
-      setError('');
-      setSuccess('');
+      clearAll(); // 기존 메시지 지우기
       
       // 폼 유효성 검사
       if (!displayName.trim()) {
-        return setError('이름을 입력해주세요.');
+        return showError('이름을 입력해주세요.');
       }
       
       // 이메일 유효성 검사
       if (!email.trim()) {
-        return setError('이메일을 입력해주세요.');
+        return showError('이메일을 입력해주세요.');
       }
       
       // 변경사항이 없으면 업데이트하지 않음
       if (!hasChanges()) {
-        return setError('변경사항이 없습니다.');
+        return showError('변경사항이 없습니다.');
       }
       
       // 이메일이 변경되었고, 아직 인증되지 않은 경우
-      let updatedEmail = false;
       if (!isEmailVerified && email !== currentUser?.email) {
-        try {
-          // 이메일 변경 함수를 별도로 호출하지 않고, 인증 버튼을 누르도록 안내
-          setError('이메일을 변경한 후에는 "이메일 인증하기" 버튼을 클릭하여 변경 및 인증을 진행해주세요.');
-          return;
-        } catch (emailError) {
-          console.error('이메일 변경 오류:', emailError);
-          setError('이메일 변경에 실패했습니다: ' + (emailError.message || ''));
-          return;
-        }
+        showError('이메일을 변경한 후에는 "이메일 인증하기" 버튼을 클릭하여 변경 및 인증을 진행해주세요.');
+        return;
       }
       
       console.log("프로필 업데이트 데이터:", {
@@ -261,15 +261,15 @@ const ProfilePage = () => {
       // 업데이트 후 원본 프로필 상태 갱신
       setOriginalProfile({
         displayName,
-        email: updatedEmail ? email : originalProfile.email,
+        email: originalProfile.email,
         department,
         interests
       });
       
-      setSuccess('프로필이 성공적으로 업데이트되었습니다!' + (updatedEmail ? ' 새 이메일로 인증을 진행해주세요.' : ''));
+      showSuccess('프로필이 성공적으로 업데이트되었습니다!');
     } catch (error) {
       console.error('Profile update error:', error);
-      setError('프로필 업데이트에 실패했습니다');
+      showError('프로필 업데이트에 실패했습니다');
     }
   };
 
@@ -304,25 +304,16 @@ const ProfilePage = () => {
             <Card className="shadow-sm">
               <Card.Body>
                 <h2 className="text-center mb-4">내 프로필</h2>
+                
+                {/* 🔥 UPDATED: 통합된 알림 메시지 표시 */}
                 {error && <Alert variant="danger">{error}</Alert>}
                 {success && <Alert variant="success">{success}</Alert>}
+                {info && <Alert variant="info">{info}</Alert>}
                 
                 {/* 이메일 인증 섹션 */}
                 <Card className="mb-4">
                   <Card.Body>
                     <h4 className="mb-3">이메일 인증</h4>
-                    
-                    {verificationError && (
-                      <Alert variant="danger" dismissible onClose={() => setVerificationError('')}>
-                        {verificationError}
-                      </Alert>
-                    )}
-                    
-                    {verificationSuccess && (
-                      <Alert variant="success" dismissible onClose={() => setVerificationSuccess('')}>
-                        {verificationSuccess}
-                      </Alert>
-                    )}
                     
                     <div className="d-flex align-items-center mb-3">
                       <div className="me-auto">

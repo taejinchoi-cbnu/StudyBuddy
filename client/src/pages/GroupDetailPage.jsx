@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import useLoading from '../hooks/UseLoading';
+import useNotification from '../hooks/useNotification';
 import logoQuestion from '../assets/logoQuestion.png';
 
 // 기존 컴포넌트들 import
@@ -24,12 +25,19 @@ const GroupDetailPage = () => {
   const { darkMode } = useDarkMode();
   const navigate = useNavigate();
   
+  // 🔥 NEW: useNotification 훅 사용 (기존 error, success 상태들을 통합)
+  const { 
+    error, 
+    success, 
+    showError, 
+    showSuccess, 
+    clearAll 
+  } = useNotification();
+  
   const [group, setGroup] = useState(null);
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isJoining, startJoiningLoading] = useLoading();
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [loadError, setLoadError] = useState(false); // 로드 오류 상태 추가
@@ -62,7 +70,7 @@ const GroupDetailPage = () => {
             setGroup(groupData);
           } else {
             setLoadError(true);
-            setError('그룹 정보를 불러오지 못했습니다.');
+            showError('그룹 정보를 불러오지 못했습니다.');
             return;
           }
         } catch (groupError) {
@@ -70,7 +78,7 @@ const GroupDetailPage = () => {
           if (!isMounted) return;
           
           setLoadError(true);
-          setError('그룹 정보를 불러오는 중 오류가 발생했습니다.');
+          showError('그룹 정보를 불러오는 중 오류가 발생했습니다.');
           return;
         }
         
@@ -109,7 +117,7 @@ const GroupDetailPage = () => {
         console.error('Error in fetchGroupData:', error);
         if (!isMounted) return;
         setLoadError(true);
-        setError('그룹 정보를 불러오는 중 오류가 발생했습니다.');
+        showError('그룹 정보를 불러오는 중 오류가 발생했습니다.');
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -124,9 +132,9 @@ const GroupDetailPage = () => {
     return () => {
       isMounted = false;
     };
-  }, [groupId, currentUser]);
+  }, [groupId, currentUser, showError]);
   
-  // 가입 요청 처리 후 그룹 데이터 새로고침 함수
+  // 🔥 UPDATED: 가입 요청 처리 후 그룹 데이터 새로고침 함수 - useNotification 훅 사용
   const reloadGroupData = async () => {
     setIsLoading(true);
     try {
@@ -150,10 +158,10 @@ const GroupDetailPage = () => {
         setUserStatus({ isMember, isAdmin, hasPendingRequest });
       }
       
-      setSuccess('그룹 정보가 업데이트되었습니다.');
+      showSuccess('그룹 정보가 업데이트되었습니다.');
     } catch (error) {
       console.error('Error reloading group data:', error);
-      setError('그룹 정보를 새로고침하는 중 오류가 발생했습니다.');
+      showError('그룹 정보를 새로고침하는 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -165,29 +173,29 @@ const GroupDetailPage = () => {
   // 탈퇴 모달 토글
   const toggleLeaveModal = () => setShowLeaveModal(!showLeaveModal);
   
-  // 그룹 탈퇴 성공 처리
+  // 🔥 UPDATED: 그룹 탈퇴 성공 처리 - useNotification 훅 사용
   const handleLeaveSuccess = () => {
     setShowLeaveModal(false);
-    setSuccess('그룹에서 성공적으로 탈퇴했습니다.');
+    showSuccess('그룹에서 성공적으로 탈퇴했습니다.');
     navigate('/groups'); // 그룹 목록 페이지로 이동
   };
   
-  // 그룹 삭제 성공 처리
+  // 🔥 UPDATED: 그룹 삭제 성공 처리 - useNotification 훅 사용
   const handleDeleteSuccess = () => {
-    setSuccess('그룹이 성공적으로 삭제되었습니다.');
+    showSuccess('그룹이 성공적으로 삭제되었습니다.');
     navigate('/groups'); // 그룹 목록 페이지로 이동
   };
   
-  // 가입 요청 제출
+  // 🔥 UPDATED: 가입 요청 제출 - useNotification 훅 사용
   const handleJoinRequest = async (message) => {
     try {
       await startJoiningLoading(sendJoinRequest(groupId, currentUser.uid, message));
-      setSuccess('가입 요청이 성공적으로 전송되었습니다.');
+      showSuccess('가입 요청이 성공적으로 전송되었습니다.');
       setUserStatus({ ...userStatus, hasPendingRequest: true });
       setShowJoinModal(false);
     } catch (error) {
       console.error('Error sending join request:', error);
-      setError('가입 요청 중 오류가 발생했습니다: ' + error.message);
+      showError('가입 요청 중 오류가 발생했습니다: ' + error.message);
     }
   };
   
@@ -238,8 +246,9 @@ const GroupDetailPage = () => {
   
   return (
     <Container className={`mt-4 ${darkMode ? 'dark-mode' : ''}`}>
-      {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
-      {success && <Alert variant="success" onClose={() => setSuccess('')} dismissible>{success}</Alert>}
+      {/* 🔥 UPDATED: 통합된 알림 메시지 표시 */}
+      {error && <Alert variant="danger" onClose={() => clearAll()} dismissible>{error}</Alert>}
+      {success && <Alert variant="success" onClose={() => clearAll()} dismissible>{success}</Alert>}
       
       <div className="mb-4">
         <Button 
