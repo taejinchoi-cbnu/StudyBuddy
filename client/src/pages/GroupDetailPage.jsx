@@ -1,24 +1,25 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Badge, Alert, Tabs, Tab, Image } from 'react-bootstrap';
-import { getGroupById, getGroupMembers, sendJoinRequest } from '../utils/GroupService';
-import { useAuth } from '../contexts/AuthContext';
-import { useDarkMode } from '../contexts/DarkModeContext';
-import LoadingSpinner from '../components/LoadingSpinner';
-import useLoading from '../hooks/useLoading';
-import useNotification from '../hooks/useNotification';
-import useModal from '../hooks/useModal';
-import logoQuestion from '../assets/logoQuestion.png';
+import { useState, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Container, Row, Col, Card, Button, Badge, Alert, Tabs, Tab, Image } from "react-bootstrap";
+import { getGroupById, getGroupMembers, sendJoinRequest } from "../utils/GroupService";
+import { useAuth } from "../contexts/AuthContext";
+import { useDarkMode } from "../contexts/DarkModeContext";
+import LoadingSpinner from "../components/LoadingSpinner";
+import useLoading from "../hooks/useLoading";
+import useNotification from "../hooks/useNotification";
+import useModal from "../hooks/useModal";
+import useFirebaseData from "../hooks/useFirebaseData"; 
+import logoQuestion from "../assets/logoQuestion.png";
 
-// 기존 컴포넌트들 import
-import GroupInfo from '../components/groups/GroupInfo';
-import GroupMembersList from '../components/groups/GroupMembersList';
-import JoinRequestModal from '../components/groups/JoinRequestModal';
-import JoinRequestsList from '../components/groups/JoinRequestsList';
-import LeaveGroupModal from '../components/groups/LeaveGroupModal';
-import GroupSettings from '../components/groups/GroupSettings';
-import MemberManagement from '../components/groups/MemberManagement';
-import GroupScheduleComponent from '../components/schedule/GroupScheduleComponent';
+// 컴포넌트들 import
+import GroupInfo from "../components/groups/GroupInfo";
+import GroupMembersList from "../components/groups/GroupMembersList";
+import JoinRequestModal from "../components/groups/JoinRequestModal";
+import JoinRequestsList from "../components/groups/JoinRequestsList";
+import LeaveGroupModal from "../components/groups/LeaveGroupModal";
+import GroupSettings from "../components/groups/GroupSettings";
+import MemberManagement from "../components/groups/MemberManagement";
+import GroupScheduleComponent from "../components/schedule/GroupScheduleComponent";
 
 const GroupDetailPage = () => {
   const { groupId } = useParams();
@@ -26,7 +27,7 @@ const GroupDetailPage = () => {
   const { darkMode } = useDarkMode();
   const navigate = useNavigate();
   
-  // NEW: useNotification 훅 사용 (기존 error, success 상태들을 통합)
+  // 알림 및 모달 훅 사용
   const { 
     error, 
     success, 
@@ -35,197 +36,165 @@ const GroupDetailPage = () => {
     clearAll 
   } = useNotification();
   
-  // 🔥 NEW: useModal 훅 사용 (기존 모달 상태들을 통합)
   const {
     openModal,
     closeModal,
     isOpen,
-    closeAllModals
-  } = useModal(['join', 'leave']);
+  } = useModal(["join", "leave"]);
   
-  const [group, setGroup] = useState(null);
-  const [members, setMembers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // 일반 상태 관리
   const [isJoining, startJoiningLoading] = useLoading();
-  const [loadError, setLoadError] = useState(false); // 로드 오류 상태 추가
-  
-  // 현재 사용자의 그룹 멤버십 상태
   const [userStatus, setUserStatus] = useState({
     isMember: false,
     isAdmin: false,
     hasPendingRequest: false
   });
   
-  // 그룹 및 멤버 정보 로드
-  useEffect(() => {
-    let isMounted = true;
-    
-    const fetchGroupData = async () => {
-      try {
-        setIsLoading(true);
-        setLoadError(false);
-        console.log("Fetching group data for ID:", groupId);
+  // useFirebaseData를 사용하여 그룹 정보 가져오기
+  const {
+    data: group,
+    loading: groupLoading,
+    error: groupError,
+    refetch: refetchGroup,
+    isSuccess: isGroupSuccess
+  } = useFirebaseData(
+    // fetchFunction: groupId가 있을 때만 실행
+    groupId ? () => getGroupById(groupId) : null,
+    // dependencies: groupId가 변경되면 다시 실행  
+    [groupId],
+    {
+      enabled: !!groupId, // groupId가 있을 때만 자동 실행
+      onSuccess: (groupData) => {
+        console.log("그룹 데이터 로드 성공:", groupData);
+      },
+      onError: (error) => {
+        console.error("그룹 데이터 로드 실패:", error);
+        showError("그룹 정보를 불러오는 중 오류가 발생했습니다.");
+      },
+      // 그룹 데이터 변환: Firebase 타임스탬프 처리 등
+      transform: (data) => {
+        if (!data) return null;
         
-        // 그룹 정보 가져오기 시도
-        let groupData;
-        try {
-          groupData = await getGroupById(groupId);
-          console.log("Group data:", groupData);
-          
-          if (!isMounted) return;
-          if (groupData) {
-            setGroup(groupData);
-          } else {
-            setLoadError(true);
-            showError('그룹 정보를 불러오지 못했습니다.');
-            return;
-          }
-        } catch (groupError) {
-          console.error("Error fetching group:", groupError);
-          if (!isMounted) return;
-          
-          setLoadError(true);
-          showError('그룹 정보를 불러오는 중 오류가 발생했습니다.');
-          return;
+        // createdAt 필드가 Firebase 타임스탬프인 경우 처리
+        if (data.createdAt && typeof data.createdAt.toDate === "function") {
+          return {
+            ...data,
+            createdAt: data.createdAt.toDate()
+          };
         }
         
-        // 그룹 멤버 정보 가져오기
-        try {
-          const membersData = await getGroupMembers(groupId);
-          console.log("Members data:", membersData);
-          
-          if (!isMounted) return;
-          if (membersData && Array.isArray(membersData)) {
-            setMembers(membersData);
-            
-            // 현재 사용자의 상태 확인
-            if (currentUser) {
-              const isMember = membersData.some(member => member.userId === currentUser.uid);
-              const isAdmin = membersData.some(
-                member => member.userId === currentUser.uid && member.role === 'admin'
-              );
-              
-              // 가입 요청 확인
-              const hasPendingRequest = groupData && groupData.joinRequests && 
-                groupData.joinRequests.some(request => request.uid === currentUser.uid);
-              
-              setUserStatus({ isMember, isAdmin, hasPendingRequest });
-            }
-          } else {
-            setMembers([]);
-          }
-        } catch (membersError) {
-          console.error("Error fetching members:", membersError);
-          if (!isMounted) return;
-          setMembers([]);
-        }
-        
-      } catch (error) {
-        console.error('Error in fetchGroupData:', error);
-        if (!isMounted) return;
-        setLoadError(true);
-        showError('그룹 정보를 불러오는 중 오류가 발생했습니다.');
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        return data;
       }
-    };
-    
-    if (groupId) {
-      fetchGroupData();
     }
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [groupId, currentUser, showError]);
+  );
   
-  // UPDATED: 가입 요청 처리 후 그룹 데이터 새로고침 함수 - useNotification 훅 사용
-  const reloadGroupData = async () => {
-    setIsLoading(true);
+  // useFirebaseData를 사용하여 멤버 정보 가져오기
+  const {
+    data: members,
+    loading: membersLoading,
+    error: membersError,
+    refetch: refetchMembers,
+    isSuccess: isMembersSuccess
+  } = useFirebaseData(
+    // fetchFunction: groupId와 그룹 데이터가 있을 때만 실행
+    groupId && isGroupSuccess ? () => getGroupMembers(groupId) : null,
+    // dependencies: groupId와 그룹 성공 상태가 변경되면 다시 실행
+    [groupId, isGroupSuccess],
+    {
+      enabled: !!groupId && isGroupSuccess, // 그룹 로드 성공 후에만 실행
+      initialData: [], // 초기값을 빈 배열로 설정
+      onSuccess: (membersData) => {
+        console.log("멤버 데이터 로드 성공:", membersData);
+        
+        // 사용자 상태 업데이트 로직
+        if (currentUser && Array.isArray(membersData)) {
+          const isMember = membersData.some(member => member.userId === currentUser.uid);
+          const isAdmin = membersData.some(
+            member => member.userId === currentUser.uid && member.role === "admin"
+          );
+          
+          // 가입 요청 확인
+          const hasPendingRequest = group && group.joinRequests && 
+            group.joinRequests.some(request => request.uid === currentUser.uid);
+          
+          setUserStatus({ isMember, isAdmin, hasPendingRequest });
+        }
+      },
+      onError: (error) => {
+        console.error("멤버 데이터 로드 실패:", error);
+        showError("멤버 정보를 불러오는 중 오류가 발생했습니다.");
+      }
+    }
+  );
+  
+  // 로딩 상태 통합 관리
+  const isLoading = groupLoading || membersLoading;
+  const hasError = groupError || membersError;
+  
+  // 그룹 데이터 새로고침 함수 - 두 데이터를 모두 리패치
+  const reloadGroupData = useCallback(async () => {
     try {
-      const updatedGroup = await getGroupById(groupId);
-      setGroup(updatedGroup);
+      console.log("그룹 데이터 새로고침 시작");
       
-      // 멤버 정보도 다시 로드
-      const updatedMembers = await getGroupMembers(groupId);
-      setMembers(updatedMembers);
+      // 순차적으로 데이터 새로고침
+      await refetchGroup();
+      await refetchMembers();
       
-      // 현재 사용자 상태 업데이트
-      if (currentUser) {
-        const isMember = updatedMembers.some(member => member.userId === currentUser.uid);
-        const isAdmin = updatedMembers.some(
-          member => member.userId === currentUser.uid && member.role === 'admin'
-        );
-        
-        const hasPendingRequest = updatedGroup && updatedGroup.joinRequests && 
-          updatedGroup.joinRequests.some(request => request.uid === currentUser.uid);
-        
-        setUserStatus({ isMember, isAdmin, hasPendingRequest });
-      }
-      
-      showSuccess('그룹 정보가 업데이트되었습니다.');
+      showSuccess("그룹 정보가 업데이트되었습니다.");
     } catch (error) {
-      console.error('Error reloading group data:', error);
-      showError('그룹 정보를 새로고침하는 중 오류가 발생했습니다.');
-    } finally {
-      setIsLoading(false);
+      console.error("그룹 데이터 새로고침 실패:", error);
+      showError("그룹 정보를 새로고침하는 중 오류가 발생했습니다.");
     }
-  };
+  }, [refetchGroup, refetchMembers, showSuccess, showError]);
   
-  // UPDATED: 모달 토글 함수들 - useModal 훅 사용
+  // 모달 핸들러들
   const toggleJoinModal = () => {
-    if (isOpen('join')) {
-      closeModal('join');
+    if (isOpen("join")) {
+      closeModal("join");
     } else {
-      openModal('join');
+      openModal("join");
     }
   };
   
   const toggleLeaveModal = () => {
-    if (isOpen('leave')) {
-      closeModal('leave');
+    if (isOpen("leave")) {
+      closeModal("leave");
     } else {
-      openModal('leave');
+      openModal("leave");
     }
   };
   
-  // UPDATED: 그룹 탈퇴 성공 처리 - useModal 훅 사용
+  // 그룹 탈퇴 성공 처리
   const handleLeaveSuccess = () => {
-    closeModal('leave');
-    showSuccess('그룹에서 성공적으로 탈퇴했습니다.');
-    navigate('/groups'); // 그룹 목록 페이지로 이동
+    closeModal("leave");
+    showSuccess("그룹에서 성공적으로 탈퇴했습니다.");
+    navigate("/groups");
   };
   
-  // UPDATED: 그룹 삭제 성공 처리 - useNotification 훅 사용
+  // 그룹 삭제 성공 처리
   const handleDeleteSuccess = () => {
-    showSuccess('그룹이 성공적으로 삭제되었습니다.');
-    navigate('/groups'); // 그룹 목록 페이지로 이동
+    showSuccess("그룹이 성공적으로 삭제되었습니다.");
+    navigate("/groups");
   };
   
-  // UPDATED: 가입 요청 제출 - useModal 훅 사용
+  // 가입 요청 제출
   const handleJoinRequest = async (message) => {
     try {
       await startJoiningLoading(sendJoinRequest(groupId, currentUser.uid, message));
-      showSuccess('가입 요청이 성공적으로 전송되었습니다.');
+      showSuccess("가입 요청이 성공적으로 전송되었습니다.");
       setUserStatus({ ...userStatus, hasPendingRequest: true });
-      closeModal('join');
+      closeModal("join");
     } catch (error) {
-      console.error('Error sending join request:', error);
-      showError('가입 요청 중 오류가 발생했습니다: ' + error.message);
+      console.error("Error sending join request:", error);
+      showError("가입 요청 중 오류가 발생했습니다: " + error.message);
     }
   };
   
-  // NEW: 모달 닫기 핸들러 추가
-  const handleJoinModalClose = () => {
-    closeModal('join');
-  };
+  // 모달 닫기 핸들러들
+  const handleJoinModalClose = () => closeModal("join");
+  const handleLeaveModalClose = () => closeModal("leave");
   
-  const handleLeaveModalClose = () => {
-    closeModal('leave');
-  };
-  
+  // 로딩 중일 때
   if (isLoading) {
     return (
       <Container className="text-center py-5">
@@ -235,8 +204,8 @@ const GroupDetailPage = () => {
     );
   }
   
-  // 데이터 로드 실패 시 친절한 오류 메시지와 이미지 표시
-  if (loadError || (!group && !isLoading)) {
+  // 데이터 로드 실패 시 친절한 오류 메시지
+  if (hasError || (!group && !isLoading)) {
     return (
       <Container className="mt-5">
         <Card className="shadow-sm text-center p-4">
@@ -244,7 +213,7 @@ const GroupDetailPage = () => {
             <Image 
               src={logoQuestion} 
               alt="오류" 
-              style={{ width: '150px', height: 'auto', margin: '0 auto 2rem' }}
+              style={{ width: "150px", height: "auto", margin: "0 auto 2rem" }}
               className="d-block"
             />
             <h3 className="mb-3">그룹 정보를 불러오지 못했습니다</h3>
@@ -254,7 +223,7 @@ const GroupDetailPage = () => {
             </p>
             <Button 
               variant="primary" 
-              onClick={() => navigate('/groups')}
+              onClick={() => navigate("/groups")}
               className="me-2"
             >
               그룹 목록으로 돌아가기
@@ -272,15 +241,15 @@ const GroupDetailPage = () => {
   }
   
   return (
-    <Container className={`mt-4 ${darkMode ? 'dark-mode' : ''}`}>
-      {/* UPDATED: 통합된 알림 메시지 표시 */}
+    <Container className={`mt-4 ${darkMode ? "dark-mode" : ""}`}>
+      {/* 통합된 알림 메시지 표시 */}
       {error && <Alert variant="danger" onClose={() => clearAll()} dismissible>{error}</Alert>}
       {success && <Alert variant="success" onClose={() => clearAll()} dismissible>{success}</Alert>}
       
       <div className="mb-4">
         <Button 
           variant="outline-secondary" 
-          onClick={() => navigate('/groups')}
+          onClick={() => navigate("/groups")}
           className="mb-3"
         >
           ← 그룹 목록으로
@@ -320,10 +289,10 @@ const GroupDetailPage = () => {
                   미팅 방식: {group.meetingType} | 
                   인원: {group.memberCount || 1}/{group.maxMembers} |
                   생성일: {group.createdAt ? (
-                    typeof group.createdAt.toDate === 'function' 
-                      ? group.createdAt.toDate().toLocaleDateString() 
+                    typeof group.createdAt.toLocaleDateString === "function" 
+                      ? group.createdAt.toLocaleDateString() 
                       : new Date(group.createdAt).toLocaleDateString()
-                  ) : '날짜 정보 없음'}
+                  ) : "날짜 정보 없음"}
                 </p>
               </Col>
               
@@ -335,7 +304,7 @@ const GroupDetailPage = () => {
                     disabled={isJoining}
                     className="w-100"
                   >
-                    {isJoining ? '처리 중...' : '가입 요청하기'}
+                    {isJoining ? "처리 중..." : "가입 요청하기"}
                   </Button>
                 )}
                 
@@ -422,18 +391,18 @@ const GroupDetailPage = () => {
         )}
       </Tabs>
       
-      {/* UPDATED: 가입 요청 모달 - useModal 훅 사용 */}
+      {/* 가입 요청 모달 */}
       <JoinRequestModal 
-        show={isOpen('join')} 
+        show={isOpen("join")} 
         onHide={handleJoinModalClose} 
         onSubmit={handleJoinRequest}
         group={group}
       />
       
-      {/* UPDATED: 그룹 탈퇴 모달 - useModal 훅 사용 */}
+      {/* 그룹 탈퇴 모달 */}
       {group && currentUser && (
         <LeaveGroupModal
-          show={isOpen('leave')}
+          show={isOpen("leave")}
           onHide={handleLeaveModalClose}
           group={group}
           userId={currentUser.uid}

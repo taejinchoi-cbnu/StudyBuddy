@@ -1,117 +1,128 @@
-import { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import { useAuth } from '../contexts/AuthContext';
-import { useDarkMode } from '../contexts/DarkModeContext';
-import CalendarView from '../components/schedule/CalendarView';
-import EventForm from '../components/schedule/EventForm';
-import { getUserEvents, addUserEvent, updateUserEvent, deleteUserEvent } from '../utils/ScheduleService';
-import { getUserGroups } from '../utils/GroupService';
-import useLoading from '../hooks/useLoading';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { useState, useCallback } from "react";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { useAuth } from "../contexts/AuthContext";
+import { useDarkMode } from "../contexts/DarkModeContext";
+import CalendarView from "../components/schedule/CalendarView";
+import EventForm from "../components/schedule/EventForm";
+import { getUserEvents, addUserEvent, updateUserEvent, deleteUserEvent } from "../utils/ScheduleService";
+import { getUserGroups } from "../utils/GroupService";
+import useLoading from "../hooks/useLoading";
+import useFirebaseData from "../hooks/useFirebaseData";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const SchedulePage = () => {
   const { currentUser } = useAuth();
   const { darkMode } = useDarkMode();
-  const [events, setEvents] = useState([]);
+  
+  // 일반 상태 관리
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventForm, setShowEventForm] = useState(false);
-  const [isLoading, startLoading] = useLoading();
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  // 사용자 일정 및 그룹 일정 로드
-  useEffect(() => {
-    if (!currentUser) return;
-
-    const loadEvents = async () => {
-      console.log('🔍 loadEvents 함수 시작');
-      try {
-        setError('');
-        
-        // 먼저 사용자 일정만 로드
-        console.log('🔍 사용자 일정 로드 시작');
-        const userEventsResult = await getUserEvents(currentUser.uid);
-        console.log('🔍 사용자 일정 로드 완료:', userEventsResult);
-        const loadedEvents = Array.isArray(userEventsResult) ? userEventsResult : [];
-        
-        // 일단 사용자 일정만 표시 (그룹 일정 로드 전)
-        setEvents(loadedEvents);
-        
-        // 그룹 일정은 별도로 로드
-        console.log('🔍 그룹 일정 로드 시작');
-        try {
-          const userGroups = await getUserGroups(currentUser.uid);
-          console.log('🔍 그룹 데이터 로드 완료:', userGroups);
-          
-          let groupEvents = [];
-          
-          if (Array.isArray(userGroups)) {
-            for (const group of userGroups) {
-              if (group && group.appointments && Array.isArray(group.appointments)) {
-                console.log(`🔍 그룹 ${group.id}의 일정 처리 중:`, group.appointments.length);
-                
-                const formattedEvents = group.appointments.map(appointment => ({
-                  id: `group_${group.id}_${appointment.id}`,
-                  title: `[${group.name}] ${appointment.title}`,
-                  start: convertToDate(appointment.day, appointment.start),
-                  end: convertToDate(appointment.day, appointment.end),
-                  isGroupEvent: true,
-                  groupId: group.id,
-                  groupName: group.name,
-                  allDay: false
-                }));
-                
-                groupEvents = [...groupEvents, ...formattedEvents];
-              }
-            }
-          }
-          
-          console.log('🔍 모든 그룹 일정 처리 완료:', groupEvents.length);
-          
-          // 사용자 일정과 그룹 일정 합치기
-          setEvents(prev => [...prev, ...groupEvents]);
-        } catch (groupError) {
-          console.error('🔍 그룹 일정 로드 오류:', groupError);
-          // 그룹 일정 로드에 실패해도 사용자 일정은 표시
-        }
-        
-      } catch (error) {
-        console.error('🔍 일정 로드 오류:', error);
-        setError('일정을 불러오는 데 실패했습니다.');
-        setEvents([]);
-      } finally {
-        console.log('🔍 loadEvents 함수 종료');
+  const [isEventLoading, startEventLoading] = useLoading();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [allEvents, setAllEvents] = useState([]); // 모든 일정을 통합 관리
+  
+  // useFirebaseData를 사용하여 사용자 일정 가져오기
+  const {
+    data: userEvents,
+    loading: userEventsLoading,
+    error: userEventsError,
+    refetch: refetchUserEvents,
+    isSuccess: isUserEventsSuccess
+  } = useFirebaseData(
+    // fetchFunction: currentUser가 있을 때만 실행
+    currentUser ? () => getUserEvents(currentUser.uid) : null,
+    // dependencies: currentUser가 변경되면 다시 실행
+    [currentUser],
+    {
+      enabled: !!currentUser, // 사용자가 있을 때만 자동 실행
+      initialData: [], // 초기값을 빈 배열로 설정
+      onSuccess: (eventsData) => {
+        console.log("사용자 일정 로드 성공:", eventsData?.length || 0, "개 일정");
+        // 성공 시 통합 이벤트 배열 업데이트 (사용자 일정 부분)
+        updateAllEvents(eventsData, "user");
+      },
+      onError: (error) => {
+        console.error("사용자 일정 로드 오류:", error);
+        setError("일정을 불러오는 데 실패했습니다.");
       }
-    };
-    
-    loadEvents();
-
-    // 안전 장치: 10초 후에 강제로 로딩 상태 해제 (디버깅용)
-    const safetyTimer = setTimeout(() => {
-      if (isLoading) {
-        console.log('🔍 안전 장치: 10초 후 강제 로딩 해제');
-        setEvents([]); // 빈 이벤트 배열 설정
-        // isLoading은 직접 변경할 수 없으므로 컴포넌트가 렌더링되도록 이벤트 배열만 설정
+    }
+  );
+  
+  // useFirebaseData를 사용하여 그룹 정보 가져오기 (그룹 일정을 위해)
+  const {
+    data: userGroups,
+    loading: userGroupsLoading,
+    error: userGroupsError,
+    refetch: refetchUserGroups,
+    isSuccess: isUserGroupsSuccess
+  } = useFirebaseData(
+    // fetchFunction: currentUser가 있고 사용자 일정 로드가 성공했을 때만 실행
+    currentUser && isUserEventsSuccess ? () => getUserGroups(currentUser.uid) : null,
+    // dependencies: currentUser와 사용자 일정 성공 상태가 변경되면 다시 실행
+    [currentUser, isUserEventsSuccess],
+    {
+      enabled: !!currentUser && isUserEventsSuccess, // 사용자 일정 로드 성공 후에만 실행
+      initialData: [], // 초기값을 빈 배열로 설정
+      onSuccess: (groupsData) => {
+        console.log("그룹 데이터 로드 성공:", groupsData?.length || 0, "개 그룹");
+        
+        // 그룹 일정 추출 및 변환
+        const groupEvents = extractGroupEvents(groupsData);
+        console.log("추출된 그룹 일정:", groupEvents?.length || 0, "개");
+        
+        // 성공 시 통합 이벤트 배열 업데이트 (그룹 일정 부분)
+        updateAllEvents(groupEvents, "group");
+      },
+      onError: (error) => {
+        console.error("그룹 일정 로드 오류:", error);
+        // 그룹 일정 로드에 실패해도 사용자 일정은 표시
       }
-    }, 10000);
+    }
+  );
+  
+  // 그룹 일정 추출 함수
+  const extractGroupEvents = useCallback((groups) => {
+    if (!Array.isArray(groups)) return [];
     
-    return () => clearTimeout(safetyTimer);
-  }, [currentUser]);
+    let groupEvents = [];
+    
+    for (const group of groups) {
+      if (group && group.appointments && Array.isArray(group.appointments)) {
+        console.log(`🔍 그룹 ${group.id}의 일정 처리 중:`, group.appointments.length);
+        
+        const formattedEvents = group.appointments.map(appointment => ({
+          id: `group_${group.id}_${appointment.id}`,
+          title: `[${group.name}] ${appointment.title}`,
+          start: convertToDate(appointment.day, appointment.start),
+          end: convertToDate(appointment.day, appointment.end),
+          isGroupEvent: true,
+          groupId: group.id,
+          groupName: group.name,
+          allDay: false
+        }));
+        
+        groupEvents = [...groupEvents, ...formattedEvents];
+      }
+    }
+    
+    return groupEvents;
+  }, []);
   
   // 요일 문자열과 시간 문자열을 Date 객체로 변환
-  const convertToDate = (dayString, timeString) => {
-    console.log('🔍 convertToDate 호출:', { dayString, timeString });
+  const convertToDate = useCallback((dayString, timeString) => {
+    console.log("convertToDate 호출:", { dayString, timeString });
     try {
       if (!dayString || !timeString) {
-        console.log('🔍 유효하지 않은 입력, 현재 시간 반환');
+        console.log("유효하지 않은 입력, 현재 시간 반환");
         return new Date();
       }
       
-      const days = { 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6, 'Sun': 0 };
+      const days = { "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6, "Sun": 0 };
       const dayNum = days[dayString];
       
       if (dayNum === undefined) {
-        console.log('🔍 알 수 없는 요일:', dayString);
+        console.log("알 수 없는 요일:", dayString);
         return new Date();
       }
       
@@ -125,115 +136,148 @@ const SchedulePage = () => {
       targetDate.setDate(today.getDate() + diff + (diff < 0 ? 7 : 0)); // 음수면 다음 주로 설정
       
       // 시간 설정
-      const [hours, minutes] = timeString.split(':').map(Number);
+      const [hours, minutes] = timeString.split(":").map(Number);
       targetDate.setHours(hours, minutes, 0, 0);
       
-      console.log('🔍 변환된 날짜:', targetDate);
+      console.log("변환된 날짜:", targetDate);
       return targetDate;
     } catch (error) {
-      console.error('🔍 날짜 변환 오류:', error);
+      console.error("날짜 변환 오류:", error);
       return new Date();
     }
-  };
+  }, []);
+  
+  // 통합 이벤트 배열 업데이트 함수
+  const updateAllEvents = useCallback((newEvents, type) => {
+    setAllEvents(prevEvents => {
+      if (type === "user") {
+        // 사용자 일정 업데이트: 기존 그룹 일정은 유지하고 사용자 일정만 교체
+        const groupEvents = prevEvents.filter(event => event.isGroupEvent);
+        return [...(newEvents || []), ...groupEvents];
+      } else if (type === "group") {
+        // 그룹 일정 업데이트: 기존 사용자 일정은 유지하고 그룹 일정만 교체
+        const userOnlyEvents = prevEvents.filter(event => !event.isGroupEvent);
+        return [...userOnlyEvents, ...(newEvents || [])];
+      }
+      return prevEvents;
+    });
+  }, []);
   
   // 새 일정 추가
-  const handleAddEvent = async (eventData) => {
-    console.log('🔍 새 일정 추가 시작:', eventData);
+  const handleAddEvent = useCallback(async (eventData) => {
+    console.log("새 일정 추가 시작:", eventData);
     try {
-      setError('');
+      setError("");
       
-      const newEvent = await startLoading(addUserEvent(currentUser.uid, eventData));
-      console.log('🔍 새 일정 추가 완료:', newEvent);
-      setEvents(prev => [...prev, newEvent]);
+      const newEvent = await startEventLoading(addUserEvent(currentUser.uid, eventData));
+      console.log("새 일정 추가 완료:", newEvent);
+      
+      // 사용자 일정 다시 로드
+      await refetchUserEvents();
+      
       setShowEventForm(false);
-      setSuccess('일정이 추가되었습니다.');
+      setSuccess("일정이 추가되었습니다.");
     } catch (error) {
-      console.error('🔍 일정 추가 오류:', error);
-      setError('일정을 추가하는 데 실패했습니다.');
+      console.error("일정 추가 오류:", error);
+      setError("일정을 추가하는 데 실패했습니다.");
     }
-  };
+  }, [currentUser, startEventLoading, refetchUserEvents]);
   
   // 일정 업데이트
-  const handleUpdateEvent = async (eventData) => {
-    console.log('🔍 일정 업데이트 시작:', eventData);
+  const handleUpdateEvent = useCallback(async (eventData) => {
+    console.log("일정 업데이트 시작:", eventData);
     try {
-      setError('');
+      setError("");
       
       // 그룹 일정은 수정 불가
       if (eventData.isGroupEvent) {
-        setError('그룹 일정은 수정할 수 없습니다.');
+        setError("그룹 일정은 수정할 수 없습니다.");
         return;
       }
       
-      const updatedEvent = await startLoading(updateUserEvent(currentUser.uid, eventData));
-      console.log('🔍 일정 업데이트 완료:', updatedEvent);
-      setEvents(prev => prev.map(event => 
-        event.id === updatedEvent.id ? updatedEvent : event
-      ));
+      const updatedEvent = await startEventLoading(updateUserEvent(currentUser.uid, eventData));
+      console.log("일정 업데이트 완료:", updatedEvent);
+      
+      // 사용자 일정 다시 로드
+      await refetchUserEvents();
+      
       setSelectedEvent(null);
       setShowEventForm(false);
-      setSuccess('일정이 업데이트되었습니다.');
+      setSuccess("일정이 업데이트되었습니다.");
     } catch (error) {
-      console.error('🔍 일정 업데이트 오류:', error);
-      setError('일정을 업데이트하는 데 실패했습니다.');
+      console.error("일정 업데이트 오류:", error);
+      setError("일정을 업데이트하는 데 실패했습니다.");
     }
-  };
+  }, [currentUser, startEventLoading, refetchUserEvents]);
   
   // 일정 삭제
-  const handleDeleteEvent = async (eventId) => {
-    console.log('🔍 일정 삭제 시작:', eventId);
+  const handleDeleteEvent = useCallback(async (eventId) => {
+    console.log("일정 삭제 시작:", eventId);
     try {
-      setError('');
+      setError("");
       
       // 그룹 일정은 삭제 불가
-      const eventToDelete = events.find(e => e.id === eventId);
+      const eventToDelete = allEvents.find(e => e.id === eventId);
       if (eventToDelete?.isGroupEvent) {
-        setError('그룹 일정은 삭제할 수 없습니다.');
+        setError("그룹 일정은 삭제할 수 없습니다.");
         return;
       }
       
-      await startLoading(deleteUserEvent(currentUser.uid, eventId));
-      console.log('🔍 일정 삭제 완료');
-      setEvents(prev => prev.filter(event => event.id !== eventId));
+      await startEventLoading(deleteUserEvent(currentUser.uid, eventId));
+      console.log("일정 삭제 완료");
+      
+      // 사용자 일정 다시 로드
+      await refetchUserEvents();
+      
       setSelectedEvent(null);
       setShowEventForm(false);
-      setSuccess('일정이 삭제되었습니다.');
+      setSuccess("일정이 삭제되었습니다.");
     } catch (error) {
-      console.error('🔍 일정 삭제 오류:', error);
-      setError('일정을 삭제하는 데 실패했습니다.');
+      console.error("일정 삭제 오류:", error);
+      setError("일정을 삭제하는 데 실패했습니다.");
     }
-  };
+  }, [allEvents, currentUser, startEventLoading, refetchUserEvents]);
   
   // 일정 선택 핸들러
-  const handleSelectEvent = (event) => {
-    console.log('🔍 일정 선택:', event);
+  const handleSelectEvent = useCallback((event) => {
+    console.log("일정 선택:", event);
     setSelectedEvent(event);
     setShowEventForm(true);
-  };
+  }, []);
   
   // 새 일정 폼 열기
-  const handleNewEvent = () => {
-    console.log('🔍 새 일정 폼 열기');
+  const handleNewEvent = useCallback(() => {
+    console.log("새 일정 폼 열기");
     setSelectedEvent(null);
     setShowEventForm(true);
-  };
+  }, []);
   
   // 폼 닫기
-  const handleCloseForm = () => {
-    console.log('🔍 일정 폼 닫기');
+  const handleCloseForm = useCallback(() => {
+    console.log("일정 폼 닫기");
     setShowEventForm(false);
     setSelectedEvent(null);
-  };
-
-  console.log('🔍 현재 로딩 상태:', isLoading, '이벤트 수:', events.length);
+  }, []);
+  
+  // 로딩 상태 통합
+  const isLoading = userEventsLoading || userGroupsLoading;
+  const hasError = userEventsError || userGroupsError;
+  
+  console.log("현재 상태:", {
+    isLoading,
+    hasError,
+    allEventsCount: allEvents.length,
+    userEventsCount: userEvents?.length || 0,
+    groupsCount: userGroups?.length || 0
+  });
   
   if (isLoading) {
-    console.log('🔍 로딩 스피너 표시');
+    console.log("로딩 스피너 표시");
     return <LoadingSpinner />;
   }
 
   return (
-    <div className={`schedule-page ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`schedule-page ${darkMode ? "dark-mode" : ""}`}>
       <Container fluid>
         <Row className="mb-4">
           <Col>
@@ -249,12 +293,14 @@ const SchedulePage = () => {
               </Button>
             </div>
             
-            {error && (
+            {/* 에러 메시지 표시 */}
+            {(error || hasError) && (
               <div className="alert alert-danger mt-3" role="alert">
-                {error}
+                {error || hasError}
               </div>
             )}
             
+            {/* 성공 메시지 표시 */}
             {success && (
               <div className="alert alert-success mt-3" role="alert">
                 {success}
@@ -268,7 +314,7 @@ const SchedulePage = () => {
             <Card className="schedule-card">
               <Card.Body className="p-0">
                 <CalendarView 
-                  events={events} 
+                  events={allEvents}
                   onSelectEvent={handleSelectEvent}
                 />
               </Card.Body>
