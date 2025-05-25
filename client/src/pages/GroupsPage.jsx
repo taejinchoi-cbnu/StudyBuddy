@@ -25,6 +25,16 @@ const GroupsPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, startLoadingMore] = useLoading();
   
+  // fetchFunction들을 useCallback으로 메모이제이션 (무한 루프 방지)
+  const fetchAllGroups = useCallback(() => {
+    return getAllGroups();
+  }, []);
+
+  const fetchUserGroups = useCallback(() => {
+    if (!currentUser) return Promise.resolve([]);
+    return getUserGroups(currentUser.uid);
+  }, [currentUser]);
+  
   // useFirebaseData를 사용하여 모든 그룹 데이터 가져오기
   const {
     data: groups,
@@ -33,8 +43,8 @@ const GroupsPage = () => {
     refetch: refetchGroups,
     isSuccess: isGroupsSuccess
   } = useFirebaseData(
-    // fetchFunction: 항상 실행
-    () => getAllGroups(),
+    // fetchFunction: 메모이제이션된 함수 사용
+    fetchAllGroups,
     // dependencies: 빈 배열 (초기 로드만)
     [],
     {
@@ -105,15 +115,15 @@ const GroupsPage = () => {
     refetch: refetchUserGroups,
     isSuccess: isUserGroupsSuccess
   } = useFirebaseData(
-    // fetchFunction: currentUser가 있고 그룹 로드가 성공했을 때만 실행
-    currentUser && isGroupsSuccess ? () => getUserGroups(currentUser.uid) : null,
-    // dependencies: currentUser와 그룹 성공 상태가 변경되면 다시 실행
-    [currentUser, isGroupsSuccess],
+    // fetchFunction: 메모이제이션된 함수 사용
+    fetchUserGroups,
+    // dependencies: currentUser가 변경되면 다시 실행
+    [currentUser],
     {
       enabled: !!currentUser && isGroupsSuccess, // 사용자가 있고 그룹 로드 성공 후에만 실행
       initialData: [], // 초기값을 빈 배열로 설정
       onSuccess: (userGroupsData) => {
-        console.log("사사용자 그룹 데이터 로드 성공:", userGroupsData?.length || 0, "개 그룹");
+        console.log("사용자 그룹 데이터 로드 성공:", userGroupsData?.length || 0, "개 그룹");
       },
       onError: (error) => {
         console.error("사용자 그룹 데이터 로드 실패:", error);
@@ -131,10 +141,8 @@ const GroupsPage = () => {
       const moreGroups = await startLoadingMore(getAllGroups(lastGroup));
       
       if (moreGroups && moreGroups.length > 0) {
-        // 기존 그룹 데이터에 추가
-        const updatedGroups = [...(groups || []), ...moreGroups];
-        // 여기서는 직접 상태 업데이트가 필요 (useFirebaseData로는 추가 로드 처리가 복잡)
-        // 실제로는 groups 상태를 직접 관리하거나 별도 로직 필요
+        // 기존 그룹 데이터에 추가 (이 부분은 실제로는 더 복잡한 상태 관리가 필요)
+        // 현재는 단순히 페이지네이션 상태만 업데이트
         setLastGroup(moreGroups[moreGroups.length - 1]);
         setHasMore(moreGroups.length >= 10);
       } else {
@@ -144,7 +152,7 @@ const GroupsPage = () => {
       console.error("Error loading more groups:", error);
       setHasMore(false);
     }
-  }, [hasMore, isLoadingMore, lastGroup, groups, startLoadingMore]);
+  }, [hasMore, isLoadingMore, lastGroup, startLoadingMore]);
   
   // 검색어에 따른 필터링 함수
   const filteredGroups = useCallback(() => {

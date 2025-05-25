@@ -22,6 +22,17 @@ const SchedulePage = () => {
   const [success, setSuccess] = useState("");
   const [allEvents, setAllEvents] = useState([]); // 모든 일정을 통합 관리
   
+  // fetchFunction들을 useCallback으로 메모이제이션 (무한 루프 방지)
+  const fetchUserEvents = useCallback(() => {
+    if (!currentUser) return Promise.resolve([]);
+    return getUserEvents(currentUser.uid);
+  }, [currentUser]);
+
+  const fetchUserGroups = useCallback(() => {
+    if (!currentUser) return Promise.resolve([]);
+    return getUserGroups(currentUser.uid);
+  }, [currentUser]);
+  
   // useFirebaseData를 사용하여 사용자 일정 가져오기
   const {
     data: userEvents,
@@ -30,8 +41,8 @@ const SchedulePage = () => {
     refetch: refetchUserEvents,
     isSuccess: isUserEventsSuccess
   } = useFirebaseData(
-    // fetchFunction: currentUser가 있을 때만 실행
-    currentUser ? () => getUserEvents(currentUser.uid) : null,
+    // fetchFunction: 메모이제이션된 함수 사용
+    fetchUserEvents,
     // dependencies: currentUser가 변경되면 다시 실행
     [currentUser],
     {
@@ -57,10 +68,10 @@ const SchedulePage = () => {
     refetch: refetchUserGroups,
     isSuccess: isUserGroupsSuccess
   } = useFirebaseData(
-    // fetchFunction: currentUser가 있고 사용자 일정 로드가 성공했을 때만 실행
-    currentUser && isUserEventsSuccess ? () => getUserGroups(currentUser.uid) : null,
-    // dependencies: currentUser와 사용자 일정 성공 상태가 변경되면 다시 실행
-    [currentUser, isUserEventsSuccess],
+    // fetchFunction: 메모이제이션된 함수 사용
+    fetchUserGroups,
+    // dependencies: currentUser가 변경되면 다시 실행
+    [currentUser],
     {
       enabled: !!currentUser && isUserEventsSuccess, // 사용자 일정 로드 성공 후에만 실행
       initialData: [], // 초기값을 빈 배열로 설정
@@ -118,22 +129,36 @@ const SchedulePage = () => {
         return new Date();
       }
       
+      // 한글 요일명을 영문으로 매핑
+      const dayMapping = {
+        "월요일": "Mon", "화요일": "Tue", "수요일": "Wed", "목요일": "Thu", 
+        "금요일": "Fri", "토요일": "Sat", "일요일": "Sun"
+      };
+      
+      // 한글 요일명이면 영문으로 변환
+      const englishDay = dayMapping[dayString] || dayString;
+      
       const days = { "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6, "Sun": 0 };
-      const dayNum = days[dayString];
+      const dayNum = days[englishDay];
       
       if (dayNum === undefined) {
-        console.log("알 수 없는 요일:", dayString);
+        console.log("알 수 없는 요일:", dayString, "->", englishDay);
         return new Date();
       }
       
       // 현재 날짜 기준으로 요일에 맞는 날짜 계산
       const today = new Date();
       const currentDay = today.getDay(); // 0: 일요일, 1: 월요일, ...
-      const diff = dayNum - currentDay;
+      let diff = dayNum - currentDay;
+      
+      // 같은 요일이거나 이미 지난 요일이면 다음 주로 설정
+      if (diff <= 0) {
+        diff += 7;
+      }
       
       // 날짜 설정
       const targetDate = new Date(today);
-      targetDate.setDate(today.getDate() + diff + (diff < 0 ? 7 : 0)); // 음수면 다음 주로 설정
+      targetDate.setDate(today.getDate() + diff);
       
       // 시간 설정
       const [hours, minutes] = timeString.split(":").map(Number);

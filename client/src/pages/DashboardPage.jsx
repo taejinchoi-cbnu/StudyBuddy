@@ -24,6 +24,12 @@ const DashboardPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [activeComponent, setActiveComponent] = useState(""); // 현재 활성화된 컴포넌트
   
+  // fetchFunction을 useCallback으로 메모이제이션 (무한 루프 방지)
+  const fetchUserGroups = useCallback(() => {
+    if (!currentUser) return Promise.resolve([]);
+    return getUserGroups(currentUser.uid);
+  }, [currentUser]);
+  
   // useFirebaseData를 사용하여 사용자 그룹 데이터 가져오기
   const {
     data: userGroups,
@@ -32,8 +38,8 @@ const DashboardPage = () => {
     refetch: refetchUserGroups,
     isSuccess: isGroupsSuccess
   } = useFirebaseData(
-    // fetchFunction: currentUser가 있을 때만 실행
-    currentUser ? () => getUserGroups(currentUser.uid) : null,
+    // fetchFunction: 메모이제이션된 함수 사용
+    fetchUserGroups,
     // dependencies: currentUser와 userProfile이 변경되면 다시 실행
     [currentUser, userProfile],
     {

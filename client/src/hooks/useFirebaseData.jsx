@@ -32,7 +32,7 @@ const useFirebaseData = (fetchFunction, dependencies = [], options = {}) => {
     initialData = null       // 처음 데이터 상태값
   } = options;
 
-  // 3단계: 실제 데이터를 가져오는 함수 정의
+  // 3단계: 실제 데이터를 가져오는 함수 정의 (무한 루프 방지를 위해 의존성 최적화)
   const fetchData = useCallback(async () => {
     // fetchFunction이 없으면 실행하지 않음
     if (!fetchFunction) {
@@ -84,14 +84,9 @@ const useFirebaseData = (fetchFunction, dependencies = [], options = {}) => {
       setLoading(false);
       console.log("Firebase 데이터 가져오기 완료");
     }
-  }, [
-    fetchFunction,    // fetchFunction이 바뀌면 다시 만들어짐
-    transform,        // transform 함수가 바뀌면 다시 만들어짐
-    onSuccess,        // onSuccess 함수가 바뀌면 다시 만들어짐
-    onError          // onError 함수가 바뀌면 다시 만들어짐
-  ]);
+  }, [fetchFunction, transform]); // onSuccess, onError는 의존성에서 제거하여 무한 루프 방지
 
-  // 4단계: 자동으로 데이터 가져오기 (useEffect 사용)
+  // 4단계: 자동으로 데이터 가져오기 (useEffect 최적화)
   useEffect(() => {
     // enabled가 true이고 fetchFunction이 있을 때만 자동 실행
     if (enabled && fetchFunction) {
@@ -100,11 +95,7 @@ const useFirebaseData = (fetchFunction, dependencies = [], options = {}) => {
     } else {
       console.log("useEffect: 조건이 맞지 않아 실행하지 않음", { enabled, fetchFunction: !!fetchFunction });
     }
-  }, [
-    fetchData,        // fetchData 함수가 바뀌면 다시 실행
-    enabled,          // enabled 옵션이 바뀌면 다시 실행
-    ...dependencies   // 전달받은 의존성 배열의 값들이 바뀌면 다시 실행
-  ]);
+  }, [enabled, ...dependencies]); // fetchData는 의존성에서 제거하여 무한 루프 방지
 
   // 5단계: 컴포넌트에서 사용할 수 있는 값들과 함수들 반환
   return {
