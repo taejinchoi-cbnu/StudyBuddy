@@ -26,7 +26,7 @@ const GroupDetailPage = () => {
   const { darkMode } = useDarkMode();
   const navigate = useNavigate();
   
-  // 🔥 NEW: useNotification 훅 사용 (기존 error, success 상태들을 통합)
+  // NEW: useNotification 훅 사용 (기존 error, success 상태들을 통합)
   const { 
     error, 
     success, 
@@ -141,7 +141,7 @@ const GroupDetailPage = () => {
     };
   }, [groupId, currentUser, showError]);
   
-  // 🔥 UPDATED: 가입 요청 처리 후 그룹 데이터 새로고침 함수 - useNotification 훅 사용
+  // UPDATED: 가입 요청 처리 후 그룹 데이터 새로고침 함수 - useNotification 훅 사용
   const reloadGroupData = async () => {
     setIsLoading(true);
     try {
@@ -174,7 +174,7 @@ const GroupDetailPage = () => {
     }
   };
   
-  // 🔥 UPDATED: 모달 토글 함수들 - useModal 훅 사용
+  // UPDATED: 모달 토글 함수들 - useModal 훅 사용
   const toggleJoinModal = () => {
     if (isOpen('join')) {
       closeModal('join');
@@ -191,20 +191,20 @@ const GroupDetailPage = () => {
     }
   };
   
-  // 🔥 UPDATED: 그룹 탈퇴 성공 처리 - useModal 훅 사용
+  // UPDATED: 그룹 탈퇴 성공 처리 - useModal 훅 사용
   const handleLeaveSuccess = () => {
     closeModal('leave');
     showSuccess('그룹에서 성공적으로 탈퇴했습니다.');
     navigate('/groups'); // 그룹 목록 페이지로 이동
   };
   
-  // 🔥 UPDATED: 그룹 삭제 성공 처리 - useNotification 훅 사용
+  // UPDATED: 그룹 삭제 성공 처리 - useNotification 훅 사용
   const handleDeleteSuccess = () => {
     showSuccess('그룹이 성공적으로 삭제되었습니다.');
     navigate('/groups'); // 그룹 목록 페이지로 이동
   };
   
-  // 🔥 UPDATED: 가입 요청 제출 - useModal 훅 사용
+  // UPDATED: 가입 요청 제출 - useModal 훅 사용
   const handleJoinRequest = async (message) => {
     try {
       await startJoiningLoading(sendJoinRequest(groupId, currentUser.uid, message));
@@ -217,7 +217,7 @@ const GroupDetailPage = () => {
     }
   };
   
-  // 🔥 NEW: 모달 닫기 핸들러 추가
+  // NEW: 모달 닫기 핸들러 추가
   const handleJoinModalClose = () => {
     closeModal('join');
   };
@@ -273,7 +273,7 @@ const GroupDetailPage = () => {
   
   return (
     <Container className={`mt-4 ${darkMode ? 'dark-mode' : ''}`}>
-      {/* 🔥 UPDATED: 통합된 알림 메시지 표시 */}
+      {/* UPDATED: 통합된 알림 메시지 표시 */}
       {error && <Alert variant="danger" onClose={() => clearAll()} dismissible>{error}</Alert>}
       {success && <Alert variant="success" onClose={() => clearAll()} dismissible>{success}</Alert>}
       
@@ -422,7 +422,7 @@ const GroupDetailPage = () => {
         )}
       </Tabs>
       
-      {/* 🔥 UPDATED: 가입 요청 모달 - useModal 훅 사용 */}
+      {/* UPDATED: 가입 요청 모달 - useModal 훅 사용 */}
       <JoinRequestModal 
         show={isOpen('join')} 
         onHide={handleJoinModalClose} 
@@ -430,7 +430,7 @@ const GroupDetailPage = () => {
         group={group}
       />
       
-      {/* 🔥 UPDATED: 그룹 탈퇴 모달 - useModal 훅 사용 */}
+      {/* UPDATED: 그룹 탈퇴 모달 - useModal 훅 사용 */}
       {group && currentUser && (
         <LeaveGroupModal
           show={isOpen('leave')}

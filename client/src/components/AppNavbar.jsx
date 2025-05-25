@@ -7,7 +7,7 @@ import LoadingSpinner from './LoadingSpinner';
 import logoSmall from '../assets/logoSmall.png';
 import EmailVerificationService from '../utils/EmailVerificationService';
 import useNotification from '../hooks/useNotification';
-import usemodal from '../hooks/useModal';
+import useModal from '../hooks/useModal';
 
 const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   // 컨텍스트 훅 사용
@@ -27,8 +27,15 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     clearAll 
   } = useNotification();
   
-  // 모달 상태 관리
-  const {} = usemodal();
+  // NEW: useModal 훅 사용 (기존 모달 상태들을 통합)
+  const {
+    modalStates,
+    openModal,
+    closeModal,
+    switchModal,
+    isOpen,
+    closeAllModals
+  } = useModal(['login', 'signup', 'forgot']);
   
   // 폼 상태 관리
   const [email, setEmail] = useState('');
@@ -46,12 +53,12 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     handleForgotPasswordModalOpen
   }));
   
-  // UPDATED: 모달 핸들러들 - useNotification 훅 사용
+  // UPDATED: 모달 핸들러들 - useModal 훅 사용
   const handleLoginModalOpen = () => {
     clearAll(); // 모든 알림 메시지 지우기
     setEmail('');
     setPassword('');
-    setShowLoginModal(true);
+    openModal('login');
   };
   
   const handleSignupModalOpen = () => {
@@ -60,46 +67,49 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     setPassword('');
     setPasswordConfirm('');
     setDisplayName('');
-    setShowSignupModal(true);
+    openModal('signup');
   };
   
   const handleForgotPasswordModalOpen = () => {
     clearAll(); // 모든 알림 메시지 지우기
     setEmail('');
-    setShowForgotPasswordModal(true);
+    openModal('forgot');
   };
   
   const handleLoginModalClose = () => {
     clearAll(); // 모든 알림 메시지 지우기
-    setShowLoginModal(false);
+    closeModal('login');
   };
   
   const handleSignupModalClose = () => {
     clearAll(); // 모든 알림 메시지 지우기
-    setShowSignupModal(false);
+    closeModal('signup');
   };
   
   const handleForgotPasswordModalClose = () => {
     clearAll(); // 모든 알림 메시지 지우기
-    setShowForgotPasswordModal(false);
+    closeModal('forgot');
   };
   
+  // UPDATED: 모달 전환 함수들 - useModal의 switchModal 사용
   const handleSwitchToSignup = () => {
-    handleLoginModalClose();
     clearAll(); // 알림 메시지 지우기
-    handleSignupModalOpen();
+    switchModal('login', 'signup');
   };
   
   const handleSwitchToLogin = () => {
-    handleSignupModalClose();
     clearAll(); // 알림 메시지 지우기
-    handleLoginModalOpen();
+    switchModal('signup', 'login');
   };
   
   const handleSwitchToForgotPassword = () => {
-    handleLoginModalClose();
     clearAll(); // 알림 메시지 지우기
-    handleForgotPasswordModalOpen();
+    switchModal('login', 'forgot');
+  };
+  
+  const handleSwitchToLoginFromForgot = () => {
+    clearAll(); // 알림 메시지 지우기
+    switchModal('forgot', 'login');
   };
   
   // UPDATED: 로그인 핸들러 - showError 사용
@@ -109,7 +119,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     try {
       clearAll(); // 기존 메시지 지우기
       await login(email, password);
-      handleLoginModalClose();
+      closeModal('login');
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
@@ -175,7 +185,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         
         // 잠시 후 리디렉션
         setTimeout(() => {
-          setShowSignupModal(false);
+          closeModal('signup');
           navigate('/dashboard');
         }, 1500);
       } catch (signupError) {
@@ -188,7 +198,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
           showSuccess('회원가입이 완료되었습니다.');
           
           setTimeout(() => {
-            setShowSignupModal(false);
+            closeModal('signup');
             navigate('/dashboard');
           }, 1500);
         } else {
@@ -212,8 +222,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
       await resetPassword(email);
       showInfo('이메일로 비밀번호 재설정 안내가 발송되었습니다.');
       setTimeout(() => {
-        handleForgotPasswordModalClose();
-        handleLoginModalOpen();
+        switchModal('forgot', 'login');
       }, 3000);
     } catch (error) {
       console.error('Password reset error:', error);
@@ -322,9 +331,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Container>
       </Navbar>
 
-      {/* UPDATED: 로그인 모달 - useNotification 훅 사용 */}
+      {/* UPDATED: 로그인 모달 - useModal 훅 사용 */}
       <Modal 
-        show={showLoginModal} 
+        show={isOpen('login')} 
         onHide={handleLoginModalClose}
         centered
         className={`auth-modal ${darkMode ? 'dark-mode' : ''}`}
@@ -390,9 +399,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Modal.Footer>
       </Modal>
       
-      {/* UPDATED: 회원가입 모달 - useNotification 훅 사용 */}
+      {/* UPDATED: 회원가입 모달 - useModal 훅 사용 */}
       <Modal 
-        show={showSignupModal} 
+        show={isOpen('signup')} 
         onHide={handleSignupModalClose}
         centered
         className={`auth-modal ${darkMode ? 'dark-mode' : ''}`}
@@ -491,9 +500,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Modal.Footer>
       </Modal>
       
-      {/* UPDATED: 비밀번호 재설정 모달 - useNotification 훅 사용 */}
+      {/* UPDATED: 비밀번호 재설정 모달 - useModal 훅 사용 */}
       <Modal 
-        show={showForgotPasswordModal} 
+        show={isOpen('forgot')} 
         onHide={handleForgotPasswordModalClose}
         centered
         className={`auth-modal ${darkMode ? 'dark-mode' : ''}`}
@@ -533,7 +542,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
           <p className="mb-0">
             <Button 
               variant="link" 
-              onClick={handleSwitchToLogin} 
+              onClick={handleSwitchToLoginFromForgot} 
               className="p-0 text-decoration-none"
             >
               로그인으로 돌아가기
