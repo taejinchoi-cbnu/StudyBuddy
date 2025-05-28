@@ -1,287 +1,548 @@
-/* 홈페이지 디자인 */
+/* ======================================================
+   홈페이지 디자인 - CSS Grid 방식 (정리된 버전)
+   ====================================================== */
 
-@import './Variables.css';
+   @import './Variables.css';
 
-/* 전체 배경 스타일 */
-.main-layout.home-page {
-  background-color: var(--light-bg);
-  color: var(--text-color); 
-  transition: background-color var(--transition-normal), color var(--transition-normal);
-}
-
-/* 히어로 섹션 */
-.hero-section {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;  
-  padding: 4rem 2rem;
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-}
+   /* ======================================================
+      전체 페이지 Grid 레이아웃
+      ====================================================== */
    
-.hero-content {
-  flex: 1;
-  max-width: 600px;
-}
+   .main-layout.home-page {
+     display: grid;
+     grid-template-rows: var(--navbar-height) 1fr; /* 네비게이션 높이 + 나머지 영역 */
+     min-height: 100vh;
+     background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%); /* 전체 배경 그라디언트 */
+     color: var(--text-color);
+     transition: background-color var(--transition-normal), color var(--transition-normal);
+   }
    
-.hero-title {
-  font-size: 4.4rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: var(--text-color);
-}
+   /* 네비게이션 바 그리드 영역 */
+   .transparent-navbar-wrapper {
+     grid-row: 1; /* 첫 번째 그리드 행 */
+     position: relative;
+     z-index: 10;
+   }
    
-.hero-text {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-  line-height: 1.6;
-  color: var(--text-color); 
-}
+   /* 메인 컨텐츠 그리드 영역 */
+   .main-content {
+     grid-row: 1 / -1; /* 전체 그리드 영역 차지 (네비게이션과 겹침) */
+     z-index: 1;
+     display: flex;
+     flex-direction: column;
+   }
    
-.hero-buttons {
-  display: flex;
-  gap: 1rem;
-}
+   /* ======================================================
+      히어로 섹션 - Grid 내에서 전체 화면 차지
+      ====================================================== */
    
-.hero-image-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+   .hero-section {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     margin-top: -4rem;
+     padding: 4rem;
+     min-height: 100vh; /* 전체 화면 높이 */
+     background: transparent; /* 부모에서 배경 처리하므로 투명 */
+     position: relative;
+     overflow: hidden;
+   }
    
-.hero-image {
-  max-width: 100%;
-  height: auto;
-  max-height: 400px;
-}
+   .hero-content {
+     flex: 1;
+     max-width: 600px;
+     z-index: 2;
+   }
    
-/* 홈페이지 버튼 스타일 */
-.hero-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.8rem 1.8rem;
-  background-color: var(--white);
-  color: var(--text-color);
-  border: 2px solid var(--primary-dark);
-  border-radius: 25px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 1.1rem;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  box-shadow: 0 4px 8px rgba(18, 18, 18, 0.3);
-}
+   .hero-text-section {
+     max-width: 500px;
+   }
    
-.hero-button:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--hover-shadow);
-}
+   .hero-title {
+     font-size: 4.5rem;
+     font-weight: 700;
+     line-height: 1.1;
+     margin-bottom: 1.5rem;
+     color: #2c3e50;
+   }
    
-.hero-button.accent {
-  background-color: var(--accent-color);
-  color: #ffffff; /* 강조 버튼은 항상 흰색 텍스트 (다크모드에서도) */
-  border: none;
-  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
-}
+   .hero-title-highlight {
+     color: var(--accent-color);
+     position: relative;
+     display: inline-block;
+   }
    
-.hero-button.accent:hover {
-  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
-}
+   .hero-description {
+     font-size: 1.1rem;
+     line-height: 1.6;
+     color: #666;
+     margin-bottom: 2rem;
+   }
    
-/* 특징 섹션 */
-.features-section {
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
-  padding: 4rem 2rem;
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-}
+   .hero-buttons {
+     display: flex;
+     gap: 1.5rem;
+     align-items: center;
+   }
    
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 3rem;
-  background-color: var(--white);
-  border: 0.2rem solid var(--border-color);
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: var(--shadow);
-  transition: transform var(--transition-normal), 
-              box-shadow var(--transition-normal),
-              background-color var(--transition-normal),
-              border-color var(--transition-normal);
-}
+   /* ======================================================
+      히어로 섹션 버튼 스타일
+      ====================================================== */
    
-.feature-item:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--hover-shadow);
-}
+   .hero-button-primary {
+     background-color: #2c3e50;
+     color: white;
+     border: none;
+     padding: 0.9rem 2.2rem;
+     border-radius: 25px;
+     font-weight: 500;
+     font-size: 1rem;
+     cursor: pointer;
+     transition: all var(--transition-normal);
+     box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+   }
    
-.feature-image-container {
-  flex: 1;
-  max-width: 40%;
-}
+   .hero-button-primary:hover {
+     background-color: #34495e;
+     transform: translateY(-2px);
+     box-shadow: 0 6px 20px rgba(44, 62, 80, 0.4);
+   }
    
-.feature-image {
-  width: 80%;
-  height: auto;
-  border-radius: 12px;
-  object-fit: cover;
-}
+   .hero-button-secondary {
+     background: transparent;
+     color: #2c3e50;
+     border: none;
+     padding: 0.9rem 1rem;
+     font-weight: 500;
+     font-size: 1rem;
+     cursor: pointer;
+     text-decoration: none;
+     position: relative;
+     transition: all var(--transition-normal);
+   }
    
-.feature-text-container {
-  flex: 1;
-  max-width: 60%;
-}
+   .hero-button-secondary:hover {
+     color: var(--accent-color);
+     transform: translateX(5px);
+   }
    
-.feature-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: var(--text-color);
-}
+   .hero-button-secondary::after {
+     content: "";
+     position: absolute;
+     bottom: 0;
+     left: 0;
+     width: 100%;
+     height: 2px;
+     background-color: currentColor;
+     transform: scaleX(0);
+     transition: transform var(--transition-normal);
+   }
    
-.feature-description {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: var(--text-color);
-}
+   .hero-button-secondary:hover::after {
+     transform: scaleX(1);
+   }
    
-/* CTA(Call To Action) 섹션 */
-.cta-section {
-  text-align: center;
-  padding: 6rem 2rem;
-  max-width: 1140px;
-  margin: 4rem auto;
-}
+   /* ======================================================
+      히어로 이미지 영역
+      ====================================================== */
    
-.cta-title {
-  font-size: 2.2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: var(--text-color);
-}
+   .hero-image-container {
+     flex: 1;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     position: relative;
+     padding-top: var(--navbar-height); /* 네비게이션 높이만큼 상단 여백 */
+   }
    
-.cta-text {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-  color: var(--text-color);
-}
+   .hero-main-image {
+     max-width: 100%;
+     height: auto;
+     max-height: 450px;
+     z-index: 1;
+     filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
+   }
    
-.cta-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 2rem;
-  background-color: var(--accent-color);
-  color: #ffffff;
-  border: none;
-  border-radius: 25px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
-  font-size: 1.2rem;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
-}
+   /* ======================================================
+      서비스 소개 섹션
+      ====================================================== */
    
-.cta-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
-}
+   .service-intro-section {
+     background-color: white;
+     padding: 4rem 2rem;
+     margin-top: -3rem;
+     position: relative;
+     z-index: 3;
+     border-radius: 30px 30px 0 0;
+     box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
+   }
    
-/* 다크모드 스타일 */
-.dark-mode .hero-button {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-.dark-mode .hero-button:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
-}
-
-.dark-mode .hero-button.accent {
-  box-shadow: 0 4px 8px rgba(153, 77, 66, 0.4);
-}
-
-.dark-mode .hero-button.accent:hover {
-  box-shadow: 0 6px 12px rgba(153, 77, 66, 0.6);
-}
-
-.dark-mode .cta-button {
-  box-shadow: 0 4px 8px rgba(153, 77, 66, 0.4);
-}
-
-.dark-mode .cta-button:hover {
-  box-shadow: 0 6px 12px rgba(153, 77, 66, 0.6);
-}
+   .service-intro-content {
+     max-width: var(--container-max-width);
+     margin: 0 auto;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 3rem;
+   }
    
-/* 반응형 디자인 */
-@media (max-width: 1200px) {
-  .hero-section,
-  .features-section {
-    padding: 3rem 1.5rem;
-  }
-}
+   .service-image-container {
+     flex: 0 0 120px;
+   }
    
-@media (max-width: 992px) {
-  /* 히어로 섹션 */
-  .hero-section {
-    flex-direction: column;
-    text-align: center;
-    gap: 2rem;
-  }
+   .service-intro-image {
+     width: 100%;
+     height: auto;
+     border-radius: 15px;
+     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+   }
+   
+   .service-text-container {
+     flex: 1;
+   }
+   
+   .service-subtitle {
+     color: #999;
+     font-size: 0.9rem;
+     margin-bottom: 0.5rem;
+     text-transform: uppercase;
+     letter-spacing: 1px;
+   }
+   
+   .service-title {
+     font-size: 2rem;
+     font-weight: 600;
+     color: #2c3e50;
+     line-height: 1.3;
+     margin: 0;
+   }
+   
+   /* ======================================================
+      서비스 후기 및 아바타 영역
+      ====================================================== */
+   
+   .service-testimonials {
+     flex: 0 0 auto;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     gap: 1rem;
+   }
+   
+   .testimonial-avatars {
+     display: flex;
+     gap: -10px; /* 아바타 겹치기 효과 */
+   }
+   
+   .testimonial-avatar {
+     width: 50px;
+     height: 50px;
+     border-radius: 50%;
+     overflow: hidden;
+     border: 3px solid white;
+     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+     margin-left: -10px;
+   }
+   
+   .testimonial-avatar:first-child {
+     margin-left: 0;
+   }
+   
+   .avatar-image {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+   }
+   
+   .testimonial-content {
+     text-align: center;
+   }
+   
+   .testimonial-rating {
+     color: #f39c12;
+     font-size: 0.9rem;
+     font-weight: 500;
+   }
+   
+   /* ======================================================
+      주요 특징 섹션
+      ====================================================== */
+   
+   .features-section {
+     display: flex;
+     flex-direction: column;
+     gap: 4rem;
+     padding: 6rem 2rem;
+     max-width: var(--container-max-width);
+     margin: 0 auto;
+     background-color: var(--light-bg);
+   }
+      
+   .feature-item {
+     display: flex;
+     align-items: center;
+     gap: 3rem;
+     background-color: var(--white);
+     border: 0.2rem solid var(--border-color);
+     border-radius: 16px;
+     padding: 2rem;
+     box-shadow: var(--shadow);
+     transition: transform var(--transition-normal), 
+                 box-shadow var(--transition-normal),
+                 background-color var(--transition-normal),
+                 border-color var(--transition-normal);
+   }
+      
+   .feature-item:hover {
+     transform: translateY(-5px);
+     box-shadow: var(--hover-shadow);
+   }
+      
+   .feature-image-container {
+     flex: 1;
+     max-width: 40%;
+   }
+      
+   .feature-image {
+     width: 80%;
+     height: auto;
+     border-radius: 12px;
+     object-fit: cover;
+   }
+      
+   .feature-text-container {
+     flex: 1;
+     max-width: 60%;
+   }
+      
+   .feature-title {
+     font-size: 2rem;
+     font-weight: 700;
+     margin-bottom: 1rem;
+     color: var(--text-color);
+   }
+      
+   .feature-description {
+     font-size: 1.1rem;
+     line-height: 1.6;
+     color: var(--text-color);
+   }
+   
+   /* ======================================================
+      CTA(Call To Action) 섹션
+      ====================================================== */
+   
+   .cta-section {
+     text-align: center;
+     padding: 6rem 2rem;
+     max-width: 1140px;
+     margin: 4rem auto;
+   }
+      
+   .cta-title {
+     font-size: 2.2rem;
+     font-weight: 700;
+     margin-bottom: 1.5rem;
+     color: var(--text-color);
+   }
+      
+   .cta-text {
+     font-size: 1.2rem;
+     margin-bottom: 2rem;
+     color: var(--text-color);
+   }
+      
+   .cta-button {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     padding: 0.75rem 2rem;
+     background-color: var(--accent-color);
+     color: #ffffff;
+     border: none;
+     border-radius: 25px;
+     font-family: 'Poor Story', 'Noto Sans KR', cursive;
+     font-size: 1.2rem;
+     font-weight: 500;
+     text-decoration: none;
+     cursor: pointer;
+     transition: all var(--transition-normal);
+     box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+   }
+      
+   .cta-button:hover {
+     transform: translateY(-3px);
+     box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+   }
+   
+   /* ======================================================
+      다크모드 Grid 레이아웃
+      ====================================================== */
+   
+   .dark-mode.main-layout.home-page {
+     background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%); /* 다크모드 그라디언트 */
+   }
+   
+   .dark-mode .hero-title {
+     color: var(--text-color);
+   }
+   
+   .dark-mode .hero-description {
+     color: #ccc;
+   }
+   
+   .dark-mode .hero-button-secondary {
+     color: var(--text-color);
+   }
+   
+   .dark-mode .service-intro-section {
+     background-color: var(--white);
+   }
+   
+   .dark-mode .service-title {
+     color: var(--text-color);
+   }
+   
+   .dark-mode .service-subtitle {
+     color: #999;
+   }
+   
+   .dark-mode .hero-button-primary {
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+   }
+   
+   .dark-mode .hero-button-primary:hover {
+     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+   }
+   
+   .dark-mode .cta-button {
+     box-shadow: 0 4px 8px rgba(153, 77, 66, 0.4);
+   }
+   
+   .dark-mode .cta-button:hover {
+     box-shadow: 0 6px 12px rgba(153, 77, 66, 0.6);
+   }
+   
+   /* ======================================================
+      반응형 Grid 레이아웃
+      ====================================================== */
+   
+   @media (max-width: 1200px) {
+     .hero-section,
+     .features-section {
+       padding: 3rem 1.5rem;
+     }
      
-  .hero-content {
-    max-width: 100%;
-  }
+     .service-intro-section {
+       padding: 3rem 1.5rem;
+     }
+   }
+      
+   @media (max-width: 992px) {
+     /* Grid 레이아웃 모바일 조정 */
+     .main-layout.home-page {
+       grid-template-rows: var(--navbar-height) 1fr; /* 동일하게 유지 */
+     }
      
-  .hero-buttons {
-    justify-content: center;
-  }
+     /* 히어로 섹션 반응형 */
+     .hero-section {
+       flex-direction: column;
+       text-align: center;
+       gap: 2rem;
+       min-height: 70vh;
+       padding: 2rem;
+     }
      
-  /* 특징 아이템 - 반응형 수정 */
-  .feature-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 1.5rem;
-  }
+     .hero-content,
+     .hero-image-container {
+       padding-top: calc(var(--navbar-height) + 1rem); /* 모바일에서 여백 증가 */
+     }
      
-  .feature-image-container,
-  .feature-text-container {
-    max-width: 100%;
-  }
-}
-   
-@media (max-width: 768px) {
-  /* 히어로 섹션 */
-  .hero-title {
-    font-size: 2rem;
-  }
+     .hero-title {
+       font-size: 3.5rem;
+     }
+        
+     .hero-content {
+       max-width: 100%;
+     }
+        
+     .hero-buttons {
+       justify-content: center;
+       flex-wrap: wrap;
+     }
      
-  .hero-text {
-    font-size: 1.1rem;
-  }
+     /* 서비스 소개 섹션 반응형 */
+     .service-intro-content {
+       flex-direction: column;
+       text-align: center;
+       gap: 2rem;
+     }
+        
+     /* 특징 아이템 반응형 */
+     .feature-item {
+       flex-direction: column;
+       text-align: center;
+       gap: 1.5rem;
+     }
+        
+     .feature-image-container,
+     .feature-text-container {
+       max-width: 100%;
+     }
+   }
+      
+   @media (max-width: 768px) {
+     /* 모바일 Grid 조정 */
+     .main-layout.home-page {
+       grid-template-rows: 60px 1fr; /* 모바일에서 네비게이션 높이 축소 */
+     }
      
-  /* 특징 섹션 */
-  .feature-title {
-    font-size: 1.6rem;
-  }
+     /* 모바일 히어로 섹션 */
+     .hero-title {
+       font-size: 2.5rem;
+     }
      
-  .feature-description {
-    font-size: 1rem;
-  }
+     .hero-buttons {
+       flex-direction: column;
+       gap: 1rem;
+     }
      
-  /* CTA 섹션 */
-  .cta-title {
-    font-size: 1.8rem;
-  }
+     .hero-button-primary,
+     .hero-button-secondary {
+       width: 100%;
+       text-align: center;
+     }
+        
+     .hero-description {
+       font-size: 1rem;
+     }
      
-  .cta-text {
-    font-size: 1.1rem;
-  }
-}
+     /* 모바일에서 패딩 조정 */
+     .hero-content,
+     .hero-image-container {
+       padding-top: calc(60px + 1rem); /* 축소된 네비게이션 높이 반영 */
+     }
+     
+     /* 모바일 서비스 소개 */
+     .service-title {
+       font-size: 1.5rem;
+     }
+        
+     /* 모바일 특징 섹션 */
+     .feature-title {
+       font-size: 1.6rem;
+     }
+        
+     .feature-description {
+       font-size: 1rem;
+     }
+        
+     /* 모바일 CTA 섹션 */
+     .cta-title {
+       font-size: 1.8rem;
+     }
+        
+     .cta-text {
+       font-size: 1.1rem;
+     }
+   }

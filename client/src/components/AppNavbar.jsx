@@ -1,22 +1,31 @@
-import { useState, forwardRef, useImperativeHandle } from 'react';
-import { Navbar, Nav, Container, Button, Form, Modal, Alert, Spinner } from 'react-bootstrap';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { useDarkMode } from '../contexts/DarkModeContext';
-import LoadingSpinner from './LoadingSpinner'; 
-import logoSmall from '../assets/logoSmall.png';
-import EmailVerificationService from '../utils/EmailVerificationService';
-import useNotification from '../hooks/useNotification';
-import useModal from '../hooks/useModal';
+import { useState, forwardRef, useImperativeHandle } from "react";
+import { Navbar, Nav, Container, Button, Form, Modal, Alert, Spinner } from "react-bootstrap";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useDarkMode } from "../contexts/DarkModeContext";
+import LoadingSpinner from "./LoadingSpinner"; 
+import logoSmall from "../assets/logoSmall.png";
+import EmailVerificationService from "../utils/EmailVerificationService";
+import useNotification from "../hooks/useNotification";
+import useModal from "../hooks/useModal";
 
 const AppNavbar = forwardRef(({ transparent = false }, ref) => {
-  // 컨텍스트 훅 사용
-  const { currentUser, logout, login, signup, resetPassword, updateUserProfile, authLoading, clearTempUserData } = useAuth();
+  // ======================================================
+  // 컨텍스트 및 훅 사용
+  // ======================================================
+  const { 
+    currentUser, 
+    logout, 
+    login, 
+    signup, 
+    resetPassword, 
+    authLoading 
+  } = useAuth();
   const { darkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const location = useLocation();
   
-  // UPDATED: useNotification 훅 사용 (기존 error, success, message 상태들을 통합)
+  // 통합 알림 관리 (error, success, info)
   const { 
     error, 
     success, 
@@ -27,229 +36,230 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     clearAll 
   } = useNotification();
   
-  // NEW: useModal 훅 사용 (기존 모달 상태들을 통합)
+  // 통합 모달 관리 (login, signup, forgot)
   const {
-    modalStates,
     openModal,
     closeModal,
     switchModal,
-    isOpen,
-    closeAllModals
-  } = useModal(['login', 'signup', 'forgot']);
+    isOpen
+  } = useModal(["login", "signup", "forgot"]);
   
+  // ======================================================
   // 폼 상태 관리
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  
-  // 로딩 상태 추가
+  // ======================================================
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   
+  // ======================================================
   // ref를 통해 외부에서 접근 가능한 메서드 노출
+  // ======================================================
   useImperativeHandle(ref, () => ({
     handleLoginModalOpen,
     handleSignupModalOpen,
     handleForgotPasswordModalOpen
   }));
   
-  // UPDATED: 모달 핸들러들 - useModal 훅 사용
+  // ======================================================
+  // 모달 핸들러 함수들
+  // ======================================================
   const handleLoginModalOpen = () => {
-    clearAll(); // 모든 알림 메시지 지우기
-    setEmail('');
-    setPassword('');
-    openModal('login');
+    clearAll();
+    setEmail("");
+    setPassword("");
+    openModal("login");
   };
   
   const handleSignupModalOpen = () => {
-    clearAll(); // 모든 알림 메시지 지우기
-    setEmail('');
-    setPassword('');
-    setPasswordConfirm('');
-    setDisplayName('');
-    openModal('signup');
+    clearAll();
+    setEmail("");
+    setPassword("");
+    setPasswordConfirm("");
+    setDisplayName("");
+    openModal("signup");
   };
   
   const handleForgotPasswordModalOpen = () => {
-    clearAll(); // 모든 알림 메시지 지우기
-    setEmail('');
-    openModal('forgot');
+    clearAll();
+    setEmail("");
+    openModal("forgot");
   };
   
   const handleLoginModalClose = () => {
-    clearAll(); // 모든 알림 메시지 지우기
-    closeModal('login');
+    clearAll();
+    closeModal("login");
   };
   
   const handleSignupModalClose = () => {
-    clearAll(); // 모든 알림 메시지 지우기
-    closeModal('signup');
+    clearAll();
+    closeModal("signup");
   };
   
   const handleForgotPasswordModalClose = () => {
-    clearAll(); // 모든 알림 메시지 지우기
-    closeModal('forgot');
+    clearAll();
+    closeModal("forgot");
   };
   
-  // UPDATED: 모달 전환 함수들 - useModal의 switchModal 사용
+  // ======================================================
+  // 모달 전환 함수들
+  // ======================================================
   const handleSwitchToSignup = () => {
-    clearAll(); // 알림 메시지 지우기
-    switchModal('login', 'signup');
+    clearAll();
+    switchModal("login", "signup");
   };
   
   const handleSwitchToLogin = () => {
-    clearAll(); // 알림 메시지 지우기
-    switchModal('signup', 'login');
+    clearAll();
+    switchModal("signup", "login");
   };
   
   const handleSwitchToForgotPassword = () => {
-    clearAll(); // 알림 메시지 지우기
-    switchModal('login', 'forgot');
+    clearAll();
+    switchModal("login", "forgot");
   };
   
   const handleSwitchToLoginFromForgot = () => {
-    clearAll(); // 알림 메시지 지우기
-    switchModal('forgot', 'login');
+    clearAll();
+    switchModal("forgot", "login");
   };
   
-  // UPDATED: 로그인 핸들러 - showError 사용
+  // ======================================================
+  // 인증 관련 핸들러 함수들
+  // ======================================================
+  
+  // 로그인 처리
   const handleLogin = async (e) => {
     e.preventDefault();
     
     try {
-      clearAll(); // 기존 메시지 지우기
+      clearAll();
       await login(email, password);
-      closeModal('login');
-      navigate('/dashboard');
+      closeModal("login");
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Login error:', error);
-      showError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+      console.error("Login error:", error);
+      showError("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
     }
   };
   
-  // UPDATED: 회원가입 핸들러 - showError, showSuccess 사용
+  // 회원가입 처리
   const handleSignup = async (e) => {
     e.preventDefault();
     
-    console.log("회원가입 시도:", { email, password, displayName });
-    
-    // 잘못된 입력 검증
+    // 입력 유효성 검증
     if (password !== passwordConfirm) {
-      return showError('비밀번호가 일치하지 않습니다.');
+      return showError("비밀번호가 일치하지 않습니다.");
     }
     
     if (password.length < 6) {
-      return showError('비밀번호는 최소 6자 이상이어야 합니다.');
+      return showError("비밀번호는 최소 6자 이상이어야 합니다.");
     }
     
-    // 이메일 도메인 체크 (chungbuk.ac.kr)
-    if (!email.endsWith('@chungbuk.ac.kr')) {
-      return showError('충북대학교 이메일(@chungbuk.ac.kr)만 가입할 수 있습니다.');
+    if (!email.endsWith("@chungbuk.ac.kr")) {
+      return showError("충북대학교 이메일(@chungbuk.ac.kr)만 가입할 수 있습니다.");
     }
     
     try {
-      clearAll(); // 기존 메시지 지우기
-      setIsProcessing(true); // 로딩 상태 시작
+      clearAll();
+      setIsProcessing(true);
       
-      console.log("이메일 유효성 확인 요청 준비");
-      
-      // 1. 이메일 유효성 확인 요청
+      // 1. 이메일 유효성 확인
       let verificationResponse;
       try {
         verificationResponse = await EmailVerificationService.verifyEmail(email);
         
         if (!verificationResponse.success) {
-          throw new Error(verificationResponse.message || '유효하지 않은 이메일입니다.');
+          throw new Error(verificationResponse.message || "유효하지 않은 이메일입니다.");
         }
-        
-        console.log("이메일 유효성 확인 성공:", email);
       } catch (verificationError) {
-        console.error('이메일 확인 요청 오류:', verificationError);
-        showError('이메일 확인 요청에 실패했습니다: ' + verificationError.message);
-        setIsProcessing(false); // 로딩 상태 종료
+        console.error("이메일 확인 요청 오류:", verificationError);
+        showError("이메일 확인 요청에 실패했습니다: " + verificationError.message);
         return;
       }
       
-      // 2. 계정 생성 시도
+      // 2. 계정 생성
       try {
         await signup(
           email,
           password,
           displayName,
-          true, // 이메일 인증 완료로 처리
+          true,
           verificationResponse.certified_date || new Date().toISOString()
         );
         
-        // 여기까지 오면 성공
-        showSuccess('회원가입이 완료되었습니다.');
+        showSuccess("회원가입이 완료되었습니다.");
         
-        // 잠시 후 리디렉션
         setTimeout(() => {
-          closeModal('signup');
-          navigate('/dashboard');
+          closeModal("signup");
+          navigate("/dashboard");
         }, 1500);
       } catch (signupError) {
-        console.error('계정 생성 중 오류:', signupError);
+        console.error("계정 생성 중 오류:", signupError);
         
         // currentUser가 이미 설정되어 있으면 성공으로 처리
-        // onAuthStateChanged가 이미 실행되었을 수 있음
         if (currentUser) {
-          console.log("이미 로그인된 상태, 성공으로 처리");
-          showSuccess('회원가입이 완료되었습니다.');
-          
+          showSuccess("회원가입이 완료되었습니다.");
           setTimeout(() => {
-            closeModal('signup');
-            navigate('/dashboard');
+            closeModal("signup");
+            navigate("/dashboard");
           }, 1500);
         } else {
-          showError('계정 생성 중 오류가 발생했습니다: ' + (signupError.message || '알 수 없는 오류'));
+          showError("계정 생성 중 오류가 발생했습니다: " + (signupError.message || "알 수 없는 오류"));
         }
       }
     } catch (error) {
-      console.error('회원가입 프로세스 오류:', error);
-      showError('회원가입 중 오류가 발생했습니다: ' + error.message);
+      console.error("회원가입 프로세스 오류:", error);
+      showError("회원가입 중 오류가 발생했습니다: " + error.message);
     } finally {
-      setIsProcessing(false); // 로딩 상태 종료
+      setIsProcessing(false);
     }
   };
   
-  // UPDATED: 비밀번호 재설정 핸들러 - showInfo, showError 사용
+  // 비밀번호 재설정 처리
   const handleResetPassword = async (e) => {
     e.preventDefault();
     
     try {
-      clearAll(); // 기존 메시지 지우기
+      clearAll();
       await resetPassword(email);
-      showInfo('이메일로 비밀번호 재설정 안내가 발송되었습니다.');
+      showInfo("이메일로 비밀번호 재설정 안내가 발송되었습니다.");
       setTimeout(() => {
-        switchModal('forgot', 'login');
+        switchModal("forgot", "login");
       }, 3000);
     } catch (error) {
-      console.error('Password reset error:', error);
-      showError('비밀번호 재설정에 실패했습니다. 이메일 주소를 확인해주세요.');
+      console.error("Password reset error:", error);
+      showError("비밀번호 재설정에 실패했습니다. 이메일 주소를 확인해주세요.");
     }
   };
 
+  // 로그아웃 처리
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 
-  // isHomePage 확인
-  const isHomePage = location.pathname === '/';
-  const navbarClass = `dashboard-navbar ${darkMode ? 'dark-mode' : ''} transparent-navbar ${
-    isHomePage ? 'home-navbar' : 'page-navbar'
+  // ======================================================
+  // 네비게이션 바 클래스 계산
+  // ======================================================
+  const isHomePage = location.pathname === "/";
+  const navbarClass = `dashboard-navbar ${darkMode ? "dark-mode" : ""} transparent-navbar ${
+    isHomePage ? "home-navbar" : "page-navbar"
   }`;
 
   return (
     <>
-      {/* 로딩 오버레이 추가 */}
+      {/* 로딩 오버레이 */}
       {(authLoading.login || isProcessing || authLoading.resetPassword) && <LoadingSpinner />}
       
+      {/* ======================================================
+          메인 네비게이션 바
+          ====================================================== */}
       <Navbar 
         variant={darkMode ? "dark" : "light"} 
         expand="lg" 
@@ -257,6 +267,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         fixed="top"
       >
         <Container>
+          {/* 브랜드 로고 및 제목 */}
           <Navbar.Brand as={Link} to="/" className="d-flex align-items-center navbar-brand-container">
             <img
               src={logoSmall}
@@ -264,12 +275,16 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
               height="30"
               className="d-inline-block align-top me-2"
             />
-            <span className="fw-bold" style={{ fontFamily: 'Poor Story, Noto Sans KR, cursive', fontSize: '1.25rem' }}>
+            <span className="fw-bold" style={{ fontFamily: "Poor Story, Noto Sans KR, cursive", fontSize: "1.25rem" }}>
               STUDYBUDDY
             </span>
           </Navbar.Brand>
+          
+          {/* 모바일 토글 버튼 */}
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          
           <Navbar.Collapse id="basic-navbar-nav">
+            {/* 왼쪽 네비게이션 링크들 */}
             <Nav className="me-auto nav-links-container">
               {currentUser && (
                 <>
@@ -279,9 +294,12 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                 </>
               )}
             </Nav>
+            
+            {/* 오른쪽 네비게이션 요소들 */}
             <Nav>
               <div className="navbar-right-items">
                 <div className="nav-button-group">
+                  {/* 다크모드 토글 스위치 */}
                   <div className="toggle-switch-wrapper">
                     <Form.Check 
                       type="switch"
@@ -292,6 +310,8 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                       label={darkMode ? "🌙" : "☀️"}
                     />
                   </div>
+                  
+                  {/* 로그인 상태에 따른 버튼 표시 */}
                   {currentUser ? (
                     <>
                       <Nav.Link as={Link} to="/profile" className="profile-link">
@@ -303,7 +323,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                         className="logout-button"
                         disabled={authLoading.logout}
                       >
-                        {authLoading.logout ? '로그아웃 중...' : '로그아웃'}
+                        {authLoading.logout ? "로그아웃 중..." : "로그아웃"}
                       </Button>
                     </>
                   ) : (
@@ -316,8 +336,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                         로그인
                       </Button>
                       <Button 
-                        variant={darkMode ? "light" : "dark"}
-                        className="text-white signup-button"
+                        className="signup-button"
                         onClick={handleSignupModalOpen}
                       >
                         회원가입
@@ -331,20 +350,24 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Container>
       </Navbar>
 
-      {/* UPDATED: 로그인 모달 - useModal 훅 사용 */}
+      {/* ======================================================
+          로그인 모달
+          ====================================================== */}
       <Modal 
-        show={isOpen('login')} 
+        show={isOpen("login")} 
         onHide={handleLoginModalClose}
         centered
-        className={`auth-modal ${darkMode ? 'dark-mode' : ''}`}
+        className={`auth-modal ${darkMode ? "dark-mode" : ""}`}
       >
         <Modal.Header closeButton>
           <Modal.Title>로그인</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {/* 알림 메시지 표시 */}
           {error && <Alert variant="danger">{error}</Alert>}
           {success && <Alert variant="success">{success}</Alert>}
           {info && <Alert variant="info">{info}</Alert>}
+          
           <Form onSubmit={handleLogin}>
             <Form.Group controlId="loginEmail">
               <Form.Label>이메일</Form.Label>
@@ -372,7 +395,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
               className="w-100 mt-4" 
               disabled={authLoading.login}
             >
-              {authLoading.login ? '로그인 중...' : '로그인'}
+              {authLoading.login ? "로그인 중..." : "로그인"}
             </Button>
             <div className="text-center mt-3">
               <Button 
@@ -399,20 +422,24 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Modal.Footer>
       </Modal>
       
-      {/* UPDATED: 회원가입 모달 - useModal 훅 사용 */}
+      {/* ======================================================
+          회원가입 모달
+          ====================================================== */}
       <Modal 
-        show={isOpen('signup')} 
+        show={isOpen("signup")} 
         onHide={handleSignupModalClose}
         centered
-        className={`auth-modal ${darkMode ? 'dark-mode' : ''}`}
+        className={`auth-modal ${darkMode ? "dark-mode" : ""}`}
       >
         <Modal.Header closeButton>
           <Modal.Title>회원가입</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {/* 알림 메시지 표시 */}
           {error && <Alert variant="danger">{error}</Alert>}
           {success && <Alert variant="success">{success}</Alert>}
           {info && <Alert variant="info">{info}</Alert>}
+          
           <Form onSubmit={handleSignup}>
             <Form.Group controlId="signupName">
               <Form.Label>이름</Form.Label>
@@ -480,7 +507,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                   처리 중...
                 </>
               ) : (
-                success ? '회원가입 완료' : '회원가입'
+                success ? "회원가입 완료" : "회원가입"
               )}
             </Button>
           </Form>
@@ -500,20 +527,24 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Modal.Footer>
       </Modal>
       
-      {/* UPDATED: 비밀번호 재설정 모달 - useModal 훅 사용 */}
+      {/* ======================================================
+          비밀번호 재설정 모달
+          ====================================================== */}
       <Modal 
-        show={isOpen('forgot')} 
+        show={isOpen("forgot")} 
         onHide={handleForgotPasswordModalClose}
         centered
-        className={`auth-modal ${darkMode ? 'dark-mode' : ''}`}
+        className={`auth-modal ${darkMode ? "dark-mode" : ""}`}
       >
         <Modal.Header closeButton>
           <Modal.Title>비밀번호 재설정</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {/* 알림 메시지 표시 */}
           {error && <Alert variant="danger">{error}</Alert>}
           {success && <Alert variant="success">{success}</Alert>}
           {info && <Alert variant="info">{info}</Alert>}
+          
           <Form onSubmit={handleResetPassword}>
             <Form.Group controlId="forgotPasswordEmail">
               <Form.Label>이메일</Form.Label>
@@ -534,7 +565,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
               className="w-100 mt-3" 
               disabled={authLoading.resetPassword}
             >
-              {authLoading.resetPassword ? '전송 중...' : '재설정 링크 발송'}
+              {authLoading.resetPassword ? "전송 중..." : "재설정 링크 발송"}
             </Button>
           </Form>
         </Modal.Body>
