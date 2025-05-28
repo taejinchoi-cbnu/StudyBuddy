@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
@@ -19,6 +19,54 @@ const HomePage = () => {
   
   // AppNavbar에 대한 참조 생성 (모달 제어용)
   const navbarRef = useRef();
+  
+  // 스크롤 애니메이션을 위한 ref 추가
+  const featuresRef = useRef();
+  const serviceIntroRef = useRef();
+
+  // ======================================================
+  // 스크롤 애니메이션 효과 처리
+  // ======================================================
+  useEffect(() => {
+    const handleScroll = () => {
+      // Features 섹션 애니메이션 처리
+      if (featuresRef.current) {
+        const featureItems = featuresRef.current.querySelectorAll(".feature-item");
+        
+        featureItems.forEach((item) => {
+          const rect = item.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+          
+          // 요소가 뷰포트의 80% 지점에 도달했을 때 애니메이션 트리거
+          if (rect.top < windowHeight * 0.8) {
+            item.classList.add("animate-in");
+          }
+        });
+      }
+
+      // 서비스 소개 섹션 애니메이션 처리
+      if (serviceIntroRef.current) {
+        const rect = serviceIntroRef.current.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // 요소가 뷰포트의 70% 지점에 도달했을 때 애니메이션 트리거
+        if (rect.top < windowHeight * 0.7) {
+          serviceIntroRef.current.classList.add("animate-in");
+        }
+      }
+    };
+
+    // 스크롤 이벤트 리스너 등록
+    window.addEventListener("scroll", handleScroll);
+    
+    // 초기 로드 시 한 번 실행 (페이지 로드 시 이미 보이는 요소들 처리)
+    handleScroll();
+
+    // 클린업 함수 - 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   
   // ======================================================
   // 이벤트 핸들러 함수들 (성능 최적화를 위해 useCallback 사용)
@@ -46,7 +94,7 @@ const HomePage = () => {
   // ======================================================
   // 특징 아이템 컴포넌트 (재사용 가능한 컴포넌트)
   // ======================================================
-  const FeatureItem = ({ imgSrc, imgAlt, title, description }) => (
+  const FeatureItem = ({ imgSrc, imgAlt, title, description, benefits }) => (
     <div className="feature-item">
       <div className="feature-image-container">
         <img src={imgSrc} alt={imgAlt} className="feature-image" />
@@ -54,19 +102,30 @@ const HomePage = () => {
       <div className="feature-text-container">
         <h3 className="feature-title">{title}</h3>
         <p className="feature-description">{description}</p>
+        
+        {benefits && (
+          <div className="feature-benefits">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="feature-benefit-item">
+                <div className="benefit-icon">✓</div>
+                <span>{benefit}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 
   return (
     <div className={`main-layout home-page ${darkMode ? "dark-mode" : ""}`}>
-    {/* 네비게이션 바 - 절대 위치로 히어로 섹션 위에 오버레이 */}
-    <div className="transparent-navbar-wrapper" style={{ position: 'absolute', zIndex: 1050 }}>
-      <AppNavbar 
-        transparent={true} 
-        ref={navbarRef}
-      />
-    </div>
+      {/* 네비게이션 바 - 절대 위치로 히어로 섹션 위에 오버레이 */}
+      <div className="transparent-navbar-wrapper" style={{ position: 'absolute', zIndex: 1050 }}>
+        <AppNavbar 
+          transparent={true} 
+          ref={navbarRef}
+        />
+      </div>
       
       {/* ======================================================
           메인 콘텐츠 영역
@@ -130,8 +189,8 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* 서비스 소개 섹션 */}
-        <section className="service-intro-section">
+        {/* 서비스 소개 섹션 - ref 추가하여 애니메이션 적용 */}
+        <section className="service-intro-section" ref={serviceIntroRef}>
           <div className="service-intro-content">
             <div className="service-image-container">
               <img 
@@ -160,32 +219,30 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* 주요 특징 섹션 */}
-        <section className="features-section">
+        {/* 주요 특징 섹션 - ref 추가하여 애니메이션 적용 */}
+        <section className="features-section" ref={featuresRef}>
           <FeatureItem 
             imgSrc={peoples}
-            imgAlt="스터디 파트너 찾기" 
-            title="스터디 파트너 찾기" 
-            description={
-              <>
-                같은 목표를 가진 학생들과 팀을 이루고 함께 성장해보세요.<br />
-                관심사와 목표가 맞는 팀원을 쉽게 찾을 수 있도록 돕고<br />
-                꾸준히 함께 공부할 수 있는 환경을 제공합니다.
-              </>
-            }
+            imgAlt="파트너 찾기" 
+            title="파트너 찾기" 
+            description="같은 목표를 가진 학생들과 팀을 이루고 함께 성장해보세요. 관심사와 목표가 맞는 팀원을 쉽게 찾을 수 있습니다."
+            benefits={[
+              "관심사 기반 매칭",
+              "목표 지향적 팀 구성",
+              "지속적인 동기 부여"
+            ]}
           />
           
           <FeatureItem 
             imgSrc={calendar} 
             imgAlt="스마트 일정 조율" 
             title="스마트 일정 조율" 
-            description={
-              <>
-                스케줄 맞추기, 이젠 고민 말고 맡기세요.<br />
-                스케줄 자동 분석으로 모두에게 딱 맞는 미팅 시간을<br />
-                스마트하게 추천해 드려요.
-              </>
-            }
+            description="스케줄 맞추기의 고민을 덜어드립니다. 스케줄 자동 분석으로 모두에게 최적화된 미팅 시간을 제안합니다."
+            benefits={[
+              "자동 시간 분석",
+              "최적 시간 추천",
+              "실시간 스케줄 동기화"
+            ]}
           />
         </section>
 
