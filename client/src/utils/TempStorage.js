@@ -14,7 +14,6 @@
  */
 export const encryptPassword = (password) => {
     // 기본적인 Base64 인코딩 사용 (테스트용)
-    // 실제 보안을 위해서는 더 강력한 암호화 라이브러리를 사용해야 함
     const encoded = window.btoa(
       encodeURIComponent(password).replace(/%([0-9A-F]{2})/g, (_, p1) => {
         return String.fromCharCode('0x' + p1);

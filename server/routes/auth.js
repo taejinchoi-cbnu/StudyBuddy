@@ -8,7 +8,7 @@ const isValidChungbukEmail = (email) => {
   return email.endsWith('@chungbuk.ac.kr');
 };
 
-// 이메일 인증 요청 API - UnivCert API 호출 버전
+// 이메일 인증 요청 API - UnivCert API 호출
 router.post('/verify-email', async (req, res) => {
   try {
     const { email, univName, univ_check } = req.body;
