@@ -5,14 +5,13 @@ import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import LoadingSpinner from "./LoadingSpinner"; 
 import logoSmall from "../assets/logoSmall.png";
+import logoLogin from "../assets/logoLogin.png";
 import EmailVerificationService from "../utils/EmailVerificationService";
 import useNotification from "../hooks/useNotification";
 import useModal from "../hooks/useModal";
 
 const AppNavbar = forwardRef(({ transparent = false }, ref) => {
-  // ======================================================
-  // 컨텍스트 및 훅 사용
-  // ======================================================
+  // 컨텍스트 및 훅
   const { 
     currentUser, 
     logout, 
@@ -44,27 +43,21 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     isOpen
   } = useModal(["login", "signup", "forgot"]);
   
-  // ======================================================
   // 폼 상태 관리
-  // ======================================================
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // ======================================================
   // ref를 통해 외부에서 접근 가능한 메서드 노출
-  // ======================================================
   useImperativeHandle(ref, () => ({
     handleLoginModalOpen,
     handleSignupModalOpen,
     handleForgotPasswordModalOpen
   }));
   
-  // ======================================================
   // 모달 핸들러 함수들
-  // ======================================================
   const handleLoginModalOpen = () => {
     clearAll();
     setEmail("");
@@ -102,9 +95,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     closeModal("forgot");
   };
   
-  // ======================================================
   // 모달 전환 함수들
-  // ======================================================
   const handleSwitchToSignup = () => {
     clearAll();
     switchModal("login", "signup");
@@ -125,9 +116,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     switchModal("forgot", "login");
   };
   
-  // ======================================================
   // 인증 관련 핸들러 함수들
-  // ======================================================
   
   // 로그인 처리
   const handleLogin = async (e) => {
@@ -244,9 +233,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     }
   };
 
-  // ======================================================
   // 네비게이션 바 클래스 계산
-  // ======================================================
   const isHomePage = location.pathname === "/";
   const navbarClass = `dashboard-navbar ${darkMode ? "dark-mode" : ""} transparent-navbar ${
     isHomePage ? "home-navbar" : "page-navbar"
@@ -257,9 +244,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
       {/* 로딩 오버레이 */}
       {(authLoading.login || isProcessing || authLoading.resetPassword) && <LoadingSpinner />}
       
-      {/* ======================================================
-          메인 네비게이션 바
-          ====================================================== */}
+      {/* 메인 네비게이션 바 */}
       <Navbar 
         variant={darkMode ? "dark" : "light"} 
         expand="lg" 
@@ -350,18 +335,25 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Container>
       </Navbar>
 
-      {/* ======================================================
-          로그인 모달
-          ====================================================== */}
+      {/* 로그인 모달 */}
       <Modal 
         show={isOpen("login")} 
         onHide={handleLoginModalClose}
         centered
         className={`auth-modal ${darkMode ? "dark-mode" : ""}`}
       >
-        <Modal.Header closeButton>
-          <Modal.Title>로그인</Modal.Title>
-        </Modal.Header>
+        {/* 로고 섹션 */}
+        <div className="modal-logo-section">
+          <img src={logoLogin} alt="StudyBuddy Login" className="modal-logo" />
+          <Button 
+            type="button"
+            className="btn-close-custom" 
+            aria-label="Close"
+            onClick={handleLoginModalClose}
+          >
+            <i class="bi bi-x-circle"></i></Button>
+        </div>
+        
         <Modal.Body>
           {/* 알림 메시지 표시 */}
           {error && <Alert variant="danger">{error}</Alert>}
@@ -422,18 +414,25 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Modal.Footer>
       </Modal>
       
-      {/* ======================================================
-          회원가입 모달
-          ====================================================== */}
+      {/* 회원가입 모달 */}
       <Modal 
         show={isOpen("signup")} 
         onHide={handleSignupModalClose}
         centered
         className={`auth-modal ${darkMode ? "dark-mode" : ""}`}
       >
-        <Modal.Header closeButton>
-          <Modal.Title>회원가입</Modal.Title>
-        </Modal.Header>
+        {/* 로고 섹션 */}
+        <div className="modal-logo-section">
+          <img src={logoLogin} alt="StudyBuddy Signup" className="modal-logo" />
+          <Button 
+            type="button"
+            className="btn-close-custom" 
+            aria-label="Close"
+            onClick={handleLoginModalClose}
+          >
+            <i class="bi bi-x-circle"></i></Button>
+        </div>
+        
         <Modal.Body>
           {/* 알림 메시지 표시 */}
           {error && <Alert variant="danger">{error}</Alert>}
@@ -527,18 +526,25 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
         </Modal.Footer>
       </Modal>
       
-      {/* ======================================================
-          비밀번호 재설정 모달
-          ====================================================== */}
+      {/* 비밀번호 재설정 모달 */}
       <Modal 
         show={isOpen("forgot")} 
         onHide={handleForgotPasswordModalClose}
         centered
         className={`auth-modal ${darkMode ? "dark-mode" : ""}`}
       >
-        <Modal.Header closeButton>
-          <Modal.Title>비밀번호 재설정</Modal.Title>
-        </Modal.Header>
+        {/* 로고 섹션 */}
+        <div className="modal-logo-section">
+          <img src={logoLogin} alt="StudyBuddy Password Reset" className="modal-logo" />
+          <Button 
+            type="button"
+            className="btn-close-custom" 
+            aria-label="Close"
+            onClick={handleLoginModalClose}
+          >
+            <i class="bi bi-x-circle"></i></Button>
+        </div>
+        
         <Modal.Body>
           {/* 알림 메시지 표시 */}
           {error && <Alert variant="danger">{error}</Alert>}
