@@ -428,7 +428,7 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
             type="button"
             className="btn-close-custom" 
             aria-label="Close"
-            onClick={handleLoginModalClose}
+            onClick={handleSignupModalClose}
           >
             <i class="bi bi-x-circle"></i></Button>
         </div>
