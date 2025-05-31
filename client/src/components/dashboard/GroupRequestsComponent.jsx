@@ -1,6 +1,7 @@
+// src/components/dashboard/GroupRequestsComponent.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ListGroup, Badge, Alert, Spinner } from "react-bootstrap";
+import { Badge, Alert, Spinner, Button } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { useDarkMode } from "../../contexts/DarkModeContext";
 
@@ -11,41 +12,60 @@ const GroupRequestsComponent = ({ userGroups = [], onDataChange }) => {
   const [adminGroups, setAdminGroups] = useState([]);
   const [error, setError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   // 관리자인 그룹 및 가입 요청 필터링
-  useEffect(() => {
-    const filterAdminGroups = () => {
-      if (!currentUser || !userGroups || !Array.isArray(userGroups)) return;
-      
-      try {
-        setIsProcessing(true);
-        
-        // 사용자가 관리자인 그룹 찾기 및 가입 요청이 있는 그룹 필터링
-        const adminGroupsWithRequests = [];
-        
-        for (const group of userGroups) {
-          // 멤버 확인하여 현재 사용자가 관리자인지 체크
-          const isAdmin = group.members?.some(
-            member => member.userId === currentUser.uid && member.role === "admin"
-          ) || group.createdBy === currentUser.uid; // 생성자도 관리자로 간주
-          
-          // 관리자이고 가입 요청이 있는 그룹만 추가
-          if (isAdmin && group.joinRequests && group.joinRequests.length > 0) {
-            adminGroupsWithRequests.push(group);
-          }
-        }
-        
-        setAdminGroups(adminGroupsWithRequests);
-      } catch (error) {
-        console.error("관리자 그룹 필터링 중 오류:", error);
-        setError("그룹 정보를 처리하는 중 문제가 발생했습니다.");
-      } finally {
-        setIsProcessing(false);
-      }
-    };
+  const filterAdminGroups = useCallback(() => {
+    if (!currentUser || !userGroups || !Array.isArray(userGroups)) return;
     
-    filterAdminGroups();
+    try {
+      setIsProcessing(true);
+      
+      const adminGroupsWithRequests = [];
+      
+      for (const group of userGroups) {
+        const isAdmin = group.members?.some(
+          member => member.userId === currentUser.uid && member.role === "admin"
+        ) || group.createdBy === currentUser.uid;
+        
+        if (isAdmin && group.joinRequests && group.joinRequests.length > 0) {
+          adminGroupsWithRequests.push(group);
+        }
+      }
+      
+      setAdminGroups(adminGroupsWithRequests);
+    } catch (error) {
+      console.error("관리자 그룹 필터링 중 오류:", error);
+      setError("그룹 정보를 처리하는 중 문제가 발생했습니다.");
+    } finally {
+      setIsProcessing(false);
+    }
   }, [currentUser, userGroups]);
+  
+  useEffect(() => {
+    filterAdminGroups();
+  }, [filterAdminGroups]);
+  
+  // 새로고침 핸들러
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    setError("");
+    
+    try {
+      if (onDataChange) {
+        await onDataChange();
+      }
+      
+      setTimeout(() => {
+        filterAdminGroups();
+        setIsRefreshing(false);
+      }, 500);
+    } catch (error) {
+      console.error("새로고침 오류:", error);
+      setError("새로고침 중 오류가 발생했습니다.");
+      setIsRefreshing(false);
+    }
+  };
   
   // 그룹 페이지로 이동
   const handleGroupClick = useCallback((groupId) => {
@@ -59,43 +79,53 @@ const GroupRequestsComponent = ({ userGroups = [], onDataChange }) => {
     }, 0);
   }, [adminGroups]);
   
-  // 로딩 중인 경우
-  if (isProcessing) {
-    return (
-      <div className="text-center py-5">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">로딩 중...</span>
-        </Spinner>
-        <p className="mt-3">가입 요청 정보를 처리하는 중...</p>
-      </div>
-    );
-  }
-  
   return (
-    <div className={`group-requests-component ${darkMode ? "dark-mode" : ""}`}>
-      {error && <Alert variant="danger">{error}</Alert>}
+    <div className={`group-requests-component card-component ${darkMode ? "dark-mode" : ""}`}>
+      {/* 카드 헤더 액션 */}
+      <div className="card-component-header">
+        <div className="header-info">
+          {getTotalRequests() > 0 && (
+            <Badge bg="danger" pill className="total-requests-badge">
+              총 {getTotalRequests()}개 요청
+            </Badge>
+          )}
+        </div>
+        <Button
+          variant="outline-secondary"
+          size="sm"
+          onClick={handleRefresh}
+          disabled={isRefreshing || isProcessing}
+          className="refresh-btn"
+        >
+          <i className={`bi bi-arrow-clockwise ${isRefreshing ? 'spin' : ''}`}></i>
+        </Button>
+      </div>
+
+      {/* 에러 메시지 */}
+      {error && (
+        <Alert variant="danger" className="card-alert">
+          {error}
+        </Alert>
+      )}
       
-      {adminGroups.length > 0 ? (
-        <>
-          <div className="group-requests-header mb-3">
-            <div className="d-flex justify-content-between align-items-center">
-              <Badge bg="danger" pill className="total-requests-badge">
-                총 {getTotalRequests()}개 요청
-              </Badge>
-            </div>
+      {/* 컨텐츠 영역 */}
+      <div className="card-component-content">
+        {isProcessing ? (
+          <div className="text-center py-3">
+            <Spinner animation="border" size="sm" />
+            <p className="mt-2 mb-0 small">가입 요청 정보를 처리하는 중...</p>
           </div>
-          
-          <ListGroup variant="flush" className="group-requests-list">
-            {adminGroups.map((group) => (
-              <ListGroup.Item 
+        ) : adminGroups.length > 0 ? (
+          <div className="group-requests-list">
+            {adminGroups.slice(0, 3).map((group) => (
+              <div 
                 key={group.id}
-                action
+                className="group-request-item"
                 onClick={() => handleGroupClick(group.id)}
-                className={`group-request-item ${darkMode ? "dark-mode" : ""}`}
               >
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h5 className="mb-1">{group.name}</h5>
+                <div className="request-content">
+                  <div className="request-info">
+                    <h6 className="group-name">{group.name}</h6>
                     <small className="text-muted">
                       처리가 필요한 요청이 있습니다
                     </small>
@@ -104,16 +134,24 @@ const GroupRequestsComponent = ({ userGroups = [], onDataChange }) => {
                     {group.joinRequests?.length || 0}
                   </Badge>
                 </div>
-              </ListGroup.Item>
+              </div>
             ))}
-          </ListGroup>
-        </>
-      ) : (
-        <div className="text-center py-5 empty-requests">
-          <i className="bi bi-envelope-check" style={{ fontSize: "3rem", color: "var(--text-muted)" }}></i>
-          <p className="mt-3 text-muted">관리자인 그룹의 가입 요청이 없습니다.</p>
-        </div>
-      )}
+            
+            {adminGroups.length > 3 && (
+              <div className="more-requests-info">
+                <small className="text-muted">
+                  외 {adminGroups.length - 3}개 그룹에 요청 있음
+                </small>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <i className="bi bi-envelope-check" style={{ fontSize: "2rem", color: "var(--text-muted)" }}></i>
+            <p className="mt-2 mb-0 small text-muted">관리자인 그룹의 가입 요청이 없습니다.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

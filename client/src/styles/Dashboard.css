@@ -1,8 +1,11 @@
-/* 대시보드 디자인 */
+/* 대시보드 디자인 - 새로운 카드 레이아웃 */
 
 @import './Variables.css';
 
-/* 대시보드 기본 레이아웃 */
+/* ======================================================
+   대시보드 기본 레이아웃
+   ====================================================== */
+
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
@@ -23,9 +26,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   position: relative;
   min-height: calc(100vh - var(--navbar-height));
+  padding: 1rem;
 }
 
 /* 대시보드 중앙 컨텐츠 */
@@ -39,7 +42,10 @@
   margin: auto;
 }
 
-/* 시계 컴포넌트 스타일 */
+/* ======================================================
+   시계 컴포넌트 스타일 (시계 전용)
+   ====================================================== */
+
 .clock-component {
   width: 100%;
   text-align: center;
@@ -53,72 +59,759 @@
   justify-content: center;
 }
 
+.clock-display {
+  text-align: center;
+}
+
 .clock-time {
-  font-size: 5rem;
+  font-size: 4rem;
   font-weight: bold;
   margin-bottom: 0.3rem;
+  color: var(--text-color);
+  font-family: 'Ubuntu Sans', 'Noto Sans KR', sans-serif;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .clock-date {
   font-size: 1.2rem;
+  color: var(--text-muted, #666);
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+/* ======================================================
+   카드 레이아웃 스타일
+   ====================================================== */
+
+/* 카드 컨테이너 */
+.dashboard-cards-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* 개별 카드 스타일 */
+.dashboard-card {
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+  transition: all var(--transition-normal);
+  border: 1px solid var(--border-color);
+  background-color: var(--white);
+  min-height: 280px;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+
+/* 카드 헤더 */
+.dashboard-card .card-header {
+  background-color: var(--primary-color);
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 15px 15px 0 0 !important;
+  padding: 1rem 1.25rem;
+}
+
+.dashboard-card .card-title {
+  margin-bottom: 0;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 1.1rem;
+}
+
+.dashboard-card .card-body {
+  padding: 1.25rem;
+}
+
+/* 카드 내부 컨텐츠가 p-0일 때 */
+.dashboard-card .card-body.p-0 {
+  padding: 0;
+}
+
+/* ======================================================
+   카드 컴포넌트 공통 스타일
+   ====================================================== */
+
+.card-component {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-component-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-component-content {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  max-height: 250px;
+}
+
+.refresh-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-color);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: all var(--transition-fast);
+}
+
+.refresh-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border-color: var(--primary-color);
+}
+
+.refresh-btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 204, 196, 0.25);
+}
+
+.refresh-btn .bi-arrow-clockwise.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.card-alert {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
   color: var(--text-muted);
 }
 
-.mode-toggle-btn {
-  margin-top: 0.3rem;
+/* ======================================================
+   그룹 추천 컴포넌트 스타일
+   ====================================================== */
+
+.group-recommendation-component {
+  padding: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-/* 타이머 컴포넌트 스타일 */
-.timer-container {
-  width: 100%;
+.recommendation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.recommendation-item {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.recommendation-item:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-dark);
+  transform: translateX(5px);
+}
+
+.group-info .group-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text-color);
+}
+
+.group-info .group-description {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.group-info .group-tags {
+  margin-bottom: 0.5rem;
+}
+
+.group-info .group-tags .badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+}
+
+/* ======================================================
+   미니 캘린더 컴포넌트 스타일
+   ====================================================== */
+
+.mini-calendar-component {
+  text-align: center;
+}
+
+.calendar-header {
+  margin-bottom: 1rem;
+}
+
+.calendar-header .month-year {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  max-width: 180px;
+  margin: 0 auto;
+}
+
+.calendar-day {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--white);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-dark);
+}
+
+.calendar-day.today {
+  background-color: var(--accent-color);
+  color: white;
+  font-weight: bold;
+  border-color: var(--accent-color);
+}
+
+.calendar-day.other-month {
+  opacity: 0.3;
+}
+
+.day-number {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.event-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  background-color: #28a745;
+  border-radius: 50%;
+}
+
+.calendar-day.today .event-dot {
+  background-color: #fff;
+}
+
+/* ======================================================
+   미팅 통계 컴포넌트 스타일
+   ====================================================== */
+
+.meeting-stats-component {
+  padding: 0.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+}
+
+.stat-item:hover {
+  background-color: var(--primary-color);
+  transform: scale(1.05);
+}
+
+.stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.stat-icon.bg-info { background-color: #17a2b8; }
+.stat-icon.bg-warning { background-color: #ffc107; color: #333; }
+.stat-icon.bg-success { background-color: #28a745; }
+.stat-icon.bg-secondary { background-color: #6c757d; }
+
+.stat-content {
+  flex: 1;
+  text-align: left;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text-color);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.1rem;
+}
+
+/* ======================================================
+   다가오는 일정 컴포넌트 스타일
+   ====================================================== */
+
+.upcoming-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.upcoming-event-item {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.upcoming-event-item:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-dark);
+  transform: translateX(3px);
+}
+
+.event-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-info {
+  flex: 1;
+}
+
+.event-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text-color);
+}
+
+.event-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.group-badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+  width: fit-content;
+}
+
+.event-time {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.countdown-badge {
+  font-size: 0.7rem;
+  padding: 0.3rem 0.5rem;
+  white-space: nowrap;
+}
+
+.more-events-info {
+  text-align: center;
+  padding: 0.5rem;
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.5rem;
+}
+
+/* ======================================================
+   그룹 요청 컴포넌트 스타일
+   ====================================================== */
+
+.group-requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.group-request-item {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.group-request-item:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-dark);
+  transform: translateX(3px);
+}
+
+.request-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.request-info {
+  flex: 1;
+}
+
+.group-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text-color);
+}
+
+.request-count-badge {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.total-requests-badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+}
+
+.more-requests-info {
+  text-align: center;
+  padding: 0.5rem;
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.5rem;
+}
+
+/* 타이머 카드 컴포넌트 - 미니멀 스타일 */
+
+.timer-card-component {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.sessions-display {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.sessions-badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+}
+
+.timer-card-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.5rem;
-  border-radius: 15px;
-  background-color: var(--white);
-  box-shadow: var(--shadow);
-  animation: fadeIn 0.8s ease;
+  justify-content: center;
+  text-align: center;
 }
 
-.timer-badge {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+.timer-display-section {
   margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.timer-display-section:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .timer-display {
-  font-size: 4rem;
+  font-size: 2.5rem;
   font-weight: bold;
-  margin: 1rem 0;
+  margin-bottom: 0.25rem;
+  color: var(--text-color);
+  font-family: 'Ubuntu Sans', 'Noto Sans KR', monospace;
+  letter-spacing: 0.05em;
 }
 
-.timer-controls {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+.edit-hint {
+  color: #666;
+  font-size: 0.75rem;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
 }
 
-.timer-btn {
+.timer-display-section:hover .edit-hint {
+  opacity: 1;
+}
+
+/* 시간 입력 폼 - 기존 스타일 적용 */
+.time-input-form {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 0.5rem;
 }
 
-.timer-settings {
-  width: 100%;
-  max-width: 300px;
+.time-input {
+  width: 100px;
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 0.5rem;
+  background-color: var(--white);
+  color: var(--text-color);
+  transition: all var(--transition-normal);
 }
 
-.timer-setting-item {
+.time-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(255, 204, 196, 0.25);
+  outline: none;
+}
+
+.time-input-hint {
+  color: var(--text-color);
+  font-size: 0.9rem;
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  opacity: 0.7;
+}
+
+/* 진행률 바 */
+.timer-progress {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
   margin-bottom: 1rem;
+  max-width: 200px;
 }
 
-.timer-slider {
-  width: 100%;
+.timer-progress-bar {
+  height: 100%;
+  background-color: var(--accent-color);
+  transition: width 1s ease;
+  border-radius: 2px;
 }
 
-/* 환영 메시지 컴포넌트 */
+/* 타이머 컨트롤 - 기존 CSS 스타일 재활용 */
+.timer-controls-section {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.timer-control-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 20px;
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  text-decoration: none;
+  gap: 0.4rem;
+}
+
+/* 시작/일시정지 버튼 - Primary 스타일 */
+.timer-control-btn.btn-primary {
+  background-color: var(--accent-color);
+  color: var(--white);
+  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+}
+
+.timer-control-btn.btn-primary:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+  color: var(--white);
+}
+
+/* 일시정지 상태 - Warning 스타일 */
+.timer-control-btn.btn-warning {
+  background-color: #ffc107;
+  color: #333;
+  box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+}
+
+.timer-control-btn.btn-warning:hover {
+  background-color: #e0a800;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(255, 193, 7, 0.4);
+  color: #333;
+}
+
+/* 리셋 버튼 - Secondary 스타일 */
+.timer-control-btn.btn-outline-secondary {
+  background-color: var(--white);
+  color: var(--text-color);
+  border: 2px solid var(--primary-dark);
+  box-shadow: 0 4px 8px rgba(204, 153, 145, 0.3);
+}
+
+.timer-control-btn.btn-outline-secondary:hover {
+  background-color: var(--primary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(204, 153, 145, 0.4);
+  color: var(--text-color);
+  border-color: var(--primary-dark);
+}
+
+/* 다크모드 타이머 스타일 - 기존 스타일 확장 */
+.dark-mode .timer-display {
+  color: var(--text-color);
+}
+
+.dark-mode .timer-display-section:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .timer-progress {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .time-input {
+  background-color: var(--white);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.dark-mode .time-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 77, 74, 0.25);
+}
+
+.dark-mode .edit-hint,
+.dark-mode .time-input-hint {
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+/* 다크모드 버튼 스타일 */
+.dark-mode .timer-control-btn.btn-primary {
+  background-color: var(--accent-color);
+  box-shadow: 0 4px 8px rgba(153, 77, 66, 0.4);
+}
+
+.dark-mode .timer-control-btn.btn-primary:hover {
+  background-color: var(--primary-dark);
+  box-shadow: 0 6px 12px rgba(153, 77, 66, 0.6);
+}
+
+.dark-mode .timer-control-btn.btn-outline-secondary {
+  background-color: var(--white);
+  color: var(--text-color);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 8px rgba(80, 64, 62, 0.3);
+}
+
+.dark-mode .timer-control-btn.btn-outline-secondary:hover {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+  box-shadow: 0 6px 12px rgba(80, 64, 62, 0.4);
+}
+
+/* 반응형 타이머 스타일 */
+@media (max-width: 768px) {
+  .timer-display {
+    font-size: 2rem;
+  }
+  
+  .timer-control-btn {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    gap: 0.3rem;
+  }
+  
+  .time-input {
+    width: 90px;
+    font-size: 1.6rem;
+    padding: 0.4rem;
+  }
+  
+  .timer-controls-section {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .timer-display {
+    font-size: 1.8rem;
+  }
+  
+  .timer-controls-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .timer-control-btn {
+    width: 100%;
+    max-width: 160px;
+    font-size: 0.8rem;
+    padding: 0.5rem 0.8rem;
+  }
+  
+  .time-input {
+    width: 80px;
+    font-size: 1.5rem;
+  }
+}
+/* ======================================================
+   환영 메시지 컴포넌트 (기존 유지)
+   ====================================================== */
+
 .welcome-message-component {
   text-align: center;
   margin-bottom: 1rem;
@@ -137,201 +830,267 @@
 
 .time-greeting {
   font-size: 1.2rem;
-  color: var(--text-muted);
+  color: var(--text-muted, #666);
 }
 
-/* 하단 버튼 스타일 */
-.bottom-buttons-container {
-  position: fixed;
-  bottom: 10px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  z-index: 1000;
-}
+/* ======================================================
+   다크모드 스타일
+   ====================================================== */
 
-.bottom-buttons-wrapper {
-  display: flex;
-  gap: 1rem;
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid var(--primary-color);
-  border-radius: 50px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  transition: all 0.3s ease;
-}
-
-.dark-mode .bottom-buttons-wrapper {
-  background-color: rgba(51, 51, 51, 0.8);
-}
-
-.bottom-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+.dark-mode .dashboard-card {
   background-color: var(--white);
-  color: var(--primary-dark);
-  padding: 0.75rem 1.2rem;
-  border: none;
-  border-radius: 30px;
-  transition: all 0.3s ease;
+  border-color: var(--border-color);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.bottom-button i {
-  font-size: 1.5rem;
+.dark-mode .dashboard-card .card-header {
+  background-color: var(--primary-color);
+  border-bottom-color: var(--border-color);
 }
 
-.bottom-button:hover {
-  background-color: var(--white);
-  color: var(--accent-color);
-  transform: translateY(-5px);
+.dark-mode .dashboard-card .card-title {
+  color: var(--text-color);
 }
 
-/* 모달 스타일 */
-.dashboard-modal .modal-content {
-  border-radius: 15px;
-  overflow: hidden;
-  border: none;
+.dark-mode .card-component-header {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom-color: var(--border-color);
 }
 
-.dashboard-modal .modal-header {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 1.25rem 1.5rem;
+.dark-mode .clock-time {
+  color: var(--text-color);
 }
 
-.dashboard-modal .modal-title {
-  font-weight: bold;
+.dark-mode .clock-date {
+  color: var(--text-color);
 }
 
-/* 모달 내부 컴포넌트 스타일 */
-.upcoming-events-component,
-.my-groups-component,
-.group-requests-component {
-  padding: 1rem;
+.dark-mode .welcome-message {
+  color: var(--text-color);
 }
 
-/* 빈 상태 컴포넌트 */
-.empty-groups,
-.empty-requests {
-  min-height: 250px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.dark-mode .time-greeting {
+  color: var(--text-color);
 }
 
-/* 그룹 카드 스타일 */
-.group-card {
-  transition: all 0.3s ease;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  cursor: pointer;
+.dark-mode .recommendation-item,
+.dark-mode .upcoming-event-item,
+.dark-mode .group-request-item {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-color);
 }
 
-.group-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--hover-shadow);
-}
-
-.group-card-title {
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-
-.group-card-description {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  margin-bottom: 1rem;
-  height: 2.4rem;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-/* 이벤트 리스트 아이템 */
-.upcoming-event-item,
-.group-request-item {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
-  transition: all 0.3s ease;
-}
-
-.upcoming-event-item:hover,
-.group-request-item:hover {
-  background-color: rgba(0, 0, 0, 0.03);
-}
-
+.dark-mode .recommendation-item:hover,
 .dark-mode .upcoming-event-item:hover,
 .dark-mode .group-request-item:hover {
+  background-color: var(--primary-color);
+}
+
+.dark-mode .calendar-day {
+  background-color: var(--white);
+  border-color: var(--border-color);
+}
+
+.dark-mode .calendar-day:hover {
+  background-color: var(--primary-color);
+}
+
+.dark-mode .stat-item {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-color);
+}
+
+.dark-mode .stat-item:hover {
+  background-color: var(--primary-color);
+}
+
+.dark-mode .timer-display {
+  color: var(--text-color);
+}
+
+.dark-mode .timer-progress {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.countdown-badge {
-  font-size: 0.8rem;
-  padding: 0.4rem 0.6rem;
+.dark-mode .setting-label {
+  color: var(--text-color);
 }
 
-/* 애니메이션 정의 */
+/* ======================================================
+   애니메이션 정의
+   ====================================================== */
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 반응형 스타일 */
-@media (max-width: 768px) {
+/* ======================================================
+   반응형 스타일
+   ====================================================== */
+
+@media (max-width: 1200px) {
+  .dashboard-content {
+    padding: 0.75rem;
+  }
+  
+  .dashboard-card {
+    min-height: 250px;
+  }
+  
+  .timer-display {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 992px) {
   .clock-time {
     font-size: 3.5rem;
   }
   
   .timer-display {
-    font-size: 3rem;
+    font-size: 2rem;
+  }
+  
+  .welcome-message {
+    font-size: 1.8rem;
+  }
+  
+  .dashboard-cards-container {
+    padding: 0 0.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .calendar-grid {
+    max-width: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 0.5rem;
+  }
+  
+  .clock-time {
+    font-size: 2.5rem;
+  }
+  
+  .timer-display {
+    font-size: 1.8rem;
   }
   
   .welcome-message {
     font-size: 1.5rem;
   }
   
-  .bottom-buttons-wrapper {
-    width: 90%;
-    justify-content: space-around;
-  }
-  
-  .bottom-button {
-    padding: 0.5rem 0.8rem;
-  }
-  
-  .bottom-button span {
-    font-size: 0.8rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .clock-time {
-    font-size: 2.5rem;
-  }
-  
-  .timer-display {
-    font-size: 2.2rem;
-  }
-  
-  .welcome-message {
-    font-size: 1.2rem;
-  }
-  
   .time-greeting {
     font-size: 1rem;
   }
   
-  .bottom-buttons-wrapper {
-    width: 95%;
+  .dashboard-card {
+    min-height: 220px;
   }
   
-  .bottom-button {
+  .dashboard-card .card-body {
+    padding: 1rem;
+  }
+  
+  .recommendation-list {
+    gap: 0.5rem;
+  }
+  
+  .recommendation-item {
     padding: 0.5rem;
   }
+  
+  .group-info .group-name {
+    font-size: 0.85rem;
+  }
+  
+  .group-info .group-description {
+    font-size: 0.75rem;
+  }
+  
+  .calendar-grid {
+    max-width: 140px;
+    gap: 0.3rem;
+  }
+  
+  .calendar-day {
+    border-radius: 6px;
+  }
+  
+  .day-number {
+    font-size: 0.8rem;
+  }
+  
+  .stat-item {
+    padding: 0.5rem;
+  }
+  
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+  
+  .stat-value {
+    font-size: 1.1rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+  
+  .timer-controls {
+    gap: 0.3rem;
+  }
+  
+  .timer-btn {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
 }
+
+@media (max-width: 480px) {
+  .dashboard-center-content {
+    max-width: 100%;
+  }
+  
+  .clock-time {
+    font-size: 2rem;
+  }
+  
+  .timer-display {
+    font-size: 1.5rem;
+  }
+  
+  .welcome-message {
+    font-size: 1.3rem;
+  }
+  
+  .dashboard-card {
+    min-height: 200px;
+  }
+  
+  .dashboard-card .card-title {
+    font-size: 1rem;
+  }
+  
+  .calendar-grid {
+    max-width: 120px;
+  }
+  
+  .recommendation-list {
+    max-height: 200px;
+  }
+  
+  .stats-grid {
+    gap: 0.4rem;
+  }
+}
+
