@@ -1,39 +1,39 @@
 /* ======================================================
-   홈페이지 디자인 - CSS Grid 방식 (정리된 버전)
+   홈페이지 디자인 - 최적화된 버전
    ====================================================== */
 
    @import './Variables.css';
 
    /* ======================================================
-      전체 페이지 Grid 레이아웃
+      전체 페이지 레이아웃
       ====================================================== */
    
    .main-layout.home-page {
      display: grid;
-     grid-template-rows: var(--navbar-height) 1fr; /* 네비게이션 높이 + 나머지 영역 */
+     grid-template-rows: var(--navbar-height) 1fr;
      min-height: 100vh;
-     background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%); /* 전체 배경 그라디언트 */
+     background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%);
      color: var(--text-color);
      transition: background-color var(--transition-normal), color var(--transition-normal);
    }
    
    /* 네비게이션 바 그리드 영역 */
    .transparent-navbar-wrapper {
-     grid-row: 1; /* 첫 번째 그리드 행 */
+     grid-row: 1;
      position: relative;
      z-index: 10;
    }
    
    /* 메인 컨텐츠 그리드 영역 */
    .main-content {
-     grid-row: 1 / -1; /* 전체 그리드 영역 차지 (네비게이션과 겹침) */
+     grid-row: 1 / -1;
      z-index: 1;
      display: flex;
      flex-direction: column;
    }
    
    /* ======================================================
-      히어로 섹션 - Grid 내에서 전체 화면 차지
+      히어로 섹션
       ====================================================== */
    
    .hero-section {
@@ -42,8 +42,8 @@
      justify-content: space-between;
      margin-top: -4rem;
      padding: 4rem;
-     min-height: 100vh; /* 전체 화면 높이 */
-     background: transparent; /* 부모에서 배경 처리하므로 투명 */
+     min-height: 100vh;
+     background: transparent;
      position: relative;
      overflow: hidden;
    }
@@ -85,74 +85,13 @@
      align-items: center;
    }
    
-   /* ======================================================
-      히어로 섹션 버튼 스타일
-      ====================================================== */
-   
-   .hero-button-primary {
-     background-color: #2c3e50;
-     color: white;
-     border: none;
-     padding: 0.9rem 2.2rem;
-     border-radius: 25px;
-     font-weight: 500;
-     font-size: 1rem;
-     cursor: pointer;
-     transition: all var(--transition-normal);
-     box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
-   }
-   
-   .hero-button-primary:hover {
-     background-color: #34495e;
-     transform: translateY(-2px);
-     box-shadow: 0 6px 20px rgba(44, 62, 80, 0.4);
-   }
-   
-   .hero-button-secondary {
-     background: transparent;
-     color: #2c3e50;
-     border: none;
-     padding: 0.9rem 1rem;
-     font-weight: 500;
-     font-size: 1rem;
-     cursor: pointer;
-     text-decoration: none;
-     position: relative;
-     transition: all var(--transition-normal);
-   }
-   
-   .hero-button-secondary:hover {
-     color: var(--accent-color);
-     transform: translateX(5px);
-   }
-   
-   .hero-button-secondary::after {
-     content: "";
-     position: absolute;
-     bottom: 0;
-     left: 0;
-     width: 100%;
-     height: 2px;
-     background-color: currentColor;
-     transform: scaleX(0);
-     transition: transform var(--transition-normal);
-   }
-   
-   .hero-button-secondary:hover::after {
-     transform: scaleX(1);
-   }
-   
-   /* ======================================================
-      히어로 이미지 영역
-      ====================================================== */
-   
    .hero-image-container {
      flex: 1;
      display: flex;
      justify-content: center;
      align-items: center;
      position: relative;
-     padding-top: var(--navbar-height); /* 네비게이션 높이만큼 상단 여백 */
+     padding-top: var(--navbar-height);
    }
    
    .hero-main-image {
@@ -164,7 +103,7 @@
    }
    
    /* ======================================================
-      서비스 소개 섹션 - 애니메이션 적용
+      서비스 소개 섹션
       ====================================================== */
    
    .service-intro-section {
@@ -175,17 +114,6 @@
      z-index: 3;
      border-radius: 30px;
      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
-     
-     /* 애니메이션 초기 상태 */
-     opacity: 0;
-     transform: translateY(40px);
-     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-   }
-   
-   /* 애니메이션 활성화 상태 */
-   .service-intro-section.animate-in {
-     opacity: 1;
-     transform: translateY(0);
    }
    
    .service-intro-content {
@@ -197,13 +125,8 @@
      gap: 3rem;
    }
    
-   /* 개별 콘텐츠 요소들에 순차 애니메이션 */
    .service-image-container {
      flex: 0 0 120px;
-     opacity: 0;
-     transform: translateX(-30px);
-     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-     transition-delay: 0.2s;
    }
    
    .service-intro-image {
@@ -215,10 +138,6 @@
    
    .service-text-container {
      flex: 1;
-     opacity: 0;
-     transform: translateY(20px);
-     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-     transition-delay: 0.4s;
    }
    
    .service-subtitle {
@@ -237,25 +156,17 @@
      margin: 0;
    }
    
-   /* ======================================================
-      서비스 후기 및 아바타 영역
-      ====================================================== */
-   
    .service-testimonials {
      flex: 0 0 auto;
      display: flex;
      flex-direction: column;
      align-items: center;
      gap: 1rem;
-     opacity: 0;
-     transform: translateX(30px);
-     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-     transition-delay: 0.6s;
    }
    
    .testimonial-avatars {
      display: flex;
-     gap: -10px; /* 아바타 겹치기 효과 */
+     gap: -10px;
    }
    
    .testimonial-avatar {
@@ -288,130 +199,36 @@
      font-weight: 500;
    }
    
-   /* 애니메이션 활성화 상태 - 개별 요소들 */
-   .service-intro-section.animate-in .service-image-container,
-   .service-intro-section.animate-in .service-text-container,
-   .service-intro-section.animate-in .service-testimonials {
-     opacity: 1;
-     transform: translateX(0) translateY(0);
-   }
-   
    /* ======================================================
       주요 특징 섹션
       ====================================================== */
    
-   /* features-section 스타일 */
    .features-section {
      display: flex;
      flex-direction: column;
      gap: 2rem;
-     padding: 3rem 2rem; /* 6rem에서 3rem으로 줄임 */
+     padding: 3rem 2rem;
      max-width: var(--container-max-width);
      margin: 10px auto;
      background-color: transparent !important;
    }
    
-   /* feature-item 스타일 */
-   .feature-item {
-     display: flex;
-     align-items: center;
-     gap: 2rem;
-     background-color: var(--white);
-     border-radius: 20px;
-     padding: 2.5rem;
-     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-     border: 1px solid rgba(255, 255, 255, 0.2);
-     
-     /* 애니메이션 초기 상태 */
+   .feature-wrapper {
+     /* 각 FeatureCard를 감싸는 래퍼 */
      opacity: 0;
      transform: translateY(60px) scale(0.95);
+     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
    }
    
-   /* 애니메이션 활성화 상태 */
-   .feature-item.animate-in {
+   .feature-wrapper.animate-in {
      opacity: 1;
      transform: translateY(0) scale(1);
    }
    
-   /* 호버 효과 */
-   .feature-item:hover {
-     transform: translateY(-8px) scale(1.02);
-     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-   }
-   
-   /* 이미지 컨테이너 스타일 */
-   .feature-image-container {
-     flex: 0 0 300px;
-     height: 200px;
-     background: linear-gradient(135deg, #ffccc4 0%, #ff9a8b 100%);
-     border-radius: 16px;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     position: relative;
-     overflow: hidden;
-   }
-   
-   .feature-image {
-     width: 70%;
-     height: auto;
-     object-fit: contain;
-     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
-   }
-   
-   /* 텍스트 컨테이너 스타일 */
-   .feature-text-container {
-     flex: 1;
-     padding-left: 1rem;
-   }
-   
-   .feature-title {
-     font-size: 1.8rem;
-     font-weight: 700;
-     margin-bottom: 1rem;
-     color: #2c3e50;
-     line-height: 1.3;
-   }
-   
-   .feature-description {
-     font-size: 1rem;
-     line-height: 1.6;
-     color: #666;
-     margin-bottom: 1.5rem;
-   }
-   
-   /* 특징 리스트 */
-   .feature-benefits {
-     display: grid;
-     grid-template-columns: 1fr 1fr;
-     gap: 0.8rem;
-   }
-   
-   .feature-benefit-item {
-     display: flex;
-     align-items: center;
-     gap: 0.5rem;
-     font-size: 0.9rem;
-     color: #555;
-   }
-   
-   .benefit-icon {
-     width: 16px;
-     height: 16px;
-     background-color: #28a745;
-     border-radius: 50%;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     color: white;
-     font-size: 10px;
-   }
-   
    /* 순차적 애니메이션 딜레이 */
-   .feature-item:nth-child(1) { transition-delay: 0.1s; }
-   .feature-item:nth-child(2) { transition-delay: 0.3s; }
-   .feature-item:nth-child(3) { transition-delay: 0.5s; }
+   .feature-wrapper:nth-child(1) { transition-delay: 0.1s; }
+   .feature-wrapper:nth-child(2) { transition-delay: 0.3s; }
+   .feature-wrapper:nth-child(3) { transition-delay: 0.5s; }
    
    /* ======================================================
       CTA(Call To Action) 섹션
@@ -419,13 +236,12 @@
    
    .cta-section {
      text-align: center;
-     padding: 3rem 2rem; /* features-section과 동일한 패딩 */
+     padding: 3rem 2rem;
      margin: 50px auto 4rem auto;
      position: relative;
      overflow: hidden;
    }
    
-   /* CTA 섹션 배경 장식 요소 */
    .cta-section::before {
      content: '';
      position: absolute;
@@ -442,7 +258,6 @@
      z-index: 0;
    }
    
-   /* CTA 내용 스타일링 */
    .cta-section > * {
      position: relative;
      z-index: 1;
@@ -469,27 +284,14 @@
      margin-right: auto;
    }
    
+   /* CTA 버튼 추가 스타일 */
    .cta-button {
-     display: inline-flex;
-     align-items: center;
-     justify-content: center;
-     padding: 1rem 2.5rem;
      background: linear-gradient(135deg, var(--accent-color) 0%, #ff6b5a 100%);
-     color: #ffffff;
-     border: none;
-     border-radius: 50px;
-     font-family: 'Poor Story', 'Noto Sans KR', cursive;
-     font-size: 1.1rem;
-     font-weight: 600;
-     text-decoration: none;
-     cursor: pointer;
-     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
      box-shadow: 0 8px 25px rgba(204, 102, 89, 0.3);
      position: relative;
      overflow: hidden;
    }
    
-   /* CTA 버튼 호버 효과 */
    .cta-button::before {
      content: '';
      position: absolute;
@@ -515,11 +317,11 @@
    }
    
    /* ======================================================
-      다크모드 Grid 레이아웃
+      다크모드 스타일
       ====================================================== */
    
    .dark-mode.main-layout.home-page {
-     background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%); /* 다크모드 그라디언트 */
+     background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%);
    }
    
    .dark-mode .hero-title {
@@ -528,10 +330,6 @@
    
    .dark-mode .hero-description {
      color: #ccc;
-   }
-   
-   .dark-mode .hero-button-secondary {
-     color: var(--text-color);
    }
    
    .dark-mode .service-intro-section {
@@ -547,50 +345,10 @@
      color: #999;
    }
    
-   /* 다크모드 서비스 소개 섹션 애니메이션 */
-   .dark-mode .service-image-container,
-   .dark-mode .service-text-container,
-   .dark-mode .service-testimonials {
-     /* 다크모드에서도 동일한 전환 효과 적용 */
-     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-   }
-   
-   .dark-mode .hero-button-primary {
-     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-   }
-   
-   .dark-mode .hero-button-primary:hover {
-     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
-   }
-   
-   /* 다크모드 특징 섹션 */
-   .dark-mode .feature-item {
-     background-color: var(--white);
-     border-color: rgba(255, 255, 255, 0.1);
-     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-   }
-   
-   .dark-mode .feature-title {
-     color: var(--text-color);
-   }
-   
-   .dark-mode .feature-description {
-     color: #ccc;
-   }
-   
-   /* 다크모드 CTA 섹션 */
    .dark-mode .cta-section {
      background: linear-gradient(135deg, rgba(102, 77, 74, 0.2) 0%, rgba(153, 77, 66, 0.2) 100%);
      border-color: rgba(102, 77, 74, 0.4);
      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-   }
-   
-   .dark-mode .cta-section::before {
-     background: radial-gradient(circle, rgba(102, 77, 74, 0.3) 0%, transparent 70%);
-   }
-   
-   .dark-mode .cta-section::after {
-     background: radial-gradient(circle, rgba(153, 77, 66, 0.2) 0%, transparent 70%);
    }
    
    .dark-mode .cta-title {
@@ -615,14 +373,14 @@
    }
    
    /* ======================================================
-      반응형 Grid 레이아웃
+      반응형 디자인
       ====================================================== */
    
    @media (max-width: 1200px) {
      .hero-section,
      .features-section,
      .cta-section {
-       padding: 2rem 1.5rem; /* features와 cta 모두 동일하게 조정 */
+       padding: 2rem 1.5rem;
      }
      
      .service-intro-section {
@@ -631,12 +389,6 @@
    }
    
    @media (max-width: 992px) {
-     /* Grid 레이아웃 모바일 조정 */
-     .main-layout.home-page {
-       grid-template-rows: var(--navbar-height) 1fr; /* 동일하게 유지 */
-     }
-     
-     /* 히어로 섹션 반응형 */
      .hero-section {
        flex-direction: column;
        text-align: center;
@@ -647,7 +399,7 @@
      
      .hero-content,
      .hero-image-container {
-       padding-top: calc(var(--navbar-height) + 1rem); /* 모바일에서 여백 증가 */
+       padding-top: calc(var(--navbar-height) + 1rem);
      }
      
      .hero-title {
@@ -663,37 +415,14 @@
        flex-wrap: wrap;
      }
      
-     /* 서비스 소개 섹션 반응형 */
      .service-intro-content {
        flex-direction: column;
        text-align: center;
        gap: 2rem;
      }
-     
-     /* 특징 아이템 반응형 */
-     .feature-item {
-       flex-direction: column;
-       text-align: center;
-       gap: 1.5rem;
-     }
-     
-     .feature-image-container,
-     .feature-text-container {
-       max-width: 100%;
-     }
-     
-     .feature-text-container {
-       padding-left: 0; /* 모바일에서 좌측 패딩 제거 */
-     }
    }
    
    @media (max-width: 768px) {
-     /* 모바일 Grid 조정 */
-     .main-layout.home-page {
-       grid-template-rows: 60px 1fr; /* 모바일에서 네비게이션 높이 축소 */
-     }
-     
-     /* 모바일 히어로 섹션 */
      .hero-title {
        font-size: 2.5rem;
      }
@@ -703,47 +432,25 @@
        gap: 1rem;
      }
      
-     .hero-button-primary,
-     .hero-button-secondary {
-       width: 100%;
-       text-align: center;
-     }
-     
      .hero-description {
        font-size: 1rem;
      }
      
-     /* 모바일에서 패딩 조정 */
      .hero-content,
      .hero-image-container {
-       padding-top: calc(60px + 1rem); /* 축소된 네비게이션 높이 반영 */
+       padding-top: calc(60px + 1rem);
      }
      
-     /* 모바일 서비스 소개 */
      .service-title {
        font-size: 1.5rem;
      }
      
-     /* 모바일 특징 섹션 */
      .features-section,
      .cta-section {
        padding: 2rem 1rem;
-       margin: 30px auto 2rem auto; /* 모바일에서 마진 축소 */
+       margin: 30px auto 2rem auto;
      }
      
-     .feature-title {
-       font-size: 1.6rem;
-     }
-     
-     .feature-description {
-       font-size: 1rem;
-     }
-     
-     .feature-benefits {
-       grid-template-columns: 1fr; /* 모바일에서 1열로 변경 */
-     }
-     
-     /* 모바일 CTA 섹션 */
      .cta-title {
        font-size: 1.8rem;
      }
@@ -752,9 +459,18 @@
        font-size: 1rem;
        margin-bottom: 1.5rem;
      }
+   }
+   
+   @media (max-width: 480px) {
+     .hero-title {
+       font-size: 2rem;
+     }
      
-     .cta-button {
-       padding: 0.9rem 2rem;
-       font-size: 1rem;
+     .features-section {
+       max-height: 200px;
+     }
+     
+     .cta-title {
+       font-size: 1.5rem;
      }
    }

@@ -1,11 +1,14 @@
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import AppNavbar from "../components/AppNavbar";
+import FeatureCard from "../components/common/FeatureCard";
+import HeroButton from "../components/common/HeroButton";
+import AnimatedSection from "../components/common/AnimatedSection";
 import logoHome from "../assets/logoHome.png";
 import logoSmall from "../assets/logoSmall.png";
-import logoHello from "../assets/logoHello.png"
+import logoHello from "../assets/logoHello.png";
 import calendar from "../assets/calendar.png";
 import peoples from "../assets/peoples.png";
 
@@ -19,54 +22,6 @@ const HomePage = () => {
   
   // AppNavbar에 대한 참조 생성 (모달 제어용)
   const navbarRef = useRef();
-  
-  // 스크롤 애니메이션을 위한 ref 추가
-  const featuresRef = useRef();
-  const serviceIntroRef = useRef();
-
-  // ======================================================
-  // 스크롤 애니메이션 효과 처리
-  // ======================================================
-  useEffect(() => {
-    const handleScroll = () => {
-      // Features 섹션 애니메이션 처리
-      if (featuresRef.current) {
-        const featureItems = featuresRef.current.querySelectorAll(".feature-item");
-        
-        featureItems.forEach((item) => {
-          const rect = item.getBoundingClientRect();
-          const windowHeight = window.innerHeight;
-          
-          // 요소가 뷰포트의 80% 지점에 도달했을 때 애니메이션 트리거
-          if (rect.top < windowHeight * 0.8) {
-            item.classList.add("animate-in");
-          }
-        });
-      }
-
-      // 서비스 소개 섹션 애니메이션 처리
-      if (serviceIntroRef.current) {
-        const rect = serviceIntroRef.current.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        
-        // 요소가 뷰포트의 70% 지점에 도달했을 때 애니메이션 트리거
-        if (rect.top < windowHeight * 0.7) {
-          serviceIntroRef.current.classList.add("animate-in");
-        }
-      }
-    };
-
-    // 스크롤 이벤트 리스너 등록
-    window.addEventListener("scroll", handleScroll);
-    
-    // 초기 로드 시 한 번 실행 (페이지 로드 시 이미 보이는 요소들 처리)
-    handleScroll();
-
-    // 클린업 함수 - 컴포넌트 언마운트 시 이벤트 리스너 제거
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
   
   // ======================================================
   // 이벤트 핸들러 함수들 (성능 최적화를 위해 useCallback 사용)
@@ -91,36 +46,36 @@ const HomePage = () => {
     navigate("/dashboard");
   }, [navigate]);
 
-  // ======================================================
-  // 특징 아이템 컴포넌트 (재사용 가능한 컴포넌트)
-  // ======================================================
-  const FeatureItem = ({ imgSrc, imgAlt, title, description, benefits }) => (
-    <div className="feature-item">
-      <div className="feature-image-container">
-        <img src={imgSrc} alt={imgAlt} className="feature-image" />
-      </div>
-      <div className="feature-text-container">
-        <h3 className="feature-title">{title}</h3>
-        <p className="feature-description">{description}</p>
-        
-        {benefits && (
-          <div className="feature-benefits">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="feature-benefit-item">
-                <div className="benefit-icon">✓</div>
-                <span>{benefit}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  // 특징 섹션 데이터
+  const features = [
+    {
+      imgSrc: peoples,
+      imgAlt: "파트너 찾기",
+      title: "파트너 찾기",
+      description: "같은 목표를 가진 학생들과 팀을 이루고 함께 성장해보세요. 관심사와 목표가 맞는 팀원을 쉽게 찾을 수 있습니다.",
+      benefits: [
+        "관심사 기반 매칭",
+        "목표 지향적 팀 구성",
+        "지속적인 동기 부여"
+      ]
+    },
+    {
+      imgSrc: calendar,
+      imgAlt: "스마트 일정 조율",
+      title: "스마트 일정 조율",
+      description: "스케줄 맞추기의 고민을 덜어드립니다. 스케줄 자동 분석으로 모두에게 최적화된 미팅 시간을 제안합니다.",
+      benefits: [
+        "자동 시간 분석",
+        "최적 시간 추천",
+        "실시간 스케줄 동기화"
+      ]
+    }
+  ];
 
   return (
     <div className={`main-layout home-page ${darkMode ? "dark-mode" : ""}`}>
       {/* 네비게이션 바 - 절대 위치로 히어로 섹션 위에 오버레이 */}
-      <div className="transparent-navbar-wrapper" style={{ position: 'absolute', zIndex: 1050 }}>
+      <div className="transparent-navbar-wrapper" style={{ position: "absolute", zIndex: 1050 }}>
         <AppNavbar 
           transparent={true} 
           ref={navbarRef}
@@ -149,29 +104,26 @@ const HomePage = () => {
               {/* 로그인 상태에 따른 버튼 표시 */}
               <div className="hero-buttons">
                 {currentUser ? (
-                  <button 
-                    type="button" 
-                    onClick={navigateToDashboard} 
-                    className="hero-button-primary"
+                  <HeroButton 
+                    variant="primary"
+                    onClick={navigateToDashboard}
                   >
                     대시보드로 이동
-                  </button>
+                  </HeroButton>
                 ) : (
                   <>
-                    <button 
-                      type="button" 
-                      onClick={handleSignup} 
-                      className="hero-button-primary"
+                    <HeroButton 
+                      variant="primary"
+                      onClick={handleSignup}
                     >
                       시작하기
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={handleLogin} 
-                      className="hero-button-secondary"
+                    </HeroButton>
+                    <HeroButton 
+                      variant="secondary"
+                      onClick={handleLogin}
                     >
                       로그인 »
-                    </button>
+                    </HeroButton>
                   </>
                 )}
               </div>
@@ -189,8 +141,8 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* 서비스 소개 섹션 - ref 추가하여 애니메이션 적용 */}
-        <section className="service-intro-section" ref={serviceIntroRef}>
+        {/* 서비스 소개 섹션 */}
+        <AnimatedSection className="service-intro-section">
           <div className="service-intro-content">
             <div className="service-image-container">
               <img 
@@ -217,50 +169,32 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-        </section>
+        </AnimatedSection>
 
-        {/* 주요 특징 섹션 - ref 추가하여 애니메이션 적용 */}
-        <section className="features-section" ref={featuresRef}>
-          <FeatureItem 
-            imgSrc={peoples}
-            imgAlt="파트너 찾기" 
-            title="파트너 찾기" 
-            description="같은 목표를 가진 학생들과 팀을 이루고 함께 성장해보세요. 관심사와 목표가 맞는 팀원을 쉽게 찾을 수 있습니다."
-            benefits={[
-              "관심사 기반 매칭",
-              "목표 지향적 팀 구성",
-              "지속적인 동기 부여"
-            ]}
-          />
-          
-          <FeatureItem 
-            imgSrc={calendar} 
-            imgAlt="스마트 일정 조율" 
-            title="스마트 일정 조율" 
-            description="스케줄 맞추기의 고민을 덜어드립니다. 스케줄 자동 분석으로 모두에게 최적화된 미팅 시간을 제안합니다."
-            benefits={[
-              "자동 시간 분석",
-              "최적 시간 추천",
-              "실시간 스케줄 동기화"
-            ]}
-          />
-        </section>
+        {/* 주요 특징 섹션 */}
+        <AnimatedSection className="features-section">
+          {features.map((feature, index) => (
+            <div key={index} className="feature-wrapper">
+              <FeatureCard {...feature} />
+            </div>
+          ))}
+        </AnimatedSection>
 
         {/* CTA(Call To Action) 섹션 - 비로그인 사용자에게만 표시 */}
         {!currentUser && (
-          <section className="cta-section">
+          <AnimatedSection className="cta-section">
             <h2 className="cta-title">함께 배우고 성장하세요</h2>
             <p className="cta-text">
               오늘 StudyBuddy에 가입하고 스터디 그룹 활동을 시작해보세요!
             </p>
-            <button 
-              type="button" 
-              onClick={handleSignup} 
+            <HeroButton 
+              variant="primary"
+              onClick={handleSignup}
               className="cta-button"
             >
               지금 가입하기
-            </button>
-          </section>
+            </HeroButton>
+          </AnimatedSection>
         )}
       </main>
     </div>

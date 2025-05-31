@@ -50,6 +50,7 @@
   width: 100%;
   text-align: center;
   animation: fadeIn 0.8s ease;
+  margin-bottom: 1.5rem;
 }
 
 .clock-container {
@@ -814,7 +815,8 @@
 
 .welcome-message-component {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
   animation: fadeIn 1s ease;
 }
 
