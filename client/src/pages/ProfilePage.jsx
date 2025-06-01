@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Alert, Button, Card, Col, Container, Form, Row, Badge, Dropdown, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Alert, Button, Form, Badge, Dropdown, Spinner } from 'react-bootstrap';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { GROUP_TAGS } from '../utils/GroupConstants';
 import EmailVerificationService from '../utils/EmailVerificationService';
 import useNotification from '../hooks/useNotification';
+
+// 공통 컴포넌트들 import
+import DashboardCard from '../components/common/DashboardCard';
 
 // 모든 태그를 하나의 배열로 평탄화
 const ALL_TAGS = Object.values(GROUP_TAGS).flat();
@@ -37,6 +40,9 @@ const ProfilePage = () => {
   const [isCheckingVerification, setIsCheckingVerification] = useState(false);
   const [isSendingVerification, setIsSendingVerification] = useState(false);
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
+
+  // 편집 모드 상태
+  const [isEditMode, setIsEditMode] = useState(false);
 
   // 초기 프로필 데이터 로드
   useEffect(() => {
@@ -181,6 +187,20 @@ const ProfilePage = () => {
     }
   };
 
+  // 편집 모드 토글
+  const toggleEditMode = () => {
+    if (isEditMode) {
+      // 편집 취소 시 원래 값으로 복원
+      if (originalProfile) {
+        setDisplayName(originalProfile.displayName);
+        setEmail(originalProfile.email);
+        setDepartment(originalProfile.department);
+        setInterests([...originalProfile.interests]);
+      }
+    }
+    setIsEditMode(!isEditMode);
+  };
+
   // 태그 추가 핸들러
   const handleAddInterest = (tag) => {
     if (!interests.includes(tag)) {
@@ -204,17 +224,6 @@ const ProfilePage = () => {
       JSON.stringify(interests) !== JSON.stringify(originalProfile.interests)
     );
   }, [displayName, email, department, interests, originalProfile, isEmailVerified]);
-
-  // 로그아웃 핸들러
-  const handleLogout = useCallback(async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-      showError('로그아웃에 실패했습니다');
-    }
-  }, [logout, navigate, showError]);
 
   // 🔥 UPDATED: 프로필 업데이트 핸들러 - useNotification 훅 사용
   const handleSubmit = async (e) => {
@@ -244,32 +253,43 @@ const ProfilePage = () => {
         return;
       }
       
-      console.log("프로필 업데이트 데이터:", {
+      console.log("🔍 프로필 업데이트 시작:", {
         displayName,
         department,
         interests
       });
       
       // 프로필 업데이트 - 업데이트할 필드를 명시적으로 지정
-      // 이메일은 Auth 객체에서 관리되므로 여기서 업데이트하지 않음
       await updateUserProfile({
-        displayName: displayName,
-        department: department,
+        displayName: displayName.trim(),
+        department: department.trim(),
         interests: interests
       });
       
+      console.log("✅ 프로필 업데이트 성공");
+      
       // 업데이트 후 원본 프로필 상태 갱신
       setOriginalProfile({
-        displayName,
+        displayName: displayName.trim(),
         email: originalProfile.email,
-        department,
-        interests
+        department: department.trim(),
+        interests: [...interests]
       });
       
+      // 편집 모드 비활성화
+      setIsEditMode(false);
+      
       showSuccess('프로필이 성공적으로 업데이트되었습니다!');
+      
+      // 자동 리프레시 (2초 후) - 서버 데이터와 동기화 확인
+      setTimeout(() => {
+        console.log("🔄 페이지 새로고침으로 서버 데이터 동기화 확인");
+        window.location.reload();
+      }, 2000);
+      
     } catch (error) {
-      console.error('Profile update error:', error);
-      showError('프로필 업데이트에 실패했습니다');
+      console.error('❌ Profile update error:', error);
+      showError(`프로필 업데이트에 실패했습니다: ${error.message}`);
     }
   };
 
@@ -294,200 +314,235 @@ const ProfilePage = () => {
   );
 
   return (
-    <>
+    <div className="main-layout profile-page">
       {/* 로딩 오버레이 추가 */}
       {(authLoading.updateProfile || authLoading.logout || isUpdatingEmail) && <LoadingSpinner />}
       
-      <Container className="mt-5 mb-5">
-        <Row className="justify-content-center">
-          <Col md={8}>
-            <Card className="shadow-sm">
-              <Card.Body>
-                <h2 className="text-center mb-4">내 프로필</h2>
-                
-                {/* 🔥 UPDATED: 통합된 알림 메시지 표시 */}
-                {error && <Alert variant="danger">{error}</Alert>}
-                {success && <Alert variant="success">{success}</Alert>}
-                {info && <Alert variant="info">{info}</Alert>}
-                
-                {/* 이메일 인증 섹션 */}
-                <Card className="mb-4">
-                  <Card.Body>
-                    <h4 className="mb-3">이메일 인증</h4>
-                    
-                    <div className="d-flex align-items-center mb-3">
-                      <div className="me-auto">
-                        <p className="mb-1">
-                          <strong>이메일:</strong> {email}
-                        </p>
-                        <div className="mb-0">
-                          <strong>인증 상태:</strong>{' '}
-                          {isCheckingVerification ? (
-                            <span><Spinner animation="border" size="sm" /></span>
-                          ) : (
-                            isEmailVerified === true ? ( // 명시적으로 true와 비교
-                              <Badge bg="success">인증됨</Badge>
-                            ) : (
-                              <Badge bg="warning" text="dark">인증 필요</Badge>
-                            )
-                          )}
-                        </div>
-                        {isEmailVerified && userProfile?.certified_date && (
-                          <p className="text-muted small mb-0">
-                            인증일: {new Date(userProfile.certified_date).toLocaleDateString()}
-                          </p>
+      {/* 네비게이션바 높이만큼 추가하는 여백 */}
+      <div className="navbar-spacer"></div>
+      
+      <main className="main-content">
+        {/* 프로필 헤더 섹션 */}
+        <section className="profile-header-section">
+          <h1 className="profile-main-title">내 프로필</h1>
+          <p className="profile-subtitle">
+            안녕하세요, {userProfile?.displayName || currentUser?.email?.split("@")[0] || "사용자"}님!
+          </p>
+        </section>
+
+        {/* 프로필 카드 섹션 */}
+        <section className="profile-cards-section">
+          <Container className="profile-container">
+            {/* 🔥 통합된 알림 메시지 표시 */}
+            {error && <Alert variant="danger" onClose={() => clearAll()} dismissible>{error}</Alert>}
+            {success && <Alert variant="success" onClose={() => clearAll()} dismissible>{success}</Alert>}
+            {info && <Alert variant="info" onClose={() => clearAll()} dismissible>{info}</Alert>}
+            
+            <Row className="g-4">
+              {/* 이메일 인증 카드 - 컴팩트 스타일 적용 */}
+              <Col lg={12}>
+                <DashboardCard
+                  title="이메일 인증"
+                  icon="bi-envelope-check"
+                  className="email-verification-card-compact"
+                  headerAction={
+                    isEmailVerified ? (
+                      <Button 
+                        variant="outline-success" 
+                        size="sm"
+                        onClick={checkEmailVerification}
+                        disabled={isCheckingVerification}
+                      >
+                        {isCheckingVerification ? (
+                          <>
+                            <Spinner animation="border" size="sm" className="me-1" />
+                            확인 중...
+                          </>
+                        ) : (
+                          '인증 상태 확인'
+                        )}
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="outline-primary" 
+                        size="sm"
+                        onClick={requestEmailVerification}
+                        disabled={isSendingVerification || !email || isUpdatingEmail}
+                      >
+                        {isSendingVerification || isUpdatingEmail ? (
+                          <>
+                            <Spinner animation="border" size="sm" className="me-1" />
+                            처리 중...
+                          </>
+                        ) : (
+                          '이메일 인증하기'
+                        )}
+                      </Button>
+                    )
+                  }
+                >
+                  <div className="email-verification-status">
+                    <div className="me-auto">
+                      <p className="mb-2">
+                        <strong>이메일:</strong> {email}
+                      </p>
+                      <div className="verification-badge-container">
+                        {isCheckingVerification ? (
+                          <div className="verification-badge">
+                            <Spinner animation="border" size="sm" className="me-1" />
+                            확인 중...
+                          </div>
+                        ) : (
+                          <div className={`verification-badge ${isEmailVerified ? 'verified' : 'not-verified'}`}>
+                            <i className={`bi ${isEmailVerified ? 'bi-check-circle' : 'bi-exclamation-triangle'} me-1`}></i>
+                            {isEmailVerified ? '인증 완료' : '인증 필요'}
+                          </div>
                         )}
                       </div>
-                      
-                      {!isEmailVerified && (
-                        <div>
-                          <Button 
-                            variant="outline-primary" 
-                            onClick={requestEmailVerification}
-                            disabled={isSendingVerification || !email || isUpdatingEmail}
-                          >
-                            {isSendingVerification || isUpdatingEmail ? (
-                              <>
-                                <Spinner animation="border" size="sm" className="me-1" />
-                                처리 중...
-                              </>
-                            ) : (
-                              '이메일 인증하기'
-                            )}
-                          </Button>
-                        </div>
-                      )}
-                      
-                      {isEmailVerified && (
-                        <div>
-                          <Button 
-                            variant="outline-success" 
-                            onClick={checkEmailVerification}
-                            disabled={isCheckingVerification}
-                          >
-                            {isCheckingVerification ? (
-                              <>
-                                <Spinner animation="border" size="sm" className="me-1" />
-                                확인 중...
-                              </>
-                            ) : (
-                              '인증 상태 확인'
-                            )}
-                          </Button>
-                        </div>
+                      {isEmailVerified && userProfile?.certified_date && (
+                        <p className="text-muted small mt-1 mb-0">
+                          인증일: {new Date(userProfile.certified_date).toLocaleDateString()}
+                        </p>
                       )}
                     </div>
+                  </div>
+                  
+                  <div className="small text-muted mt-2">
+                    {!isEmailVerified ? (
+                      <p className="mb-0">
+                        학교 이메일 인증이 필요합니다. 인증하지 않으면 일부 기능(그룹 생성 등)이 제한될 수 있습니다.
+                      </p>
+                    ) : (
+                      <p className="mb-0">
+                        이메일이 성공적으로 인증되었습니다. 모든 기능을 사용할 수 있습니다.
+                      </p>
+                    )}
+                  </div>
+                </DashboardCard>
+              </Col>
+
+              {/* 기본 정보 카드 */}
+              <Col lg={6}>
+                <DashboardCard
+                  title="기본 정보"
+                  icon="bi-person"
+                  headerAction={
+                    <Button 
+                      variant={isEditMode ? "outline-secondary" : "outline-primary"}
+                      size="sm"
+                      onClick={toggleEditMode}
+                      disabled={authLoading.updateProfile}
+                    >
+                      <i className={`bi ${isEditMode ? 'bi-x-circle' : 'bi-pencil'} me-1`}></i>
+                      {isEditMode ? '취소' : '편집'}
+                    </Button>
+                  }
+                >
+                  <Form onSubmit={handleSubmit} className="profile-form-section">
+                    <Form.Group className="mb-3">
+                      <Form.Label>이메일</Form.Label>
+                      <Form.Control 
+                        type="email" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                        disabled={isEmailVerified || !isEditMode} // 편집 모드가 아니면 비활성화
+                        required
+                      />
+                      <Form.Text className="text-muted">
+                        {isEmailVerified 
+                          ? '이메일 주소가 인증되어 변경할 수 없습니다.' 
+                          : '이메일 주소를 변경한 후 인증 버튼을 클릭하세요.'}
+                      </Form.Text>
+                    </Form.Group>
                     
-                    <div className="small text-muted">
-                      {!isEmailVerified ? (
-                        <p className="mb-0">
-                          학교 이메일 인증이 필요합니다. 인증하지 않으면 일부 기능(그룹 생성 등)이 제한될 수 있습니다.
-                        </p>
+                    <Form.Group className="mb-3">
+                      <Form.Label>이름</Form.Label>
+                      <Form.Control 
+                        type="text" 
+                        value={displayName} 
+                        onChange={(e) => setDisplayName(e.target.value)} 
+                        disabled={!isEditMode} // 편집 모드가 아니면 비활성화
+                        required 
+                      />
+                    </Form.Group>
+                    
+                    <Form.Group className="mb-4">
+                      <Form.Label>학과</Form.Label>
+                      <Form.Control 
+                        type="text" 
+                        value={department} 
+                        onChange={(e) => setDepartment(e.target.value)} 
+                        disabled={!isEditMode} // 편집 모드가 아니면 비활성화
+                        placeholder="예: 컴퓨터공학과"
+                      />
+                    </Form.Group>
+                    
+                    {/* 편집 모드일 때만 저장 버튼 표시 */}
+                    {isEditMode && (
+                      <Button 
+                        variant="primary"
+                        disabled={authLoading.updateProfile || !hasChanges()} 
+                        className="profile-btn-primary w-100" 
+                        type="submit"
+                      >
+                        {authLoading.updateProfile 
+                          ? '업데이트 중...' 
+                          : !hasChanges() 
+                            ? '변경사항 없음' 
+                            : '프로필 저장'}
+                      </Button>
+                    )}
+                  </Form>
+                </DashboardCard>
+              </Col>
+
+              {/* 관심 분야 카드 */}
+              <Col lg={6}>
+                <DashboardCard
+                  title="관심 분야"
+                  icon="bi-tags"
+                >
+                  <div className="interests-section">
+                    <Form.Label>선택된 관심 분야</Form.Label>
+                    <div className="interests-display">
+                      {interests.length > 0 ? (
+                        interests.map((interest) => (
+                          <div 
+                            key={interest} 
+                            className={`interest-tag ${!isEditMode ? 'disabled' : ''}`}
+                            onClick={() => isEditMode && handleRemoveInterest(interest)}
+                            title={isEditMode ? "클릭하여 제거" : "편집 모드에서 제거 가능"}
+                          >
+                            {interest}
+                            {isEditMode && <span className="remove-icon">×</span>}
+                          </div>
+                        ))
                       ) : (
-                        <p className="mb-0">
-                          이메일이 성공적으로 인증되었습니다. 모든 기능을 사용할 수 있습니다.
-                        </p>
-                      )}
-                    </div>
-                  </Card.Body>
-                </Card>
-                
-                <Form onSubmit={handleSubmit}>
-                  <Form.Group id="email" className="mb-3">
-                    <Form.Label>이메일</Form.Label>
-                    <Form.Control 
-                      type="email" 
-                      value={email} 
-                      onChange={(e) => setEmail(e.target.value)} 
-                      disabled={isEmailVerified} // 인증된 경우 이메일 변경 불가
-                      required
-                    />
-                    <Form.Text className="text-muted">
-                      {isEmailVerified 
-                        ? '이메일 주소가 인증되어 변경할 수 없습니다.' 
-                        : '이메일 주소를 변경한 후 인증 버튼을 클릭하세요.'}
-                    </Form.Text>
-                  </Form.Group>
-                  
-                  <Form.Group id="displayName" className="mb-3">
-                    <Form.Label>이름</Form.Label>
-                    <Form.Control 
-                      type="text" 
-                      value={displayName} 
-                      onChange={(e) => setDisplayName(e.target.value)} 
-                      required 
-                    />
-                  </Form.Group>
-                  
-                  <Form.Group id="department" className="mb-3">
-                    <Form.Label>학과</Form.Label>
-                    <Form.Control 
-                      type="text" 
-                      value={department} 
-                      onChange={(e) => setDepartment(e.target.value)} 
-                      placeholder="예: 컴퓨터공학과"
-                    />
-                  </Form.Group>
-                  
-                  <Form.Group id="interests" className="mb-3">
-                    <Form.Label>관심 분야</Form.Label>
-                    
-                    <div className="d-flex flex-wrap mb-3">
-                      {interests.map((interest) => (
-                        <Badge 
-                          key={interest} 
-                          bg="primary" 
-                          className="me-1 mb-1 p-2"
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => handleRemoveInterest(interest)}
-                        >
-                          {interest} &times;
-                        </Badge>
-                      ))}
-                      {interests.length === 0 && (
-                        <p className="text-muted mb-0">선택된 관심 분야가 없습니다. 아래 드롭다운에서 선택해주세요.</p>
+                        <div className="interests-empty">
+                          선택된 관심 분야가 없습니다. {isEditMode ? '아래에서 추가해주세요.' : '편집 모드에서 추가할 수 있습니다.'}
+                        </div>
                       )}
                     </div>
                     
-                    <div className="d-flex flex-wrap">
-                      {renderProgrammingTagsDropdown()}
-                    </div>
+                    {/* 편집 모드일 때만 태그 추가 드롭다운 표시 */}
+                    {isEditMode && (
+                      <div className="d-flex flex-wrap">
+                        {renderProgrammingTagsDropdown()}
+                      </div>
+                    )}
                     
                     <Form.Text className="text-muted d-block mt-2">
-                      관심 분야를 선택하면 관련 스터디 그룹을 더 쉽게 찾을 수 있습니다. 태그를 클릭하면 제거됩니다.
+                      관심 분야를 선택하면 관련 스터디 그룹을 더 쉽게 찾을 수 있습니다. 
+                      {isEditMode ? '태그를 클릭하면 제거됩니다.' : '편집 모드에서 수정할 수 있습니다.'}
                     </Form.Text>
-                  </Form.Group>
-                  
-                  <Button 
-                    variant="primary" 
-                    disabled={authLoading.updateProfile || !hasChanges()} 
-                    className="w-100 mb-3" 
-                    type="submit"
-                  >
-                    {authLoading.updateProfile 
-                      ? '업데이트 중...' 
-                      : !hasChanges() 
-                        ? '변경사항 없음' 
-                        : '프로필 업데이트'}
-                  </Button>
-                </Form>
-                
-                <div className="w-100 text-center mt-3">
-                  <Button 
-                    variant="link" 
-                    onClick={handleLogout} 
-                    disabled={authLoading.logout}
-                    className="text-danger"
-                  >
-                    {authLoading.logout ? '로그아웃 중...' : '로그아웃'}
-                  </Button>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-    </>
+                  </div>
+                </DashboardCard>
+              </Col>
+            </Row>
+          </Container>
+        </section>
+      </main>
+    </div>
   );
 };
 

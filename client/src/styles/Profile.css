@@ -1,0 +1,350 @@
+/* 프로필 페이지 전용 스타일 */
+@import './Variables.css';
+
+/* ======================================================
+   프로필 페이지 레이아웃
+   ====================================================== */
+
+.main-layout.profile-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%);
+  color: var(--text-color);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+.main-layout.profile-page .main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* ======================================================
+   프로필 헤더 섹션
+   ====================================================== */
+
+.profile-header-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem 0;
+}
+
+.profile-main-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+}
+
+.profile-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin: 0;
+}
+
+/* ======================================================
+   프로필 카드 섹션
+   ====================================================== */
+
+.profile-cards-section {
+  flex: 1;
+}
+
+.profile-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ======================================================
+   이메일 인증 카드 컴팩트 스타일
+   ====================================================== */
+
+.email-verification-card-compact .card-body-common {
+  padding: 1rem 1.25rem; /* 기본보다 줄어든 패딩 */
+}
+
+.email-verification-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.verification-badge-container {
+  margin-bottom: 0.5rem;
+}
+
+.verification-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.verification-badge.verified {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.verification-badge.not-verified {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #856404;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+/* ======================================================
+   관심 분야 태그 스타일
+   ====================================================== */
+
+.interests-section {
+  width: 100%;
+}
+
+.interests-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  min-height: 40px;
+  align-items: flex-start;
+}
+
+.interest-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-color);
+}
+
+.interest-tag:hover {
+  background-color: var(--accent-color);
+  color: white;
+  transform: scale(1.05);
+}
+
+.interest-tag.disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.interest-tag.disabled:hover {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  transform: none;
+}
+
+.remove-icon {
+  margin-left: 0.5rem;
+  font-weight: bold;
+  opacity: 0.7;
+}
+
+.interests-empty {
+  color: var(--text-muted, #666);
+  font-style: italic;
+  text-align: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  border: 1px dashed var(--border-color);
+  width: 100%;
+}
+
+/* ======================================================
+   프로필 폼 섹션
+   ====================================================== */
+
+.profile-form-section {
+  width: 100%;
+}
+
+.profile-form-section .form-control:disabled {
+  background-color: var(--light-bg);
+  border-color: var(--border-color);
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.profile-btn-primary {
+  background-color: var(--accent-color);
+  border: none;
+  border-radius: 25px;
+  font-family: 'Poor Story', 'Noto Sans KR', cursive;
+  font-weight: 500;
+  padding: 0.9rem 2rem;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+}
+
+.profile-btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+}
+
+.profile-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ======================================================
+   다크모드 스타일
+   ====================================================== */
+
+.dark-mode.main-layout.profile-page {
+  background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%);
+}
+
+.dark-mode .profile-main-title {
+  color: var(--text-color);
+}
+
+.dark-mode .profile-subtitle {
+  color: #ccc;
+}
+
+.dark-mode .verification-badge.verified {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #4caf50;
+}
+
+.dark-mode .verification-badge.not-verified {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #ffb74d;
+}
+
+.dark-mode .interest-tag {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.dark-mode .interest-tag:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.dark-mode .interests-empty {
+  background-color: rgba(255, 255, 255, 0.02);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.dark-mode .profile-form-section .form-control:disabled {
+  background-color: var(--white);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.dark-mode .profile-btn-primary {
+  background-color: var(--accent-color);
+  box-shadow: 0 4px 8px rgba(153, 77, 66, 0.4);
+}
+
+.dark-mode .profile-btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+  box-shadow: 0 6px 12px rgba(153, 77, 66, 0.6);
+}
+
+/* ======================================================
+   반응형 스타일
+   ====================================================== */
+
+@media (max-width: 1200px) {
+  .main-layout.profile-page .main-content {
+    padding: 1.5rem;
+  }
+  
+  .profile-container {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .profile-main-title {
+    font-size: 2.5rem;
+  }
+  
+  .profile-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .email-verification-card-compact .card-body-common {
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-layout.profile-page .main-content {
+    padding: 1rem;
+  }
+  
+  .profile-header-section {
+    padding: 1rem 0;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-main-title {
+    font-size: 2rem;
+  }
+  
+  .profile-subtitle {
+    font-size: 1rem;
+  }
+  
+  .interests-display {
+    gap: 0.3rem;
+  }
+  
+  .interest-tag {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+  }
+  
+  .verification-badge {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-main-title {
+    font-size: 1.8rem;
+  }
+  
+  .email-verification-status {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .interests-display {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .interest-tag {
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .profile-btn-primary {
+    font-size: 0.9rem;
+    padding: 0.8rem 1.5rem;
+  }
+}
