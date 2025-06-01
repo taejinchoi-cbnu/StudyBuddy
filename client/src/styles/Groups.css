@@ -1,0 +1,559 @@
+/* ======================================================
+   그룹 페이지 전용 스타일
+   ====================================================== */
+
+   @import './Variables.css';
+
+   /* ======================================================
+      Groups Page 전체 레이아웃
+      ====================================================== */
+   
+   .main-layout.groups-page {
+     display: grid;
+     grid-template-rows: 1fr;
+     min-height: 100vh;
+     background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%);
+     color: var(--text-color);
+     transition: background-color var(--transition-normal), color var(--transition-normal);
+   }
+   
+   /* Groups Page 메인 콘텐츠 */
+   .groups-page .main-content {
+     grid-row: 1;
+     z-index: 1;
+     display: flex;
+     flex-direction: column;
+     padding: 2rem;
+     overflow-y: auto;
+     padding-top: calc(var(--navbar-height) + 2rem);
+   }
+   
+   /* ======================================================
+      Groups Page 헤더 섹션
+      ====================================================== */
+   
+   .groups-header-section {
+     padding: 2rem 0;
+     text-align: center;
+     margin-bottom: 2rem;
+   }
+   
+   .groups-header-content {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     max-width: var(--container-max-width);
+     margin: 0 auto;
+     gap: 2rem;
+   }
+   
+   .groups-main-title {
+     font-size: 3rem;
+     font-weight: 700;
+     color: #2c3e50;
+     margin: 0;
+     line-height: 1.2;
+   }
+   
+   .create-group-btn {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     background-color: #2c3e50;
+     color: white;
+     border: none;
+     border-radius: 25px;
+     font-family: 'Poor Story', 'Noto Sans KR', cursive;
+     font-weight: 500;
+     font-size: 1rem;
+     cursor: pointer;
+     transition: all var(--transition-normal);
+     text-decoration: none;
+     padding: 0.9rem 2.2rem;
+     box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+   }
+   
+   .create-group-btn:hover {
+     background-color: #34495e;
+     transform: translateY(-2px);
+     box-shadow: 0 6px 20px rgba(44, 62, 80, 0.4);
+     color: white;
+   }
+   
+   /* ======================================================
+      Groups 섹션 스타일
+      ====================================================== */
+   
+   .my-groups-section,
+   .all-groups-section {
+     background-color: white;
+     padding: 3rem 0;
+     margin: 1rem 0;
+     border-radius: 30px;
+     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+     position: relative;
+   }
+   
+   .my-groups-section {
+     margin-top: 0;
+   }
+   
+   .groups-container {
+     max-width: var(--container-max-width);
+     margin: 0 auto;
+     padding: 0 2rem;
+   }
+   
+   .section-title {
+     font-size: 2rem;
+     font-weight: 600;
+     color: #2c3e50;
+     line-height: 1.3;
+     margin-bottom: 2rem;
+     text-align: center;
+   }
+   
+   /* ======================================================
+      검색/필터 카드 스타일
+      ====================================================== */
+   
+   .search-filter-card {
+     margin-bottom: 2rem;
+   }
+   
+   .tags-filter-section {
+     margin-top: 1rem;
+   }
+   
+   .filter-label {
+     font-weight: 600;
+     color: var(--text-color);
+     margin-bottom: 0.5rem;
+   }
+   
+   .tags-container {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 0.5rem;
+   }
+   
+   .tag-badge {
+     cursor: pointer;
+     transition: all var(--transition-fast);
+     user-select: none;
+   }
+   
+   .tag-badge:hover {
+     transform: scale(1.05);
+   }
+   
+   /* ======================================================
+      그룹 그리드 스타일
+      ====================================================== */
+   
+   .groups-grid {
+     margin-bottom: 2rem;
+   }
+   
+   /* ListItem 그룹 카드 변형 스타일 */
+   .list-item-common.list-item-group-card {
+     background-color: var(--white);
+     border-radius: 15px;
+     padding: 1.5rem;
+     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+     transition: all 0.3s ease;
+     border: 1px solid rgba(255, 255, 255, 0.2);
+     height: 100%;
+     cursor: pointer;
+   }
+   
+   .list-item-common.list-item-group-card:hover {
+     transform: translateY(-5px);
+     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+   }
+   
+   .list-item-common.list-item-group-card .list-item-content {
+     flex-direction: column;
+     align-items: flex-start;
+     gap: 1rem;
+     height: 100%;
+   }
+   
+   .list-item-common.list-item-group-card .list-item-info {
+     flex: 1;
+     width: 100%;
+   }
+   
+   .list-item-common.list-item-group-card .list-item-title {
+     font-size: 1.4rem;
+     font-weight: 700;
+     margin-bottom: 1rem;
+     color: #2c3e50;
+     line-height: 1.3;
+   }
+   
+   .list-item-common.list-item-group-card .group-description {
+     font-size: 0.95rem;
+     line-height: 1.6;
+     color: #666;
+   }
+   
+   .list-item-common.list-item-group-card .group-tags {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 0.25rem;
+   }
+   
+   .list-item-common.list-item-group-card .group-meta {
+     margin-top: auto;
+     padding-top: 1rem;
+     border-top: 1px solid var(--border-color);
+   }
+   
+   .list-item-common.list-item-group-card .list-item-right {
+     align-self: flex-start;
+   }
+   
+   /* ======================================================
+      로딩 및 빈 상태 스타일
+      ====================================================== */
+   
+   .groups-loading-container {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     min-height: 50vh;
+     text-align: center;
+   }
+   
+   .empty-groups-section {
+     text-align: center;
+     padding: 3rem 2rem;
+     color: #666;
+   }
+   
+   .empty-groups-section i {
+     color: var(--text-muted, #999);
+     margin-bottom: 1rem;
+   }
+   
+   /* ======================================================
+      더 보기 버튼 스타일
+      ====================================================== */
+   
+   .load-more-section {
+     text-align: center;
+     padding: 2rem 0;
+   }
+   
+   .load-more-btn {
+     background: transparent;
+     color: #2c3e50;
+     border: 2px solid #2c3e50;
+     border-radius: 25px;
+     font-family: 'Poor Story', 'Noto Sans KR', cursive;
+     font-weight: 500;
+     padding: 0.9rem 2.2rem;
+     position: relative;
+     transition: all var(--transition-normal);
+   }
+   
+   .load-more-btn:hover {
+     color: var(--accent-color);
+     border-color: var(--accent-color);
+     transform: translateY(-2px);
+   }
+   
+   /* ======================================================
+      검색 및 필터 애니메이션
+      ====================================================== */
+   
+   .search-input.searching {
+     border-color: var(--primary-color);
+     box-shadow: 0 0 0 0.2rem rgba(255, 204, 196, 0.25);
+   }
+   
+   .spinning {
+     animation: spin 1s linear infinite;
+   }
+   
+   @keyframes spin {
+     from { transform: rotate(0deg); }
+     to { transform: rotate(360deg); }
+   }
+   
+   .filter-animating {
+     transition: all 0.3s ease;
+     opacity: 0.7;
+   }
+   
+   .tag-badge.tag-selected {
+     transform: scale(1.05);
+     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+   }
+   
+   /* ======================================================
+      다크모드 스타일
+      ====================================================== */
+   
+   .dark-mode.main-layout.groups-page {
+     background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%);
+   }
+   
+   .dark-mode .groups-main-title {
+     color: var(--text-color);
+   }
+   
+   .dark-mode .my-groups-section,
+   .dark-mode .all-groups-section {
+     background-color: var(--white);
+     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+   }
+   
+   .dark-mode .section-title {
+     color: var(--text-color);
+   }
+   
+   .dark-mode .filter-label {
+     color: var(--text-color);
+   }
+   
+   .dark-mode .list-item-common.list-item-group-card {
+     background-color: var(--white);
+     border-color: rgba(255, 255, 255, 0.1);
+     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+   }
+   
+   .dark-mode .list-item-common.list-item-group-card .list-item-title {
+     color: var(--text-color);
+   }
+   
+   .dark-mode .list-item-common.list-item-group-card .group-description {
+     color: #ccc;
+   }
+   
+   .dark-mode .create-group-btn {
+     background-color: var(--accent-color);
+     box-shadow: 0 4px 15px rgba(153, 77, 66, 0.4);
+   }
+   
+   .dark-mode .create-group-btn:hover {
+     background-color: var(--primary-dark);
+     box-shadow: 0 6px 20px rgba(153, 77, 66, 0.6);
+   }
+   
+   .dark-mode .load-more-btn {
+     color: var(--text-color);
+     border-color: var(--text-color);
+   }
+   
+   .dark-mode .load-more-btn:hover {
+     color: var(--accent-color);
+     border-color: var(--accent-color);
+   }
+   
+   .dark-mode .empty-groups-section {
+     color: #ccc;
+   }
+   
+   /* ======================================================
+      반응형 디자인
+      ====================================================== */
+   
+   @media (max-width: 1200px) {
+     .groups-page .main-content {
+       padding: 1.5rem;
+       padding-top: calc(var(--navbar-height) + 1.5rem);
+     }
+     
+     .groups-container {
+       padding: 0 1.5rem;
+     }
+   }
+   
+   @media (max-width: 992px) {
+     .groups-header-content {
+       flex-direction: column;
+       text-align: center;
+       gap: 1.5rem;
+     }
+     
+     .groups-main-title {
+       font-size: 2.5rem;
+     }
+     
+     .create-group-btn {
+       width: 100%;
+       max-width: 300px;
+     }
+     
+     .my-groups-section,
+     .all-groups-section {
+       padding: 2rem 0;
+       margin: 0.5rem 0;
+     }
+   }
+   
+   @media (max-width: 768px) {
+     .groups-page .main-content {
+       padding: 1rem;
+       padding-top: calc(60px + 1rem);
+     }
+     
+     .groups-container {
+       padding: 0 1rem;
+     }
+     
+     .groups-main-title {
+       font-size: 2rem;
+     }
+     
+     .section-title {
+       font-size: 1.6rem;
+     }
+     
+     .list-item-common.list-item-group-card {
+       padding: 1rem;
+     }
+     
+     .list-item-common.list-item-group-card .list-item-title {
+       font-size: 1.2rem;
+     }
+   }
+   
+   @media (max-width: 480px) {
+     .groups-main-title {
+       font-size: 1.8rem;
+     }
+     
+     .section-title {
+       font-size: 1.4rem;
+     }
+     
+     .create-group-btn {
+       width: 100%;
+       font-size: 0.9rem;
+       padding: 0.8rem 1.5rem;
+     }
+   }
+
+   /* ======================================================
+   내 스터디 그룹 리스트 스타일
+   ====================================================== */
+
+.my-groups-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 800px; /* 리스트가 너무 넓어지지 않도록 제한 */
+  }
+  
+  /* 내 그룹 아이템 변형 스타일 */
+  .list-item-common.list-item-my-group {
+    background-color: var(--white);
+    border: 1px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: all var(--transition-normal);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .list-item-common.list-item-my-group:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .list-item-common.list-item-my-group .list-item-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .my-group-details {
+    width: 100%;
+  }
+  
+  .group-description-short {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  .group-meta-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    color: var(--text-muted, #666);
+    font-size: 0.85rem;
+  }
+  
+  .group-meta-info span {
+    display: flex;
+    align-items: center;
+  }
+  
+  .group-meta-info i {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+  
+  /* 그룹 카드 래퍼에 호버 효과 */
+  .group-card-wrapper {
+    height: 100%;
+    transition: transform var(--transition-normal);
+  }
+  
+  .group-card-wrapper:hover {
+    transform: translateY(-5px);
+  }
+  
+  /* 다크모드 스타일 */
+  .dark-mode .list-item-common.list-item-my-group {
+    background-color: var(--white);
+    border-color: var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .dark-mode .list-item-common.list-item-my-group:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+  
+  .dark-mode .list-item-common.list-item-my-group .list-item-title {
+    color: var(--text-color);
+  }
+  
+  .dark-mode .group-description-short {
+    color: #ccc;
+  }
+  
+  .dark-mode .group-meta-info {
+    color: var(--text-color);
+  }
+  
+  /* 반응형 스타일 */
+  @media (max-width: 768px) {
+    .my-groups-list {
+      max-width: 100%;
+    }
+    
+    .list-item-common.list-item-my-group {
+      padding: 1rem;
+    }
+    
+    .list-item-common.list-item-my-group .list-item-title {
+      font-size: 1.1rem;
+    }
+    
+    .group-meta-info {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    
+    .group-meta-info span {
+      margin-right: 0;
+    }
+  }

@@ -122,62 +122,62 @@ const DashboardPage = () => {
 
           {/* 첫 번째 카드 행: 다가오는 일정 + 그룹 요청 + 그룹 추천 */}
           <Container className="dashboard-cards-container">
-            <Row className="g-4 mb-4">
-              {/* 다가오는 일정 카드 */}
+          <Row className="g-4 mb-4">
+            {/* 다가오는 일정 카드 */}
+            <Col lg={hasAdminGroups ? 4 : 6} md={6} sm={12}>
+              <Card className="dashboard-card h-100">
+                <Card.Header>
+                  <h5 className="card-title mb-0">
+                    <i className="bi bi-calendar-event me-2"></i>
+                    다가오는 일정
+                  </h5>
+                </Card.Header>
+                <Card.Body className="p-0">
+                  <UpcomingEventsComponent 
+                    userGroups={userGroups || []}
+                    onDataChange={refreshData}
+                  />
+                </Card.Body>
+              </Card>
+            </Col>
+
+            {/* 그룹 요청 카드 - 관리자인 경우에만 표시 */}
+            {hasAdminGroups && (
               <Col lg={4} md={6} sm={12}>
                 <Card className="dashboard-card h-100">
                   <Card.Header>
                     <h5 className="card-title mb-0">
-                      <i className="bi bi-calendar-event me-2"></i>
-                      다가오는 일정
+                      <i className="bi bi-envelope-fill me-2"></i>
+                      그룹 가입 요청
                     </h5>
                   </Card.Header>
                   <Card.Body className="p-0">
-                    <UpcomingEventsComponent 
+                    <GroupRequestsComponent 
                       userGroups={userGroups || []}
                       onDataChange={refreshData}
                     />
                   </Card.Body>
                 </Card>
               </Col>
+            )}
 
-              {/* 그룹 요청 카드 - 관리자인 경우에만 표시 */}
-              {hasAdminGroups && (
-                <Col lg={4} md={6} sm={12}>
-                  <Card className="dashboard-card h-100">
-                    <Card.Header>
-                      <h5 className="card-title mb-0">
-                        <i className="bi bi-envelope-fill me-2"></i>
-                        그룹 가입 요청
-                      </h5>
-                    </Card.Header>
-                    <Card.Body className="p-0">
-                      <GroupRequestsComponent 
-                        userGroups={userGroups || []}
-                        onDataChange={refreshData}
-                      />
-                    </Card.Body>
-                  </Card>
-                </Col>
-              )}
-
-              {/* 그룹 추천 카드 */}
-              <Col lg={hasAdminGroups ? 4 : 6} md={6} sm={12}>
-                <Card className="dashboard-card h-100">
-                  <Card.Header>
-                    <h5 className="card-title mb-0">
-                      <i className="bi bi-lightbulb me-2"></i>
-                      이런 그룹은 어때요?
-                    </h5>
-                  </Card.Header>
-                  <Card.Body className="p-0">
-                    <GroupRecommendationComponent 
-                      userGroups={userGroups || []}
-                    />
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
+            {/* 그룹 추천 카드 */}
+            <Col lg={hasAdminGroups ? 4 : 6} md={6} sm={12}>
+              <Card className="dashboard-card h-100">
+                <Card.Header>
+                  <h5 className="card-title mb-0">
+                    <i className="bi bi-lightbulb me-2"></i>
+                    이런 그룹은 어때요?
+                  </h5>
+                </Card.Header>
+                <Card.Body className="p-0">
+                  <GroupRecommendationComponent 
+                    userGroups={userGroups || []}
+                  />
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
 
             {/* 두 번째 카드 행: 미니 캘린더 + 미팅 통계 + 타이머 */}
             <Row className="g-4 mb-4">
