@@ -1,0 +1,376 @@
+@import './Variables.css';
+
+/* ======================================================
+   공통 대시보드 카드 스타일
+   ====================================================== */
+
+.dashboard-card-common {
+  border-radius: var(--card-border-radius, 15px);
+  box-shadow: var(--shadow);
+  transition: all var(--transition-normal);
+  border: 1px solid var(--border-color);
+  background-color: var(--white);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dashboard-card-common:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+
+/* 카드 헤더 */
+.card-header-common {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background-color: var(--primary-color);
+  border-bottom: 1px solid var(--border-color);
+  border-radius: var(--card-border-radius, 15px) var(--card-border-radius, 15px) 0 0;
+}
+
+.card-header-left {
+  display: flex;
+  align-items: center;
+}
+
+.card-title-common {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 1.1rem;
+}
+
+.card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 카드 바디 */
+.card-body-common {
+  flex: 1;
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+/* ======================================================
+   공통 리스트 아이템 스타일
+   ====================================================== */
+
+.list-item-common {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all var(--transition-fast);
+  background-color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.75rem;
+}
+
+.list-item-common:last-child {
+  margin-bottom: 0;
+}
+
+.list-item-common:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-dark);
+  transform: translateX(3px);
+}
+
+.list-item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-item-info {
+  flex: 1;
+}
+
+.list-item-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text-color);
+}
+
+.list-item-subtitle {
+  font-size: 0.75rem;
+  color: #666;
+  line-height: 1.3;
+}
+
+.list-item-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 리스트 아이템 변형 */
+.list-item-upcoming-event .list-item-subtitle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.list-item-recommendation .list-item-title {
+  font-size: 0.85rem;
+}
+
+.list-item-recommendation .list-item-subtitle {
+  font-size: 0.75rem;
+}
+
+/* ======================================================
+   공통 통계 위젯 스타일
+   ====================================================== */
+
+.stat-widget-common {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+}
+
+.stat-widget-common:hover {
+  background-color: var(--primary-color);
+  transform: scale(1.05);
+}
+
+.stat-widget-compact {
+  padding: 0.5rem;
+}
+
+.stat-icon-common {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.stat-widget-compact .stat-icon-common {
+  width: 32px;
+  height: 32px;
+  font-size: 0.8rem;
+}
+
+/* 통계 아이콘 색상 */
+.stat-icon-common.bg-info { background-color: #17a2b8; }
+.stat-icon-common.bg-warning { background-color: #ffc107; color: #333; }
+.stat-icon-common.bg-success { background-color: #28a745; }
+.stat-icon-common.bg-secondary { background-color: #6c757d; }
+.stat-icon-common.bg-primary { background-color: var(--accent-color); }
+.stat-icon-common.bg-danger { background-color: #dc3545; }
+
+.stat-content-common {
+  flex: 1;
+  text-align: left;
+}
+
+.stat-value-common {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text-color);
+  line-height: 1;
+}
+
+.stat-widget-compact .stat-value-common {
+  font-size: 1.1rem;
+}
+
+.stat-label-common {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.1rem;
+}
+
+/* ======================================================
+   공통 유틸리티 클래스
+   ====================================================== */
+
+.hover-lift {
+  transition: transform var(--transition-normal);
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+}
+
+.hover-highlight {
+  transition: background-color var(--transition-fast);
+}
+
+.hover-highlight:hover {
+  background-color: var(--primary-color);
+}
+
+.scroll-container {
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.scroll-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 2px;
+}
+
+/* 빈 상태 공통 스타일 */
+.empty-state-common {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-muted, #666);
+}
+
+.empty-state-common i {
+  font-size: 2rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.empty-state-common p {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+/* ======================================================
+   배지 공통 스타일
+   ====================================================== */
+
+.badge-count-common {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.badge-count-small {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+}
+
+.badge-count-large {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+}
+
+/* ======================================================
+   다크모드 스타일
+   ====================================================== */
+
+.dark-mode .dashboard-card-common {
+  background-color: var(--white);
+  border-color: var(--border-color);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .card-header-common {
+  background-color: var(--primary-color);
+  border-bottom-color: var(--border-color);
+}
+
+.dark-mode .card-title-common {
+  color: var(--text-color);
+}
+
+.dark-mode .list-item-common {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-color);
+}
+
+.dark-mode .list-item-common:hover {
+  background-color: var(--primary-color);
+}
+
+.dark-mode .stat-widget-common {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-color);
+}
+
+.dark-mode .stat-widget-common:hover {
+  background-color: var(--primary-color);
+}
+
+/* ======================================================
+   반응형 스타일
+   ====================================================== */
+
+@media (max-width: 768px) {
+  .dashboard-card-common {
+    min-height: 220px !important;
+  }
+  
+  .card-header-common {
+    padding: 0.75rem 1rem;
+  }
+  
+  .card-body-common {
+    padding: 1rem;
+  }
+  
+  .list-item-common {
+    padding: 0.5rem;
+  }
+  
+  .list-item-title {
+    font-size: 0.85rem !important;
+  }
+  
+  .list-item-subtitle {
+    font-size: 0.7rem !important;
+  }
+  
+  .stat-widget-common {
+    padding: 0.5rem;
+  }
+  
+  .stat-icon-common {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+  
+  .stat-value-common {
+    font-size: 1.1rem;
+  }
+  
+  .stat-label-common {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-card-common {
+    min-height: 200px !important;
+  }
+  
+  .card-title-common {
+    font-size: 1rem;
+  }
+  
+  .scroll-container {
+    max-height: 200px;
+  }
+}

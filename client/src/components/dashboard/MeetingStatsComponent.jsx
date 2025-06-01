@@ -1,6 +1,6 @@
-// src/components/dashboard/MeetingStatsComponent.jsx
 import { useState, useEffect } from "react";
 import { useDarkMode } from "../../contexts/DarkModeContext";
+import StatWidget from "../common/StatWidget";
 
 const MeetingStatsComponent = ({ userGroups = [], userEvents = [] }) => {
   const { darkMode } = useDarkMode();
@@ -46,44 +46,36 @@ const MeetingStatsComponent = ({ userGroups = [], userEvents = [] }) => {
     });
   }, [userGroups, userEvents]);
 
-  const StatItem = ({ icon, label, value, color = "primary" }) => (
-    <div className="stat-item">
-      <div className={`stat-icon bg-${color}`}>
-        <i className={`bi ${icon}`}></i>
-      </div>
-      <div className="stat-content">
-        <div className="stat-value">{value}</div>
-        <div className="stat-label">{label}</div>
-      </div>
-    </div>
-  );
-
   return (
     <div className={`meeting-stats-component ${darkMode ? "dark-mode" : ""}`}>
       <div className="stats-grid">
-        <StatItem 
+        <StatWidget 
           icon="bi-people-fill" 
           label="참여 그룹" 
           value={stats.totalGroups}
           color="info"
+          size="compact"
         />
-        <StatItem 
+        <StatWidget 
           icon="bi-calendar-event" 
           label="예정 미팅" 
           value={stats.upcomingMeetings}
           color="warning"
+          size="compact"
         />
-        <StatItem 
+        <StatWidget 
           icon="bi-calendar-week" 
           label="이번 주" 
           value={stats.thisWeekMeetings}
           color="success"
+          size="compact"
         />
-        <StatItem 
+        <StatWidget 
           icon="bi-check-circle" 
           label="완료 미팅" 
           value={stats.completedMeetings}
           color="secondary"
+          size="compact"
         />
       </div>
     </div>

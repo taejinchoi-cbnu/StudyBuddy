@@ -11,6 +11,7 @@
 @import './Navigation.css';
 @import './Loading.css';
 @import './Modal.css';
+@import './DashboardComponents.css';
 
 /* 페이지별 스타일 */
 @import './Home.css';

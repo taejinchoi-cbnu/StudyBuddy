@@ -172,13 +172,13 @@ const HomePage = () => {
         </AnimatedSection>
 
         {/* 주요 특징 섹션 */}
-        <AnimatedSection className="features-section">
-          {features.map((feature, index) => (
-            <div key={index} className="feature-wrapper">
-              <FeatureCard {...feature} />
-            </div>
-          ))}
-        </AnimatedSection>
+          <AnimatedSection className="features-section">
+            {features.map((feature, index) => (
+              <div key={index} className="feature-wrapper animate-target">
+                <FeatureCard {...feature} />
+              </div>
+            ))}
+          </AnimatedSection>
 
         {/* CTA(Call To Action) 섹션 - 비로그인 사용자에게만 표시 */}
         {!currentUser && (

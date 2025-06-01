@@ -18,7 +18,16 @@ const AnimatedSection = ({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          // 섹션 자체에 애니메이션 클래스 추가
           entry.target.classList.add(animationClass);
+          
+          // animate-target 클래스를 가진 자식 요소들에도 애니메이션 적용
+          const animateTargets = entry.target.querySelectorAll('.animate-target');
+          animateTargets.forEach((target, index) => {
+            setTimeout(() => {
+              target.classList.add(animationClass);
+            }, index * 300); // 순차적 애니메이션
+          });
         }
       },
       { threshold }

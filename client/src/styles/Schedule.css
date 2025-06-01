@@ -29,7 +29,6 @@
   color: #ffffff;
   border: none;
   border-radius: 25px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
   font-size: 1.1rem;
   font-weight: 500;
   text-decoration: none;
@@ -86,7 +85,6 @@
 .rbc-calendar {
   width: 100%;
   min-height: 600px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
   background-color: var(--white);
   color: var(--text-color);
   border-radius: 8px;
@@ -118,7 +116,6 @@
   background-color: var(--white);
   padding: 8px 16px;
   margin: 0 2px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
   transition: all var(--transition-fast);
 }
 

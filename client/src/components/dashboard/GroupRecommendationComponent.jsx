@@ -1,10 +1,11 @@
 // src/components/dashboard/GroupRecommendationComponent.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Badge, Spinner, Alert } from "react-bootstrap";
+import { Badge, Spinner, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { useDarkMode } from "../../contexts/DarkModeContext";
 import { getAllGroups } from "../../utils/GroupService";
+import ListItem from "../common/ListItem";
 
 const GroupRecommendationComponent = ({ userGroups = [] }) => {
   const { currentUser, userProfile } = useAuth();
@@ -71,40 +72,39 @@ const GroupRecommendationComponent = ({ userGroups = [] }) => {
   return (
     <div className={`group-recommendation-component ${darkMode ? "dark-mode" : ""}`}>
       {recommendedGroups.length > 0 ? (
-        <div className="recommendation-list">
+        <div className="scroll-container">
           {recommendedGroups.map((group) => (
-            <div 
+            <ListItem
               key={group.id}
-              className="recommendation-item"
+              variant="recommendation"
               onClick={() => handleGroupClick(group.id)}
-            >
-              <div className="group-info">
-                <h6 className="group-name">{group.name}</h6>
-                <p className="group-description">
-                  {group.description?.length > 60 
-                    ? `${group.description.substring(0, 60)}...` 
-                    : group.description}
-                </p>
-                <div className="group-tags">
-                  {group.tags?.slice(0, 2).map(tag => (
-                    <Badge key={tag} bg="secondary" className="me-1 small">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <small className="text-muted">
-                  {group.memberCount || 1}/{group.maxMembers}명
-                </small>
-              </div>
-            </div>
+              title={group.name}
+              subtitle={
+                <>
+                  <p className="mb-1">
+                    {group.description?.length > 60 
+                      ? `${group.description.substring(0, 60)}...` 
+                      : group.description}
+                  </p>
+                  <div className="d-flex flex-wrap gap-1 mb-2">
+                    {group.tags?.slice(0, 2).map(tag => (
+                      <Badge key={tag} bg="secondary" className="badge-count-small">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  <small className="text-muted">
+                    {group.memberCount || 1}/{group.maxMembers}명
+                  </small>
+                </>
+              }
+            />
           ))}
         </div>
       ) : (
-        <div className="text-center py-3">
-          <i className="bi bi-search" style={{ fontSize: "2rem", color: "var(--text-muted)" }}></i>
-          <p className="mt-2 mb-0 small text-muted">
-            관심사와 맞는 그룹을 찾지 못했습니다.
-          </p>
+        <div className="empty-state-common">
+          <i className="bi bi-search"></i>
+          <p>관심사와 맞는 그룹을 찾지 못했습니다.</p>
         </div>
       )}
     </div>

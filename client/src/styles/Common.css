@@ -181,17 +181,23 @@
       Animated Section 공통 스타일
       ====================================================== */
    
-   .animated-section {
-     opacity: 0;
-     transform: translateY(40px);
-     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-   }
-   
-   .animated-section.animate-in {
-     opacity: 1;
-     transform: translateY(0);
-   }
-   
+    .animated-section {
+      /* 서비스 소개와 CTA 섹션을 위한 기본 애니메이션 */
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* 특정 섹션은 항상 보이도록 오버라이드 */
+    .animated-section.features-section {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .animated-section.animate-in {
+      opacity: 1;
+      transform: translateY(0);
+    }   
    /* ======================================================
       반응형 공통 스타일
       ====================================================== */
