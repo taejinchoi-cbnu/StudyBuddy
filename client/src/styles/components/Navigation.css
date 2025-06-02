@@ -77,7 +77,6 @@
    }
    
    .navbar-brand {
-     font-family: 'Poor Story', 'Noto Sans KR', cursive;
      font-weight: 700;
      font-size: 1.5rem;
      letter-spacing: 0.5px;
@@ -91,7 +90,6 @@
    
    /* 네비게이션 링크 스타일 */
    .nav-link-item {
-     font-family: 'Poor Story', 'Noto Sans KR', cursive;
      font-size: 1.1rem;
      font-weight: 500;
      padding: 0.5rem 1rem !important;
@@ -163,7 +161,6 @@
       ====================================================== */
    
    .profile-link {
-     font-family: 'Poor Story', 'Noto Sans KR', cursive;
      font-size: 1.1rem;
      font-weight: 500;
      color: var(--text-color) !important; 
@@ -177,7 +174,6 @@
    .login-button, 
    .logout-button, 
    .signup-button {
-     font-family: 'Poor Story', 'Noto Sans KR', cursive;
      font-size: 1rem;
      font-weight: 500;
      border-radius: 25px;

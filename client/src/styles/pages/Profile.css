@@ -182,7 +182,6 @@
   background-color: var(--accent-color);
   border: none;
   border-radius: 25px;
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
   font-weight: 500;
   padding: 0.9rem 2rem;
   transition: all var(--transition-normal);

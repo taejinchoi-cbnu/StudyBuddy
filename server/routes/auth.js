@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const { firestore } = require('../config/firebase');
 
 // 기존 도메인 검증 함수
 const isValidChungbukEmail = (email) => {
