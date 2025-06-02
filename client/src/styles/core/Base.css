@@ -4,7 +4,6 @@
 
 /* 기본 요소 스타일 */
 body {
-  font-family: 'Poor Story', 'Noto Sans KR', cursive;
   margin: 0;
   padding: 0;
   background-color: var(--light-bg);

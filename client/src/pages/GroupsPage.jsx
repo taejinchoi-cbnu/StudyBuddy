@@ -10,7 +10,6 @@ import useLoading from "../hooks/useLoading";
 import useFirebaseData from "../hooks/useFirebaseData"; 
 import GroupCard from "../components/groups/GroupCard";
 import DashboardCard from "../components/common/DashboardCard";
-import AnimatedSection from "../components/common/AnimatedSection";
 import ListItem from "../components/common/ListItem";
 
 const GroupsPage = () => {
@@ -348,11 +347,11 @@ const GroupsPage = () => {
   
   return (
     <div className={`page-container ${darkMode ? "dark-mode" : ""}`}>
-      {/* 네비게이션바 높이만큼 추가하는 여백 */}
+      {/* 네비게이션바 */}
       <div className="navbar-spacer"></div>
       
       <Container className={`mt-4 ${darkMode ? "dark-mode" : ""}`}>
-        {/* 로딩 상태 명시적 처리 */}
+        {/* 로딩 상태 */}
         {isLoading ? (
           <div className="text-center py-5">
             <LoadingSpinner />

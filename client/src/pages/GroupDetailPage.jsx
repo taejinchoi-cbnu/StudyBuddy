@@ -204,7 +204,7 @@ const GroupDetailPage = () => {
     );
   }
   
-  // 데이터 로드 실패 시 친절한 오류 메시지
+  // 데이터 로드 실패 시 오류 메시지
   if (hasError || (!group && !isLoading)) {
     return (
       <Container className="mt-5">

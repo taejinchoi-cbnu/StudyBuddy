@@ -1,4 +1,3 @@
-// src/pages/DashboardPage.jsx
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
@@ -8,13 +7,11 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import useFirebaseData from "../hooks/useFirebaseData";
 import { useCallback } from "react";
 
-// 기존 컴포넌트들
+// 컴포넌트들 import
 import ClockTimerComponent from "../components/dashboard/ClockTimerComponent";
 import WelcomeMessageComponent from "../components/dashboard/WelcomeMessageComponent";
 import UpcomingEventsComponent from "../components/dashboard/UpcomingEventsComponent";
 import GroupRequestsComponent from "../components/dashboard/GroupRequestsComponent";
-
-// 새로운 컴포넌트들 import
 import GroupRecommendationComponent from "../components/dashboard/GroupRecommendationComponent.jsx";
 import MiniCalendarComponent from "../components/dashboard/MiniCalendarComponent";
 import MeetingStatsComponent from "../components/dashboard/MeetingStatsComponent";
@@ -36,7 +33,7 @@ const DashboardPage = () => {
     return getUserEvents(currentUser.uid);
   }, [currentUser]);
 
-  // useFirebaseData로 그룹 데이터 관리
+  // useFirebaseData로 그룹 데이터 관리하기
   const {
     data: userGroups,
     loading: groupsLoading,
@@ -54,7 +51,7 @@ const DashboardPage = () => {
     }
   );
 
-  // useFirebaseData로 일정 데이터 관리
+  // useFirebaseData로 일정 데이터 관리하기
   const {
     data: userEvents,
     loading: eventsLoading,
@@ -227,7 +224,6 @@ const DashboardPage = () => {
                   </Card.Header>
                   <Card.Body className="d-flex align-items-center justify-content-center">
                     <div className="timer-card-content">
-                      {/* ClockTimerComponent에서 타이머 부분만 추출해서 여기에 */}
                       <TimerCardComponent/>
                     </div>
                   </Card.Body>

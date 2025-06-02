@@ -7,7 +7,7 @@ import { GROUP_TAGS } from '../utils/GroupConstants';
 import EmailVerificationService from '../utils/EmailVerificationService';
 import useNotification from '../hooks/useNotification';
 
-// 공통 컴포넌트들 import
+// 컴포넌트 import
 import DashboardCard from '../components/common/DashboardCard';
 
 // 모든 태그를 하나의 배열로 평탄화
@@ -17,7 +17,7 @@ const ProfilePage = () => {
   const { currentUser, userProfile, updateUserProfile, logout, authLoading, updateEmail } = useAuth();
   const navigate = useNavigate();
   
-  // 🔥 NEW: useNotification 훅 사용 (기존 error, success 상태들을 통합)
+  // useNotification 훅 사용
   const { 
     error, 
     success, 
@@ -62,7 +62,7 @@ const ProfilePage = () => {
         interests: userProfile.interests || []
       });
       
-      // 이메일 인증 상태 설정 - 명시적으로 불리언으로 변환
+      // 이메일 인증 상태 설정
       setIsEmailVerified(userProfile.certified_email === true);
       console.log("인증 상태 설정:", userProfile.certified_email);
     }
@@ -80,7 +80,7 @@ const ProfilePage = () => {
     }
   }, [currentUser?.email, userProfile]);
 
-  // 🔥 UPDATED: 이메일 인증 상태 확인 - useNotification 훅 사용
+  // 이메일 인증 상태 확인
   const checkEmailVerification = async () => {
     if (!currentUser?.email) return;
     
@@ -117,7 +117,7 @@ const ProfilePage = () => {
     }
   };
 
-  // 🔥 UPDATED: 이메일 인증 요청 - useNotification 훅 사용
+  // 이메일 인증 요청
   const requestEmailVerification = async () => {
     if (!email) return;
     
@@ -225,7 +225,7 @@ const ProfilePage = () => {
     );
   }, [displayName, email, department, interests, originalProfile, isEmailVerified]);
 
-  // 🔥 UPDATED: 프로필 업데이트 핸들러 - useNotification 훅 사용
+  // 프로필 업데이트 핸들러 - useNotification 훅 사용
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -266,7 +266,7 @@ const ProfilePage = () => {
         interests: interests
       });
       
-      console.log("✅ 프로필 업데이트 성공");
+      console.log("프로필 업데이트 성공");
       
       // 업데이트 후 원본 프로필 상태 갱신
       setOriginalProfile({
@@ -283,12 +283,12 @@ const ProfilePage = () => {
       
       // 자동 리프레시 (2초 후) - 서버 데이터와 동기화 확인
       setTimeout(() => {
-        console.log("🔄 페이지 새로고침으로 서버 데이터 동기화 확인");
+        console.log("페이지 새로고침으로 서버 데이터 동기화 확인");
         window.location.reload();
       }, 2000);
       
     } catch (error) {
-      console.error('❌ Profile update error:', error);
+      console.error('Profile update error:', error);
       showError(`프로필 업데이트에 실패했습니다: ${error.message}`);
     }
   };
@@ -333,13 +333,12 @@ const ProfilePage = () => {
         {/* 프로필 카드 섹션 */}
         <section className="profile-cards-section">
           <Container className="profile-container">
-            {/* 🔥 통합된 알림 메시지 표시 */}
             {error && <Alert variant="danger" onClose={() => clearAll()} dismissible>{error}</Alert>}
             {success && <Alert variant="success" onClose={() => clearAll()} dismissible>{success}</Alert>}
             {info && <Alert variant="info" onClose={() => clearAll()} dismissible>{info}</Alert>}
             
             <Row className="g-4">
-              {/* 이메일 인증 카드 - 컴팩트 스타일 적용 */}
+              {/* 이메일 인증 카드 */}
               <Col lg={12}>
                 <DashboardCard
                   title="이메일 인증"

@@ -15,7 +15,7 @@ import { useState, useEffect, useCallback } from "react";
  * @returns {Object} { data, loading, error, refetch }
  */
 const useFirebaseData = (fetchFunction, dependencies = [], options = {}) => {
-  // 1단계: 기본 상태 정의
+  // 기본 상태 정의
   // data: Firebase에서 가져온 데이터를 저장
   // loading: 현재 데이터를 가져오는 중인지 여부
   // error: 에러가 발생했을 때 에러 메시지 저장
@@ -23,7 +23,7 @@ const useFirebaseData = (fetchFunction, dependencies = [], options = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // 2단계: 옵션들 구조 분해 (기본값 설정)
+  // 옵션들 구조 분해 (기본값 설정)
   const {
     enabled = true,           // 자동으로 데이터를 가져올지 여부
     onSuccess,               // 성공했을 때 실행할 함수
@@ -32,7 +32,7 @@ const useFirebaseData = (fetchFunction, dependencies = [], options = {}) => {
     initialData = null       // 처음 데이터 상태값
   } = options;
 
-  // 3단계: 실제 데이터를 가져오는 함수 정의 (무한 루프 방지를 위해 의존성 최적화)
+  // 실제 데이터를 가져오는 함수 정의 (무한 루프 방지를 위해 의존성 최적화)
   const fetchData = useCallback(async () => {
     // fetchFunction이 없으면 실행하지 않음
     if (!fetchFunction) {
@@ -86,7 +86,7 @@ const useFirebaseData = (fetchFunction, dependencies = [], options = {}) => {
     }
   }, [fetchFunction, transform]); // onSuccess, onError는 의존성에서 제거하여 무한 루프 방지
 
-  // 4단계: 자동으로 데이터 가져오기 (useEffect 최적화)
+  // 자동으로 데이터 가져오기 (useEffect 최적화)
   useEffect(() => {
     // enabled가 true이고 fetchFunction이 있을 때만 자동 실행
     if (enabled && fetchFunction) {

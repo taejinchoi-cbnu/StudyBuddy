@@ -13,9 +13,7 @@ import calendar from "../assets/calendar.png";
 import peoples from "../assets/peoples.png";
 
 const HomePage = () => {
-  // ======================================================
   // 컨텍스트 및 훅 사용
-  // ======================================================
   const { currentUser } = useAuth();
   const { darkMode } = useDarkMode();
   const navigate = useNavigate();
@@ -23,9 +21,7 @@ const HomePage = () => {
   // AppNavbar에 대한 참조 생성 (모달 제어용)
   const navbarRef = useRef();
   
-  // ======================================================
   // 이벤트 핸들러 함수들 (성능 최적화를 위해 useCallback 사용)
-  // ======================================================
   
   // 회원가입 모달 열기
   const handleSignup = useCallback(() => {
@@ -74,7 +70,7 @@ const HomePage = () => {
 
   return (
     <div className={`main-layout home-page ${darkMode ? "dark-mode" : ""}`}>
-      {/* 네비게이션 바 - 절대 위치로 히어로 섹션 위에 오버레이 */}
+      {/* 네비게이션 바 */}
       <div className="transparent-navbar-wrapper" style={{ position: "absolute", zIndex: 1050 }}>
         <AppNavbar 
           transparent={true} 
@@ -82,9 +78,7 @@ const HomePage = () => {
         />
       </div>
       
-      {/* ======================================================
-          메인 콘텐츠 영역
-          ====================================================== */}
+      {/* 메인 콘텐츠 영역 */}
       <main className="main-content">
         
         {/* 히어로 섹션 - 메인 랜딩 영역 */}
