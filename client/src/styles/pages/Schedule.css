@@ -1,6 +1,6 @@
 /* 일정 페이지 디자인 */
 
-@import './Variables.css';
+@import '../core/Variables.css';
 
 /* 페이지 레이아웃 기본 설정 */
 .schedule-page {
