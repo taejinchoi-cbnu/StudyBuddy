@@ -4,7 +4,8 @@
 
 /* 기본 네비게이션 바 스타일 */
 .dashboard-navbar {
-  background-color: var(--primary-color); 
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(3px);
   box-shadow: var(--shadow);
   height: var(--navbar-height);
   padding: 0;
@@ -14,7 +15,7 @@
 }
    
 /* Grid 레이아웃용 투명 네비게이션 바 */
-   
+
    .transparent-navbar {
      background-color: transparent !important; /* 완전 투명 */
      box-shadow: none !important;

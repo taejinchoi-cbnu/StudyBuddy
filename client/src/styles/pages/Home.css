@@ -41,7 +41,7 @@
   align-items: center;
   justify-content: space-between;
   margin-top: -4rem;
-  padding: 4rem;
+  padding: 4rem !important;
   min-height: 100vh;
   background: transparent;
   position: relative;
@@ -108,8 +108,8 @@
 
 .service-intro-section {
   background-color: white;
-  padding: 4rem 2rem;
-  margin: -1rem 1rem;
+  padding: 3rem 1.5rem;
+  margin: -1rem 1.7rem 2rem 1.7rem;
   position: relative;
   z-index: 3;
   border-radius: 30px;
@@ -211,7 +211,6 @@
   max-width: var(--container-max-width);
   margin: 10px auto;
   background-color: transparent !important;
-  /* 섹션 자체는 항상 보이도록 설정 */
   opacity: 1 !important;
   transform: none !important;
 }
@@ -288,7 +287,6 @@
   margin-right: auto;
 }
 
-/* CTA 버튼 추가 스타일 */
 .cta-button {
   background: linear-gradient(135deg, var(--accent-color) 0%, #ff6b5a 100%);
   box-shadow: 0 8px 25px rgba(204, 102, 89, 0.3);

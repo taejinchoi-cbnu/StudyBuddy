@@ -1,6 +1,6 @@
 import { useState, forwardRef, useImperativeHandle } from "react";
 import { Navbar, Nav, Container, Button, Form, Modal, Alert, Spinner } from "react-bootstrap";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import LoadingSpinner from "./LoadingSpinner"; 
@@ -10,7 +10,7 @@ import EmailVerificationService from "../utils/EmailVerificationService";
 import useNotification from "../hooks/useNotification";
 import useModal from "../hooks/useModal";
 
-const AppNavbar = forwardRef(({ transparent = false }, ref) => {
+const AppNavbar = forwardRef((props, ref) => {
   // 컨텍스트 및 훅
   const { 
     currentUser, 
@@ -22,7 +22,6 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
   } = useAuth();
   const { darkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
-  const location = useLocation();
   
   // 통합 알림 관리 (error, success, info)
   const { 
@@ -233,18 +232,15 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
     }
   };
 
-  // 네비게이션 바 클래스 계산
-  const isHomePage = location.pathname === "/";
-  const navbarClass = `dashboard-navbar ${darkMode ? "dark-mode" : ""} transparent-navbar ${
-    isHomePage ? "home-navbar" : "page-navbar"
-  }`;
+  // 통일된 네비게이션 바 클래스 (다크모드에 따라서만 변경)
+  const navbarClass = `dashboard-navbar ${darkMode ? "dark-mode" : ""}`;
 
   return (
     <>
       {/* 로딩 오버레이 */}
       {(authLoading.login || isProcessing || authLoading.resetPassword) && <LoadingSpinner />}
       
-      {/* 메인 네비게이션 바 */}
+      {/* 메인 네비게이션 바 - 모든 페이지에서 동일 */}
       <Navbar 
         variant={darkMode ? "dark" : "light"} 
         expand="lg" 
@@ -321,8 +317,9 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
                         로그인
                       </Button>
                       <Button 
-                        className="signup-button"
+                        variant="primary"
                         onClick={handleSignupModalOpen}
+                        className="signup-button"
                       >
                         회원가입
                       </Button>
@@ -351,7 +348,8 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
             aria-label="Close"
             onClick={handleLoginModalClose}
           >
-            <i class="bi bi-x-circle"></i></Button>
+            <i className="bi bi-x-circle"></i>
+          </Button>
         </div>
         
         <Modal.Body>
@@ -430,7 +428,8 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
             aria-label="Close"
             onClick={handleSignupModalClose}
           >
-            <i class="bi bi-x-circle"></i></Button>
+            <i className="bi bi-x-circle"></i>
+          </Button>
         </div>
         
         <Modal.Body>
@@ -540,9 +539,10 @@ const AppNavbar = forwardRef(({ transparent = false }, ref) => {
             type="button"
             className="btn-close-custom" 
             aria-label="Close"
-            onClick={handleLoginModalClose}
+            onClick={handleForgotPasswordModalClose}
           >
-            <i class="bi bi-x-circle"></i></Button>
+            <i className="bi bi-x-circle"></i>
+          </Button>
         </div>
         
         <Modal.Body>
