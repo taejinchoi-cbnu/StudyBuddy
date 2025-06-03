@@ -1,18 +1,21 @@
-import { Container, Row, Col, Card } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
-import { getUserGroups } from "../utils/GroupService";
-import { getUserEvents } from "../utils/ScheduleService";
 import LoadingSpinner from "../components/LoadingSpinner";
-import useFirebaseData from "../hooks/useFirebaseData";
 import { useCallback } from "react";
 
-// 컴포넌트들 import
+// API 통합 훅
+import useApi from "../hooks/useApi";
+
+// 통합 컴포넌트
+import UniversalCard from "../components/common/UniversalCard";
+
+// 기존 컴포넌트들
 import ClockTimerComponent from "../components/dashboard/ClockTimerComponent";
 import WelcomeMessageComponent from "../components/dashboard/WelcomeMessageComponent";
 import UpcomingEventsComponent from "../components/dashboard/UpcomingEventsComponent";
 import GroupRequestsComponent from "../components/dashboard/GroupRequestsComponent";
-import GroupRecommendationComponent from "../components/dashboard/GroupRecommendationComponent.jsx";
+import GroupRecommendationComponent from "../components/dashboard/GroupRecommendationComponent";
 import MiniCalendarComponent from "../components/dashboard/MiniCalendarComponent";
 import MeetingStatsComponent from "../components/dashboard/MeetingStatsComponent";
 import TimerCardComponent from "../components/dashboard/TimerCardComponent";
@@ -21,71 +24,87 @@ const DashboardPage = () => {
   const { currentUser, userProfile } = useAuth();
   const { darkMode } = useDarkMode();
 
-  // 사용자 그룹 데이터 가져오기
-  const fetchUserGroups = useCallback(() => {
-    if (!currentUser) return Promise.resolve([]);
-    return getUserGroups(currentUser.uid);
-  }, [currentUser]);
-
-  // 사용자 일정 데이터 가져오기
-  const fetchUserEvents = useCallback(() => {
-    if (!currentUser) return Promise.resolve([]);
-    return getUserEvents(currentUser.uid);
-  }, [currentUser]);
-
-  // useFirebaseData로 그룹 데이터 관리하기
-  const {
-    data: userGroups,
-    loading: groupsLoading,
-    error: groupsError,
-    refetch: refetchUserGroups
-  } = useFirebaseData(
-    fetchUserGroups,
-    [currentUser, userProfile],
-    {
-      enabled: !!currentUser && !!userProfile,
-      initialData: [],
-      onSuccess: (groupsData) => {
-        console.log("사용자 그룹 데이터 로드 성공:", groupsData?.length || 0, "개 그룹");
-      }
+  // 통합 API를 사용한 그룹 데이터 관리
+  const groupsApi = useApi("groupMembers", {
+    apiType: "firebase",
+    firebaseOperation: "list",
+    firebaseFilters: [
+      { field: "userId", operator: "==", value: currentUser?.uid }
+    ],
+    executeOnMount: !!currentUser && !!userProfile,
+    showNotifications: true,
+    cacheDuration: 2 * 60 * 1000, // 2분 캐싱
+    onSuccess: (membersData) => {
+      console.log("사용자 그룹 멤버십 로드 성공:", membersData?.length || 0);
+    },
+    transform: async (membersData) => {
+      // 멤버십 데이터에서 그룹 정보를 가져오는 로직
+      if (!membersData || !Array.isArray(membersData)) return [];
+      
+      const groupPromises = membersData.map(async (member) => {
+        try {
+          const groupResponse = await fetch(`/api/groups/${member.groupId}`);
+          if (groupResponse.ok) {
+            const groupData = await groupResponse.json();
+            return { ...groupData, memberInfo: member };
+          }
+        } catch (error) {
+          console.error(`그룹 ${member.groupId} 로드 실패:`, error);
+        }
+        return null;
+      });
+      
+      const groups = await Promise.all(groupPromises);
+      return groups.filter(Boolean);
     }
-  );
+  });
 
-  // useFirebaseData로 일정 데이터 관리하기
-  const {
-    data: userEvents,
-    loading: eventsLoading,
-    error: eventsError,
-    refetch: refetchUserEvents
-  } = useFirebaseData(
-    fetchUserEvents,
-    [currentUser],
-    {
-      enabled: !!currentUser,
-      initialData: [],
-      onSuccess: (eventsData) => {
-        console.log("사용자 일정 데이터 로드 성공:", eventsData?.length || 0, "개 일정");
-      }
+  // 통합 API를 사용한 일정 데이터 관리
+  const eventsApi = useApi("userEvents", {
+    apiType: "firebase",
+    firebaseOperation: "list",
+    firebaseFilters: [
+      { field: "userId", operator: "==", value: currentUser?.uid }
+    ],
+    executeOnMount: !!currentUser,
+    showNotifications: true,
+    cacheDuration: 1 * 60 * 1000, // 1분 캐싱
+    onSuccess: (eventsData) => {
+      console.log("사용자 일정 데이터 로드 성공:", eventsData?.length || 0);
+    },
+    transform: (eventsData) => {
+      if (!Array.isArray(eventsData)) return [];
+      
+      return eventsData.map(event => ({
+        ...event,
+        start: event.start?.toDate ? event.start.toDate() : new Date(event.start),
+        end: event.end?.toDate ? event.end.toDate() : new Date(event.end),
+        isGroupEvent: false
+      }));
     }
-  );
+  });
 
   // 관리자 권한이 있는 그룹 확인
-  const hasAdminGroups = userGroups?.some(group => {
+  const hasAdminGroups = groupsApi.data?.some(group => {
     return group.createdBy === currentUser?.uid || 
-           group.members?.some(member => 
-             member.userId === currentUser?.uid && member.role === "admin"
-           );
+           group.memberInfo?.role === "admin";
   }) || false;
 
   // 데이터 새로고침 함수
-  const refreshData = useCallback(() => {
+  const refreshData = useCallback(async () => {
     console.log("데이터 새로고침 요청됨");
-    refetchUserGroups();
-    refetchUserEvents();
-  }, [refetchUserGroups, refetchUserEvents]);
+    try {
+      await Promise.all([
+        groupsApi.refresh(),
+        eventsApi.refresh()
+      ]);
+    } catch (error) {
+      console.error("데이터 새로고침 실패:", error);
+    }
+  }, [groupsApi, eventsApi]);
 
   // 로딩 상태 처리
-  if (groupsLoading || eventsLoading) {
+  if (groupsApi.loading || eventsApi.loading) {
     return <LoadingSpinner />;
   }
 
@@ -101,9 +120,9 @@ const DashboardPage = () => {
         
         <main className="dashboard-content">
           {/* 에러 메시지 표시 */}
-          {(groupsError || eventsError) && (
+          {(groupsApi.error || eventsApi.error) && (
             <div className="alert alert-danger mt-3" role="alert">
-              {groupsError || eventsError}
+              {groupsApi.error || eventsApi.error}
             </div>
           )}
 
@@ -119,115 +138,97 @@ const DashboardPage = () => {
 
           {/* 첫 번째 카드 행: 다가오는 일정 + 그룹 요청 + 그룹 추천 */}
           <Container className="dashboard-cards-container">
-          <Row className="g-4 mb-4">
-            {/* 다가오는 일정 카드 */}
-            <Col lg={hasAdminGroups ? 4 : 6} md={6} sm={12}>
-              <Card className="dashboard-card h-100">
-                <Card.Header>
-                  <h5 className="card-title mb-0">
-                    <i className="bi bi-calendar-event me-2"></i>
-                    다가오는 일정
-                  </h5>
-                </Card.Header>
-                <Card.Body className="p-0">
+            <Row className="g-4 mb-4">
+              {/* 다가오는 일정 카드 */}
+              <Col lg={hasAdminGroups ? 4 : 6} md={6} sm={12}>
+                <UniversalCard
+                  variant="dashboard"
+                  title="다가오는 일정"
+                  icon="bi-calendar-event"
+                  className="h-100"
+                >
                   <UpcomingEventsComponent 
-                    userGroups={userGroups || []}
+                    userGroups={groupsApi.data || []}
                     onDataChange={refreshData}
                   />
-                </Card.Body>
-              </Card>
-            </Col>
+                </UniversalCard>
+              </Col>
 
-            {/* 그룹 요청 카드 - 관리자인 경우에만 표시 */}
-            {hasAdminGroups && (
-              <Col lg={4} md={6} sm={12}>
-                <Card className="dashboard-card h-100">
-                  <Card.Header>
-                    <h5 className="card-title mb-0">
-                      <i className="bi bi-envelope-fill me-2"></i>
-                      그룹 가입 요청
-                    </h5>
-                  </Card.Header>
-                  <Card.Body className="p-0">
+              {/* 그룹 요청 카드 - 관리자인 경우에만 표시 */}
+              {hasAdminGroups && (
+                <Col lg={4} md={6} sm={12}>
+                  <UniversalCard
+                    variant="dashboard"
+                    title="그룹 가입 요청"
+                    icon="bi-envelope-fill"
+                    className="h-100"
+                  >
                     <GroupRequestsComponent 
-                      userGroups={userGroups || []}
+                      userGroups={groupsApi.data || []}
                       onDataChange={refreshData}
                     />
-                  </Card.Body>
-                </Card>
-              </Col>
-            )}
+                  </UniversalCard>
+                </Col>
+              )}
 
-            {/* 그룹 추천 카드 */}
-            <Col lg={hasAdminGroups ? 4 : 6} md={6} sm={12}>
-              <Card className="dashboard-card h-100">
-                <Card.Header>
-                  <h5 className="card-title mb-0">
-                    <i className="bi bi-lightbulb me-2"></i>
-                    이런 그룹은 어때요?
-                  </h5>
-                </Card.Header>
-                <Card.Body className="p-0">
+              {/* 그룹 추천 카드 */}
+              <Col lg={hasAdminGroups ? 4 : 6} md={6} sm={12}>
+                <UniversalCard
+                  variant="dashboard"
+                  title="이런 그룹은 어때요?"
+                  icon="bi-lightbulb"
+                  className="h-100"
+                >
                   <GroupRecommendationComponent 
-                    userGroups={userGroups || []}
+                    userGroups={groupsApi.data || []}
                   />
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
+                </UniversalCard>
+              </Col>
+            </Row>
 
             {/* 두 번째 카드 행: 미니 캘린더 + 미팅 통계 + 타이머 */}
             <Row className="g-4 mb-4">
               {/* 미니 캘린더 카드 */}
               <Col lg={4} md={6} sm={12}>
-                <Card className="dashboard-card h-100">
-                  <Card.Header>
-                    <h5 className="card-title mb-0">
-                      <i className="bi bi-calendar3 me-2"></i>
-                      미니 캘린더
-                    </h5>
-                  </Card.Header>
-                  <Card.Body>
-                    <MiniCalendarComponent 
-                      userEvents={userEvents || []}
-                    />
-                  </Card.Body>
-                </Card>
+                <UniversalCard
+                  variant="dashboard"
+                  title="미니 캘린더"
+                  icon="bi-calendar3"
+                  className="h-100"
+                >
+                  <MiniCalendarComponent 
+                    userEvents={eventsApi.data || []}
+                  />
+                </UniversalCard>
               </Col>
 
               {/* 미팅 통계 카드 */}
               <Col lg={4} md={6} sm={12}>
-                <Card className="dashboard-card h-100">
-                  <Card.Header>
-                    <h5 className="card-title mb-0">
-                      <i className="bi bi-graph-up me-2"></i>
-                      미팅 통계
-                    </h5>
-                  </Card.Header>
-                  <Card.Body>
-                    <MeetingStatsComponent 
-                      userGroups={userGroups || []}
-                      userEvents={userEvents || []}
-                    />
-                  </Card.Body>
-                </Card>
+                <UniversalCard
+                  variant="dashboard"
+                  title="미팅 통계"
+                  icon="bi-graph-up"
+                  className="h-100"
+                >
+                  <MeetingStatsComponent 
+                    userGroups={groupsApi.data || []}
+                    userEvents={eventsApi.data || []}
+                  />
+                </UniversalCard>
               </Col>
 
               {/* 포모도로 타이머 카드 */}
               <Col lg={4} md={12} sm={12}>
-                <Card className="dashboard-card h-100">
-                  <Card.Header>
-                    <h5 className="card-title mb-0">
-                      <i className="bi bi-alarm me-2"></i>
-                      집중 타이머
-                    </h5>
-                  </Card.Header>
-                  <Card.Body className="d-flex align-items-center justify-content-center">
-                    <div className="timer-card-content">
-                      <TimerCardComponent/>
-                    </div>
-                  </Card.Body>
-                </Card>
+                <UniversalCard
+                  variant="dashboard"
+                  title="집중 타이머"
+                  icon="bi-alarm"
+                  className="h-100"
+                >
+                  <div className="d-flex align-items-center justify-content-center h-100">
+                    <TimerCardComponent />
+                  </div>
+                </UniversalCard>
               </Col>
             </Row>
           </Container>
