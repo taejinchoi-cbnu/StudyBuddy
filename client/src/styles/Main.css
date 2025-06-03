@@ -8,6 +8,8 @@
 @import './components/CommonComponents.css';
 @import './components/Components.css';
 @import './components/Navigation.css';
+@import './components/BaseModal.css';
+@import './components/UniversalCard.css';
 
 /* 페이지별 스타일 */
 @import './pages/Home.css';
