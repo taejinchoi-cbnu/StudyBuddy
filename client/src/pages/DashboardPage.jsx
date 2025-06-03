@@ -15,7 +15,7 @@ import GroupRequestsComponent from "../components/dashboard/GroupRequestsCompone
 import GroupRecommendationComponent from "../components/dashboard/GroupRecommendationComponent.jsx";
 import MiniCalendarComponent from "../components/dashboard/MiniCalendarComponent";
 import MeetingStatsComponent from "../components/dashboard/MeetingStatsComponent";
-import TimerCardComponent from "../components/dashboard/TimerCardComponent .jsx";
+import TimerCardComponent from "../components/dashboard/TimerCardComponent";
 
 const DashboardPage = () => {
   const { currentUser, userProfile } = useAuth();

@@ -1,15 +1,12 @@
-import { useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Badge, Alert, Tabs, Tab, Image } from "react-bootstrap";
-import { getGroupById, getGroupMembers, sendJoinRequest } from "../utils/GroupService";
 import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import LoadingSpinner from "../components/LoadingSpinner";
-import useLoading from "../hooks/useLoading";
-import useNotification from "../hooks/useNotification";
-import useModal from "../hooks/useModal";
-import useFirebaseData from "../hooks/useFirebaseData"; 
-import logoQuestion from "../assets/logoQuestion.png";
+
+// 새로운 통합 훅들
+import useUIState from "../hooks/useUIState";
+import useApi from "../hooks/useApi";
 
 // 컴포넌트들 import
 import GroupInfo from "../components/groups/GroupInfo";
@@ -20,182 +17,171 @@ import LeaveGroupModal from "../components/groups/LeaveGroupModal";
 import GroupSettings from "../components/groups/GroupSettings";
 import MemberManagement from "../components/groups/MemberManagement";
 import GroupScheduleComponent from "../components/schedule/GroupScheduleComponent";
+import logoQuestion from "../assets/logoQuestion.png";
 
 const GroupDetailPage = () => {
   const { groupId } = useParams();
   const { currentUser } = useAuth();
   const { darkMode } = useDarkMode();
   const navigate = useNavigate();
+
+  // 통합 UI 상태 관리 (기존의 여러 훅들을 하나로 통합)
+  const ui = useUIState(
+    {
+      // 모달 상태들
+      joinModal: false,
+      leaveModal: false,
+      
+      // 사용자 권한 상태
+      isMember: false,
+      isAdmin: false,
+      hasPendingRequest: false,
+      
+      // 로딩 상태들
+      joining: false,
+    },
+    {
+      persistToLocalStorage: false,
+      showNotifications: true,
+    }
+  );
+
+  // ============================================================================
+  // 통합 API 관리 (기존의 useFirebaseData들을 통합)
+  // ============================================================================
   
-  // 알림 및 모달 훅 사용
-  const { 
-    error, 
-    success, 
-    showError, 
-    showSuccess, 
-    clearAll 
-  } = useNotification();
-  
-  const {
-    openModal,
-    closeModal,
-    isOpen,
-  } = useModal(["join", "leave"]);
-  
-  // 일반 상태 관리
-  const [isJoining, startJoiningLoading] = useLoading();
-  const [userStatus, setUserStatus] = useState({
-    isMember: false,
-    isAdmin: false,
-    hasPendingRequest: false
+  // 그룹 정보 API
+  const groupApi = useApi(`groups/${groupId}`, {
+    apiType: "firebase",
+    firebaseOperation: "get",
+    executeOnMount: !!groupId,
+    showNotifications: true,
+    cacheDuration: 2 * 60 * 1000, // 2분 캐싱
+    onSuccess: (groupData) => {
+      console.log("그룹 데이터 로드 성공:", groupData);
+      
+      // 가입 요청 상태 확인
+      if (currentUser && groupData.joinRequests) {
+        const hasPending = groupData.joinRequests.some(
+          request => request.uid === currentUser.uid
+        );
+        ui.setValue("hasPendingRequest", hasPending);
+      }
+    },
+    onError: (error) => {
+      console.error("그룹 데이터 로드 실패:", error);
+      ui.showError("그룹 정보를 불러오는 중 오류가 발생했습니다.");
+    },
+    transform: (data) => {
+      if (!data) return null;
+      
+      // Firebase 타임스탬프 처리
+      if (data.createdAt && typeof data.createdAt.toDate === "function") {
+        return { ...data, createdAt: data.createdAt.toDate() };
+      }
+      return data;
+    },
   });
-  
-  // useFirebaseData를 사용하여 그룹 정보 가져오기
-  const {
-    data: group,
-    loading: groupLoading,
-    error: groupError,
-    refetch: refetchGroup,
-    isSuccess: isGroupSuccess
-  } = useFirebaseData(
-    // fetchFunction: groupId가 있을 때만 실행
-    groupId ? () => getGroupById(groupId) : null,
-    // dependencies: groupId가 변경되면 다시 실행  
-    [groupId],
-    {
-      enabled: !!groupId, // groupId가 있을 때만 자동 실행
-      onSuccess: (groupData) => {
-        console.log("그룹 데이터 로드 성공:", groupData);
-      },
-      onError: (error) => {
-        console.error("그룹 데이터 로드 실패:", error);
-        showError("그룹 정보를 불러오는 중 오류가 발생했습니다.");
-      },
-      // 그룹 데이터 변환: Firebase 타임스탬프 처리 등
-      transform: (data) => {
-        if (!data) return null;
+
+  // 멤버 정보 API
+  const membersApi = useApi("groupMembers", {
+    apiType: "firebase",
+    firebaseOperation: "list",
+    firebaseFilters: [{ field: "groupId", operator: "==", value: groupId }],
+    executeOnMount: !!groupId && groupApi.isSuccess,
+    showNotifications: true,
+    cacheDuration: 1 * 60 * 1000, // 1분 캐싱
+    onSuccess: (membersData) => {
+      console.log("멤버 데이터 로드 성공:", membersData);
+      
+      // 사용자 권한 확인
+      if (currentUser && Array.isArray(membersData)) {
+        const userMember = membersData.find(member => member.userId === currentUser.uid);
         
-        // createdAt 필드가 Firebase 타임스탬프인 경우 처리
-        if (data.createdAt && typeof data.createdAt.toDate === "function") {
-          return {
-            ...data,
-            createdAt: data.createdAt.toDate()
-          };
-        }
-        
-        return data;
+        ui.updateState({
+          isMember: !!userMember,
+          isAdmin: userMember?.role === "admin",
+        });
       }
-    }
-  );
-  
-  // useFirebaseData를 사용하여 멤버 정보 가져오기
-  const {
-    data: members,
-    loading: membersLoading,
-    error: membersError,
-    refetch: refetchMembers,
-    isSuccess: isMembersSuccess
-  } = useFirebaseData(
-    // fetchFunction: groupId와 그룹 데이터가 있을 때만 실행
-    groupId && isGroupSuccess ? () => getGroupMembers(groupId) : null,
-    // dependencies: groupId와 그룹 성공 상태가 변경되면 다시 실행
-    [groupId, isGroupSuccess],
-    {
-      enabled: !!groupId && isGroupSuccess, // 그룹 로드 성공 후에만 실행
-      initialData: [], // 초기값을 빈 배열로 설정
-      onSuccess: (membersData) => {
-        console.log("멤버 데이터 로드 성공:", membersData);
-        
-        // 사용자 상태 업데이트 로직
-        if (currentUser && Array.isArray(membersData)) {
-          const isMember = membersData.some(member => member.userId === currentUser.uid);
-          const isAdmin = membersData.some(
-            member => member.userId === currentUser.uid && member.role === "admin"
-          );
-          
-          // 가입 요청 확인
-          const hasPendingRequest = group && group.joinRequests && 
-            group.joinRequests.some(request => request.uid === currentUser.uid);
-          
-          setUserStatus({ isMember, isAdmin, hasPendingRequest });
-        }
-      },
-      onError: (error) => {
-        console.error("멤버 데이터 로드 실패:", error);
-        showError("멤버 정보를 불러오는 중 오류가 발생했습니다.");
-      }
-    }
-  );
-  
-  // 로딩 상태 통합 관리
-  const isLoading = groupLoading || membersLoading;
-  const hasError = groupError || membersError;
-  
-  // 그룹 데이터 새로고침 함수 - 두 데이터를 모두 리패치
-  const reloadGroupData = useCallback(async () => {
+    },
+    onError: (error) => {
+      console.error("멤버 데이터 로드 실패:", error);
+      ui.showError("멤버 정보를 불러오는 중 오류가 발생했습니다.");
+    },
+  });
+
+  // ============================================================================
+  // 이벤트 핸들러들 (기존 로직 유지하되 새로운 훅 활용)
+  // ============================================================================
+
+  // 그룹 데이터 새로고침
+  const reloadGroupData = async () => {
     try {
-      console.log("그룹 데이터 새로고침 시작");
+      ui.showInfo("그룹 정보를 새로고침 중입니다...");
       
-      // 순차적으로 데이터 새로고침
-      await refetchGroup();
-      await refetchMembers();
+      // 두 API를 순차적으로 새로고침
+      await groupApi.refresh();
+      await membersApi.refresh();
       
-      showSuccess("그룹 정보가 업데이트되었습니다.");
+      ui.showSuccess("그룹 정보가 업데이트되었습니다.");
     } catch (error) {
       console.error("그룹 데이터 새로고침 실패:", error);
-      showError("그룹 정보를 새로고침하는 중 오류가 발생했습니다.");
-    }
-  }, [refetchGroup, refetchMembers, showSuccess, showError]);
-  
-  // 모달 핸들러들
-  const toggleJoinModal = () => {
-    if (isOpen("join")) {
-      closeModal("join");
-    } else {
-      openModal("join");
+      ui.showError("그룹 정보를 새로고침하는 중 오류가 발생했습니다.");
     }
   };
-  
-  const toggleLeaveModal = () => {
-    if (isOpen("leave")) {
-      closeModal("leave");
-    } else {
-      openModal("leave");
-    }
-  };
-  
-  // 그룹 탈퇴 성공 처리
-  const handleLeaveSuccess = () => {
-    closeModal("leave");
-    showSuccess("그룹에서 성공적으로 탈퇴했습니다.");
-    navigate("/groups");
-  };
-  
-  // 그룹 삭제 성공 처리
-  const handleDeleteSuccess = () => {
-    showSuccess("그룹이 성공적으로 삭제되었습니다.");
-    navigate("/groups");
-  };
-  
+
   // 가입 요청 제출
   const handleJoinRequest = async (message) => {
     try {
-      await startJoiningLoading(sendJoinRequest(groupId, currentUser.uid, message));
-      showSuccess("가입 요청이 성공적으로 전송되었습니다.");
-      setUserStatus({ ...userStatus, hasPendingRequest: true });
-      closeModal("join");
+      ui.setLoading("joining", true);
+      ui.clearNotifications();
+
+      // Firebase에 가입 요청 추가
+      const joinRequestData = {
+        uid: currentUser.uid,
+        requestedAt: new Date(),
+        message: message || "",
+      };
+
+      // 그룹 문서 업데이트 (joinRequests 배열에 추가)
+      await groupApi.patch({
+        joinRequests: [...(groupApi.data.joinRequests || []), joinRequestData]
+      });
+
+      ui.showSuccess("가입 요청이 성공적으로 전송되었습니다.");
+      ui.setValue("hasPendingRequest", true);
+      ui.closeModal("join");
+
+      // 그룹 데이터 새로고침
+      await groupApi.refresh();
+
     } catch (error) {
-      console.error("Error sending join request:", error);
-      showError("가입 요청 중 오류가 발생했습니다: " + error.message);
+      console.error("가입 요청 오류:", error);
+      ui.showError("가입 요청 중 오류가 발생했습니다: " + error.message);
+    } finally {
+      ui.setLoading("joining", false);
     }
   };
-  
-  // 모달 닫기 핸들러들
-  const handleJoinModalClose = () => closeModal("join");
-  const handleLeaveModalClose = () => closeModal("leave");
-  
+
+  // 그룹 탈퇴 성공 처리
+  const handleLeaveSuccess = () => {
+    ui.closeModal("leave");
+    ui.showSuccess("그룹에서 성공적으로 탈퇴했습니다.");
+    navigate("/groups");
+  };
+
+  // 그룹 삭제 성공 처리
+  const handleDeleteSuccess = () => {
+    ui.showSuccess("그룹이 성공적으로 삭제되었습니다.");
+    navigate("/groups");
+  };
+
+  // ============================================================================
+  // 렌더링 조건 확인
+  // ============================================================================
+
   // 로딩 중일 때
-  if (isLoading) {
+  if (groupApi.loading || membersApi.loading) {
     return (
       <Container className="text-center py-5">
         <LoadingSpinner />
@@ -203,9 +189,9 @@ const GroupDetailPage = () => {
       </Container>
     );
   }
-  
+
   // 데이터 로드 실패 시 오류 메시지
-  if (hasError || (!group && !isLoading)) {
+  if (groupApi.error || !groupApi.data) {
     return (
       <Container className="mt-5">
         <Card className="shadow-sm text-center p-4">
@@ -239,12 +225,42 @@ const GroupDetailPage = () => {
       </Container>
     );
   }
-  
+
+  // ============================================================================
+  // 메인 렌더링
+  // ============================================================================
+
+  const group = groupApi.data;
+  const members = membersApi.data || [];
+
   return (
     <Container className={`mt-4 ${darkMode ? "dark-mode" : ""}`}>
       {/* 통합된 알림 메시지 표시 */}
-      {error && <Alert variant="danger" onClose={() => clearAll()} dismissible>{error}</Alert>}
-      {success && <Alert variant="success" onClose={() => clearAll()} dismissible>{success}</Alert>}
+      {groupApi.error && (
+        <Alert variant="danger" onClose={() => groupApi.clearNotifications()} dismissible>
+          {groupApi.error}
+        </Alert>
+      )}
+      {groupApi.success && (
+        <Alert variant="success" onClose={() => groupApi.clearNotifications()} dismissible>
+          {groupApi.success}
+        </Alert>
+      )}
+      {ui.get("error") && (
+        <Alert variant="danger" onClose={() => ui.clearNotifications()} dismissible>
+          {ui.get("error")}
+        </Alert>
+      )}
+      {ui.get("success") && (
+        <Alert variant="success" onClose={() => ui.clearNotifications()} dismissible>
+          {ui.get("success")}
+        </Alert>
+      )}
+      {ui.get("info") && (
+        <Alert variant="info" onClose={() => ui.clearNotifications()} dismissible>
+          {ui.get("info")}
+        </Alert>
+      )}
       
       <div className="mb-4">
         <Button 
@@ -297,18 +313,19 @@ const GroupDetailPage = () => {
               </Col>
               
               <Col md={4} className="d-flex align-items-center justify-content-end">
-                {!userStatus.isMember && !userStatus.hasPendingRequest && (
+                {/* 가입 상태에 따른 버튼 표시 */}
+                {!ui.get("isMember") && !ui.get("hasPendingRequest") && (
                   <Button 
                     variant="primary" 
-                    onClick={toggleJoinModal}
-                    disabled={isJoining}
+                    onClick={() => ui.openModal("join")}
+                    disabled={ui.isLoading("joining")}
                     className="w-100"
                   >
-                    {isJoining ? "처리 중..." : "가입 요청하기"}
+                    {ui.isLoading("joining") ? "처리 중..." : "가입 요청하기"}
                   </Button>
                 )}
                 
-                {userStatus.hasPendingRequest && (
+                {ui.get("hasPendingRequest") && (
                   <Button 
                     variant="outline-primary" 
                     disabled
@@ -318,14 +335,14 @@ const GroupDetailPage = () => {
                   </Button>
                 )}
                 
-                {userStatus.isMember && (
+                {ui.get("isMember") && (
                   <div className="text-center w-100">
                     <Badge bg="success" className="p-2 mb-2">그룹 멤버</Badge>
                     <Button 
                       variant="outline-danger" 
                       size="sm"
                       className="w-100"
-                      onClick={toggleLeaveModal}
+                      onClick={() => ui.openModal("leave")}
                     >
                       그룹 탈퇴
                     </Button>
@@ -337,27 +354,29 @@ const GroupDetailPage = () => {
         </Card>
       </div>
       
+      {/* 탭 메뉴 */}
       <Tabs defaultActiveKey="info" className="mb-4">
         <Tab eventKey="info" title="그룹 정보">
-          <GroupInfo group={group} isAdmin={userStatus.isAdmin} />
+          <GroupInfo group={group} isAdmin={ui.get("isAdmin")} />
         </Tab>
         
         <Tab eventKey="members" title="멤버">
           <GroupMembersList 
             members={members} 
-            isAdmin={userStatus.isAdmin}
+            isAdmin={ui.get("isAdmin")}
             currentUser={currentUser} 
           />
         </Tab>
 
         <Tab eventKey="schedule" title="스케줄">
           <GroupScheduleComponent 
-              group={group} 
-              members={members}
+            group={group} 
+            members={members}
           />
         </Tab>
         
-        {userStatus.isAdmin && (
+        {/* 관리자 전용 탭들 */}
+        {ui.get("isAdmin") && (
           <Tab eventKey="settings" title="설정">
             <Row className="mt-3">
               <Col lg={6} className="mb-4">
@@ -380,7 +399,7 @@ const GroupDetailPage = () => {
           </Tab>
         )}
         
-        {userStatus.isAdmin && group.joinRequests && group.joinRequests.length > 0 && (
+        {ui.get("isAdmin") && group.joinRequests && group.joinRequests.length > 0 && (
           <Tab eventKey="requests" title={`가입 요청 (${group.joinRequests.length})`}>
             <JoinRequestsList 
               group={group} 
@@ -391,19 +410,18 @@ const GroupDetailPage = () => {
         )}
       </Tabs>
       
-      {/* 가입 요청 모달 */}
+      {/* 모달들 */}
       <JoinRequestModal 
-        show={isOpen("join")} 
-        onHide={handleJoinModalClose} 
+        show={ui.isModalOpen("join")} 
+        onHide={() => ui.closeModal("join")} 
         onSubmit={handleJoinRequest}
         group={group}
       />
       
-      {/* 그룹 탈퇴 모달 */}
       {group && currentUser && (
         <LeaveGroupModal
-          show={isOpen("leave")}
-          onHide={handleLeaveModalClose}
+          show={ui.isModalOpen("leave")}
+          onHide={() => ui.closeModal("leave")}
           group={group}
           userId={currentUser.uid}
           onLeaveSuccess={handleLeaveSuccess}

@@ -6,6 +6,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { GROUP_TAGS } from '../utils/GroupConstants';
 import EmailVerificationService from '../utils/EmailVerificationService';
 import useNotification from '../hooks/useNotification';
+import useLoading from '../hooks/useLoading';
 
 // 컴포넌트 import
 import DashboardCard from '../components/common/DashboardCard';
@@ -27,6 +28,9 @@ const ProfilePage = () => {
     showInfo,
     clearAll 
   } = useNotification();
+  
+  // useLoading 훅 사용 (기존 프로젝트 패턴)
+  const [isUpdatingProfile, startUpdatingProfile] = useLoading();
   
   // 프로필 상태 관리
   const [displayName, setDisplayName] = useState('');
@@ -260,11 +264,11 @@ const ProfilePage = () => {
       });
       
       // 프로필 업데이트 - 업데이트할 필드를 명시적으로 지정
-      await updateUserProfile({
+      await startUpdatingProfile(updateUserProfile({
         displayName: displayName.trim(),
         department: department.trim(),
         interests: interests
-      });
+      }));
       
       console.log("프로필 업데이트 성공");
       
@@ -316,7 +320,8 @@ const ProfilePage = () => {
   return (
     <div className="main-layout profile-page">
       {/* 로딩 오버레이 추가 */}
-      {(authLoading.updateProfile || authLoading.logout || isUpdatingEmail) && <LoadingSpinner />}
+      {(authLoading.updateProfile || authLoading.logout || isUpdatingEmail || 
+        isUpdatingProfile) && <LoadingSpinner />}
       
       {/* 네비게이션바 높이만큼 추가하는 여백 */}
       <div className="navbar-spacer"></div>
@@ -430,7 +435,7 @@ const ProfilePage = () => {
                       variant={isEditMode ? "outline-secondary" : "outline-primary"}
                       size="sm"
                       onClick={toggleEditMode}
-                      disabled={authLoading.updateProfile}
+                      disabled={isUpdatingProfile}
                     >
                       <i className={`bi ${isEditMode ? 'bi-x-circle' : 'bi-pencil'} me-1`}></i>
                       {isEditMode ? '취소' : '편집'}
@@ -480,11 +485,11 @@ const ProfilePage = () => {
                     {isEditMode && (
                       <Button 
                         variant="primary"
-                        disabled={authLoading.updateProfile || !hasChanges()} 
+                        disabled={isUpdatingProfile || !hasChanges()} 
                         className="profile-btn-primary w-100" 
                         type="submit"
                       >
-                        {authLoading.updateProfile 
+                        {isUpdatingProfile 
                           ? '업데이트 중...' 
                           : !hasChanges() 
                             ? '변경사항 없음' 
