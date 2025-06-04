@@ -256,7 +256,7 @@ const AppNavbar = forwardRef((props, ref) => {
               height="30"
               className="d-inline-block align-top me-2"
             />
-            <span className="fw-bold" style={{ fontFamily: "Poor Story, Noto Sans KR, cursive", fontSize: "1.25rem" }}>
+            <span className="fw-bold" style={{ fontSize: "1.25rem" }}>
               STUDYBUDDY
             </span>
           </Navbar.Brand>
