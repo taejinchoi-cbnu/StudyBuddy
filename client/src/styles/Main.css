@@ -13,6 +13,7 @@
 /* 페이지별 스타일 */
 @import './pages/Home.css';
 @import './pages/Dashboard.css';
-@import './pages/Schedule.css';
 @import './pages/Groups.css';
 @import './pages/Profile.css';
+@import './pages/Schedule.css';
+@import './pages/GroupDetail.css';

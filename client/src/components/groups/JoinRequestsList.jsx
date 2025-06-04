@@ -6,7 +6,7 @@ import useUIState from '../../hooks/useUIState';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase';
 
-const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
+const JoinRequestsList = ({ group = {}, currentUser, onRequestProcessed }) => {
   const { darkMode } = useDarkMode();
   const [requestProfiles, setRequestProfiles] = useState({});
   
@@ -19,7 +19,7 @@ const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
   // 모든 요청자의 프로필을 한 번에 로드
   useEffect(() => {
     const loadAllProfiles = async () => {
-      if (!group.joinRequests?.length) return;
+      if (!group?.joinRequests?.length) return;
       
       const profiles = {};
       await Promise.allSettled(
@@ -39,7 +39,7 @@ const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
     };
     
     loadAllProfiles();
-  }, [group.joinRequests]);
+  }, [group?.joinRequests]);
   
   // 요청 처리 핸들러 통합
   const handleRequest = async (userId, action) => {
@@ -73,7 +73,7 @@ const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
     }
   };
   
-  if (!group.joinRequests?.length) {
+  if (!group?.joinRequests?.length) {
     return (
       <Card className={`shadow-sm ${darkMode ? 'dark-mode' : ''}`}>
         <Card.Body>

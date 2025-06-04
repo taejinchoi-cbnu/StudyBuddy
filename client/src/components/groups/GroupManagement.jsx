@@ -9,7 +9,7 @@ import GroupActionModal from './GroupActionModal';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase';
 
-const GroupManagement = ({ group, members, currentUser, onUpdateSuccess, onDeleteSuccess, onMemberRemoved }) => {
+const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, onDeleteSuccess, onMemberRemoved }) => {
   const { darkMode } = useDarkMode();
   const [isUpdating, startUpdating] = useLoading();
   const [memberProfiles, setMemberProfiles] = useState({});
@@ -57,6 +57,8 @@ const GroupManagement = ({ group, members, currentUser, onUpdateSuccess, onDelet
   useEffect(() => {
     const loadProfiles = async () => {
       const profiles = {};
+      if (!members || !Array.isArray(members)) return;
+      
       for (const member of members) {
         try {
           const userDoc = await getDoc(doc(firestore, 'users', member.userId));
@@ -70,7 +72,7 @@ const GroupManagement = ({ group, members, currentUser, onUpdateSuccess, onDelet
       setMemberProfiles(profiles);
     };
     
-    if (members.length > 0) {
+    if (members && members.length > 0) {
       loadProfiles();
     }
   }, [members]);
@@ -172,7 +174,7 @@ const GroupManagement = ({ group, members, currentUser, onUpdateSuccess, onDelet
                     }}
                   >
                     <option value="">주제 선택</option>
-                    {GROUP_SUBJECTS.map((subject) => (
+                    {Array.isArray(GROUP_SUBJECTS) && GROUP_SUBJECTS.map((subject) => (
                       <option 
                         key={subject} 
                         value={subject}
@@ -295,7 +297,7 @@ const GroupManagement = ({ group, members, currentUser, onUpdateSuccess, onDelet
                       meetingType: e.target.value
                     })}
                   >
-                    {MEETING_TYPES.map((type) => (
+                    {Array.isArray(MEETING_TYPES) && MEETING_TYPES.map((type) => (
                       <option key={type} value={type}>{type}</option>
                     ))}
                   </Form.Select>
@@ -330,7 +332,7 @@ const GroupManagement = ({ group, members, currentUser, onUpdateSuccess, onDelet
             {/* 멤버 관리 탭 */}
             <Tab eventKey="members" title="멤버 관리">
               <ListGroup>
-                {members.map((member) => {
+                {Array.isArray(members) && members.map((member) => {
                   const profile = memberProfiles[member.userId] || {};
                   const isCurrentUser = currentUser && member.userId === currentUser.uid;
                   
@@ -386,7 +388,7 @@ const GroupManagement = ({ group, members, currentUser, onUpdateSuccess, onDelet
         onHide={() => setShowActionModal(false)}
         type={modalType}
         group={group}
-        userId={currentUser.uid}
+        userId={currentUser?.uid}
         onDeleteSuccess={onDeleteSuccess}
       />
     </>
