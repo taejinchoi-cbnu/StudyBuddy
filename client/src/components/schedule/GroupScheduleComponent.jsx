@@ -3,8 +3,7 @@ import { Card, Container, Row, Col, Button, Alert, Table, ProgressBar } from 're
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 import { getGroupById, saveGroupAppointment, deleteGroupAppointment } from '../../utils/GroupService';
-import UnavailabilitySelector from './UnavailabilitySelector';
-import AvailableTimesDisplay from './AvailableTimesDisplay';
+import ScheduleManager from './ScheduleManager';
 import useLoading from '../../hooks/useLoading';
 
 // 요일 및 시간 데이터
@@ -265,28 +264,31 @@ const GroupScheduleComponent = ({ group, members }) => {
   };
   
   // 일정 처리 핸들러
-  const handleAppointment = async (appointmentData, action = 'save') => {
+  const handleAppointment = async (appointmentData, action = 'add') => {
+    if (!group || !group.id) {
+      setError('그룹 정보가 없습니다.');
+      return;
+    }
+
     try {
-      setError('');
+      startSaving();
       
-      if (action === 'save') {
-        // 일정 저장
-        await startSaving(saveGroupAppointment(group.id, appointmentData, currentUser.uid));
-        
-        // 로컬 상태 업데이트
-        setAppointments(prev => [...prev, appointmentData]);
-        setSuccess('일정이 성공적으로 추가되었습니다.');
-      } else if (action === 'delete') {
+      if (action === 'delete') {
         // 일정 삭제
-        await startSaving(deleteGroupAppointment(group.id, appointmentData.id, currentUser.uid));
-        
-        // 로컬 상태 업데이트
+        await deleteGroupAppointment(group.id, appointmentData.id);
         setAppointments(prev => prev.filter(app => app.id !== appointmentData.id));
         setSuccess('일정이 삭제되었습니다.');
+      } else {
+        // 일정 추가
+        await saveGroupAppointment(group.id, appointmentData);
+        setAppointments(prev => [...prev, appointmentData]);
+        setSuccess('일정이 저장되었습니다.');
       }
     } catch (error) {
       console.error('일정 처리 오류:', error);
-      setError(`일정 처리 중 오류가 발생했습니다: ${error.message}`);
+      setError('일정 처리 중 오류가 발생했습니다.');
+    } finally {
+      startSaving();
     }
   };
 
@@ -415,20 +417,27 @@ const GroupScheduleComponent = ({ group, members }) => {
           <Card.Body>
             <h4 className="mb-3">내 불가능한 시간 설정</h4>
             {currentUser && (
-              <UnavailabilitySelector
+              <ScheduleManager
+                currentUser={currentUser}
+                isAdmin={userStatus.isAdmin}
                 userId={currentUser.uid}
                 days={DAYS_OF_WEEK}
                 timeSlots={TIME_SLOTS}
                 onAdd={addUnavailableTime}
                 existingTimes={availabilityData[currentUser.uid]?.unavailableTimes || []}
                 onRemove={(index) => removeUnavailableTime(currentUser.uid, index)}
+                availableTimeSlots={availableTimeSlots}
+                onSelectAppointment={handleAppointment}
+                existingAppointments={appointments}
+                mode={calculationDone ? "full" : "availability-only"}
+                showSteps={true}
               />
             )}
           </Card.Body>
         </Card>
         
         {/* 시간 계산 버튼 - 관리자만 사용 가능 */}
-        {userStatus.isAdmin && (
+        {userStatus.isAdmin && !calculationDone && (
           <div className="d-grid gap-2 mb-4">
             <Button
               variant="primary"
@@ -445,21 +454,6 @@ const GroupScheduleComponent = ({ group, members }) => {
               </small>
             )}
           </div>
-        )}
-        
-        {/* 결과 표시 섹션 */}
-        {calculationDone && (
-          <Card>
-            <Card.Body>
-              <h4 className="mb-3">모두가 가능한 시간</h4>
-              <AvailableTimesDisplay 
-                availableTimeSlots={availableTimeSlots} 
-                isAdmin={userStatus.isAdmin}
-                onSelectAppointment={handleAppointment}
-                existingAppointments={appointments}
-              />
-            </Card.Body>
-          </Card>
         )}
       </Card.Body>
     </Card>

@@ -1,0 +1,152 @@
+.schedule-manager {
+  width: 100%;
+}
+
+.schedule-manager.dark-mode {
+  color: var(--text-primary);
+}
+
+/* 단계 표시기 스타일 */
+.schedule-manager .progress {
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--bg-secondary);
+}
+
+.schedule-manager .progress-bar {
+  transition: width 0.3s ease;
+}
+
+.schedule-manager .step-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.schedule-manager .step-labels small {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* 시간 선택 폼 스타일 */
+.schedule-manager .form-label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.schedule-manager .form-select {
+  border-color: var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.schedule-manager .form-select:disabled {
+  background-color: var(--bg-secondary);
+  cursor: not-allowed;
+}
+
+/* 뱃지 스타일 */
+.schedule-manager .badge {
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.schedule-manager .badge:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* 테이블 스타일 */
+.schedule-manager .table {
+  margin-bottom: 0;
+}
+
+.schedule-manager .table th {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 600;
+  border-color: var(--border-color);
+}
+
+.schedule-manager .table td {
+  border-color: var(--border-color);
+  vertical-align: middle;
+}
+
+/* 모달 스타일 */
+.schedule-manager .modal-content {
+  background-color: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+.schedule-manager .modal-header {
+  border-bottom-color: var(--border-color);
+}
+
+.schedule-manager .modal-footer {
+  border-top-color: var(--border-color);
+}
+
+.schedule-manager .modal-title {
+  color: var(--text-primary);
+}
+
+/* 버튼 스타일 */
+.schedule-manager .btn {
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.schedule-manager .btn:hover {
+  transform: translateY(-1px);
+}
+
+.schedule-manager .btn:disabled {
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 알림 스타일 */
+.schedule-manager .alert {
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .schedule-manager .form-row {
+    margin-bottom: 16px;
+  }
+  
+  .schedule-manager .table {
+    font-size: 0.9rem;
+  }
+  
+  .schedule-manager .badge {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+}
+
+/* 애니메이션 */
+.schedule-manager .fade-enter {
+  opacity: 0;
+}
+
+.schedule-manager .fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.schedule-manager .fade-exit {
+  opacity: 1;
+}
+
+.schedule-manager .fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+} 
