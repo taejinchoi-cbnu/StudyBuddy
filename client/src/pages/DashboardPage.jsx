@@ -4,8 +4,10 @@ import { useDarkMode } from "../contexts/DarkModeContext";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useCallback } from "react";
 
-// API 통합 훅
-import useApi from "../hooks/useApi";
+// Firebase 데이터 훅 - 기존 패턴 사용
+import useFirebaseData from "../hooks/useFirebaseData";
+import { getUserGroups } from "../utils/GroupService";
+import { getUserEvents } from "../utils/ScheduleService";
 
 // 통합 컴포넌트
 import UniversalCard from "../components/common/UniversalCard";
@@ -24,87 +26,100 @@ const DashboardPage = () => {
   const { currentUser, userProfile } = useAuth();
   const { darkMode } = useDarkMode();
 
-  // 통합 API를 사용한 그룹 데이터 관리
-  const groupsApi = useApi("groupMembers", {
-    apiType: "firebase",
-    firebaseOperation: "list",
-    firebaseFilters: [
-      { field: "userId", operator: "==", value: currentUser?.uid }
-    ],
-    executeOnMount: !!currentUser && !!userProfile,
-    showNotifications: true,
-    cacheDuration: 2 * 60 * 1000, // 2분 캐싱
-    onSuccess: (membersData) => {
-      console.log("사용자 그룹 멤버십 로드 성공:", membersData?.length || 0);
-    },
-    transform: async (membersData) => {
-      // 멤버십 데이터에서 그룹 정보를 가져오는 로직
-      if (!membersData || !Array.isArray(membersData)) return [];
-      
-      const groupPromises = membersData.map(async (member) => {
-        try {
-          const groupResponse = await fetch(`/api/groups/${member.groupId}`);
-          if (groupResponse.ok) {
-            const groupData = await groupResponse.json();
-            return { ...groupData, memberInfo: member };
-          }
-        } catch (error) {
-          console.error(`그룹 ${member.groupId} 로드 실패:`, error);
-        }
-        return null;
-      });
-      
-      const groups = await Promise.all(groupPromises);
-      return groups.filter(Boolean);
-    }
-  });
+  // 사용자 그룹 데이터 가져오기 함수
+  const fetchUserGroups = useCallback(() => {
+    if (!currentUser) return Promise.resolve([]);
+    return getUserGroups(currentUser.uid);
+  }, [currentUser]);
 
-  // 통합 API를 사용한 일정 데이터 관리
-  const eventsApi = useApi("userEvents", {
-    apiType: "firebase",
-    firebaseOperation: "list",
-    firebaseFilters: [
-      { field: "userId", operator: "==", value: currentUser?.uid }
-    ],
-    executeOnMount: !!currentUser,
-    showNotifications: true,
-    cacheDuration: 1 * 60 * 1000, // 1분 캐싱
-    onSuccess: (eventsData) => {
-      console.log("사용자 일정 데이터 로드 성공:", eventsData?.length || 0);
-    },
-    transform: (eventsData) => {
-      if (!Array.isArray(eventsData)) return [];
-      
-      return eventsData.map(event => ({
-        ...event,
-        start: event.start?.toDate ? event.start.toDate() : new Date(event.start),
-        end: event.end?.toDate ? event.end.toDate() : new Date(event.end),
-        isGroupEvent: false
-      }));
-    }
-  });
+  // 사용자 일정 데이터 가져오기 함수
+  const fetchUserEvents = useCallback(() => {
+    if (!currentUser) return Promise.resolve([]);
+    return getUserEvents(currentUser.uid);
+  }, [currentUser]);
 
-  // 관리자 권한이 있는 그룹 확인
-  const hasAdminGroups = groupsApi.data?.some(group => {
-    return group.createdBy === currentUser?.uid || 
-           group.memberInfo?.role === "admin";
-  }) || false;
+  // useFirebaseData로 그룹 데이터 관리
+  const {
+    data: userGroups,
+    loading: groupsLoading,
+    error: groupsError,
+    refetch: refetchGroups
+  } = useFirebaseData(
+    fetchUserGroups,
+    [currentUser],
+    {
+      enabled: !!currentUser && !!userProfile,
+      initialData: [],
+      onSuccess: (groupsData) => {
+        console.log("사용자 그룹 데이터 로드 성공:", groupsData?.length || 0);
+      },
+      onError: (error) => {
+        console.error("사용자 그룹 데이터 로드 실패:", error);
+      }
+    }
+  );
+
+  // useFirebaseData로 일정 데이터 관리
+  const {
+    data: userEvents,
+    loading: eventsLoading,
+    error: eventsError,
+    refetch: refetchEvents
+  } = useFirebaseData(
+    fetchUserEvents,
+    [currentUser],
+    {
+      enabled: !!currentUser,
+      initialData: [],
+      onSuccess: (eventsData) => {
+        console.log("사용자 일정 데이터 로드 성공:", eventsData?.length || 0);
+      },
+      onError: (error) => {
+        console.error("사용자 일정 데이터 로드 실패:", error);
+      },
+      transform: (eventsData) => {
+        if (!Array.isArray(eventsData)) return [];
+        
+        return eventsData.map(event => ({
+          ...event,
+          start: event.start?.toDate ? event.start.toDate() : new Date(event.start),
+          end: event.end?.toDate ? event.end.toDate() : new Date(event.end),
+          isGroupEvent: false
+        }));
+      }
+    }
+  );
+
+  // 관리자 권한이 있는 그룹 확인 - 안전한 검사
+  const hasAdminGroups = () => {
+    if (!Array.isArray(userGroups) || !currentUser) {
+      return false;
+    }
+    
+    return userGroups.some(group => {
+      return group.createdBy === currentUser.uid || 
+             (group.members && Array.isArray(group.members) && 
+              group.members.some(member => 
+                member.userId === currentUser.uid && member.role === "admin"
+              ));
+    });
+  };
 
   // 데이터 새로고침 함수
   const refreshData = useCallback(async () => {
     console.log("데이터 새로고침 요청됨");
     try {
       await Promise.all([
-        groupsApi.refresh(),
-        eventsApi.refresh()
+        refetchGroups(),
+        refetchEvents()
       ]);
     } catch (error) {
       console.error("데이터 새로고침 실패:", error);
     }
-  }, [groupsApi, eventsApi]);
+  }, [refetchGroups, refetchEvents]);
 
   // 로딩 상태 처리
-  if (groupsApi.loading || eventsApi.loading) {
+  if (groupsLoading || eventsLoading) {
     return <LoadingSpinner />;
   }
 
@@ -113,6 +128,11 @@ const DashboardPage = () => {
     return <LoadingSpinner />;
   }
 
+  // 안전한 데이터 확인
+  const safeUserGroups = Array.isArray(userGroups) ? userGroups : [];
+  const safeUserEvents = Array.isArray(userEvents) ? userEvents : [];
+  const showAdminCards = hasAdminGroups();
+
   return (
     <Container fluid className={`dashboard-layout ${darkMode ? "dark-mode" : ""}`}>
       <div className="main-area-full">
@@ -120,9 +140,9 @@ const DashboardPage = () => {
         
         <main className="dashboard-content">
           {/* 에러 메시지 표시 */}
-          {(groupsApi.error || eventsApi.error) && (
+          {(groupsError || eventsError) && (
             <div className="alert alert-danger mt-3" role="alert">
-              {groupsApi.error || eventsApi.error}
+              데이터를 불러오는 중 오류가 발생했습니다: {groupsError || eventsError}
             </div>
           )}
 
@@ -140,7 +160,7 @@ const DashboardPage = () => {
           <Container className="dashboard-cards-container">
             <Row className="g-4 mb-4">
               {/* 다가오는 일정 카드 */}
-              <Col lg={hasAdminGroups ? 4 : 6} md={6} sm={12}>
+              <Col lg={showAdminCards ? 4 : 6} md={6} sm={12}>
                 <UniversalCard
                   variant="dashboard"
                   title="다가오는 일정"
@@ -148,14 +168,14 @@ const DashboardPage = () => {
                   className="h-100"
                 >
                   <UpcomingEventsComponent 
-                    userGroups={groupsApi.data || []}
+                    userGroups={safeUserGroups}
                     onDataChange={refreshData}
                   />
                 </UniversalCard>
               </Col>
 
               {/* 그룹 요청 카드 - 관리자인 경우에만 표시 */}
-              {hasAdminGroups && (
+              {showAdminCards && (
                 <Col lg={4} md={6} sm={12}>
                   <UniversalCard
                     variant="dashboard"
@@ -164,7 +184,7 @@ const DashboardPage = () => {
                     className="h-100"
                   >
                     <GroupRequestsComponent 
-                      userGroups={groupsApi.data || []}
+                      userGroups={safeUserGroups}
                       onDataChange={refreshData}
                     />
                   </UniversalCard>
@@ -172,7 +192,7 @@ const DashboardPage = () => {
               )}
 
               {/* 그룹 추천 카드 */}
-              <Col lg={hasAdminGroups ? 4 : 6} md={6} sm={12}>
+              <Col lg={showAdminCards ? 4 : 6} md={6} sm={12}>
                 <UniversalCard
                   variant="dashboard"
                   title="이런 그룹은 어때요?"
@@ -180,7 +200,7 @@ const DashboardPage = () => {
                   className="h-100"
                 >
                   <GroupRecommendationComponent 
-                    userGroups={groupsApi.data || []}
+                    userGroups={safeUserGroups}
                   />
                 </UniversalCard>
               </Col>
@@ -197,7 +217,7 @@ const DashboardPage = () => {
                   className="h-100"
                 >
                   <MiniCalendarComponent 
-                    userEvents={eventsApi.data || []}
+                    userEvents={safeUserEvents}
                   />
                 </UniversalCard>
               </Col>
@@ -211,13 +231,13 @@ const DashboardPage = () => {
                   className="h-100"
                 >
                   <MeetingStatsComponent 
-                    userGroups={groupsApi.data || []}
-                    userEvents={eventsApi.data || []}
+                    userGroups={safeUserGroups}
+                    userEvents={safeUserEvents}
                   />
                 </UniversalCard>
               </Col>
 
-              {/* 포모도로 타이머 카드 */}
+              {/* 타이머 카드 */}
               <Col lg={4} md={12} sm={12}>
                 <UniversalCard
                   variant="dashboard"
