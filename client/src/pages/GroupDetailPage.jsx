@@ -11,11 +11,9 @@ import useApi from "../hooks/useApi";
 // 컴포넌트들 import
 import GroupInfo from "../components/groups/GroupInfo";
 import GroupMembersList from "../components/groups/GroupMembersList";
-import JoinRequestModal from "../components/groups/JoinRequestModal";
+import GroupActionModal from "../components/groups/GroupActionModal";
 import JoinRequestsList from "../components/groups/JoinRequestsList";
-import LeaveGroupModal from "../components/groups/LeaveGroupModal";
-import GroupSettings from "../components/groups/GroupSettings";
-import MemberManagement from "../components/groups/MemberManagement";
+import GroupManagement from "../components/groups/GroupManagement";
 import GroupScheduleComponent from "../components/schedule/GroupScheduleComponent";
 import logoQuestion from "../assets/logoQuestion.png";
 
@@ -25,7 +23,7 @@ const GroupDetailPage = () => {
   const { darkMode } = useDarkMode();
   const navigate = useNavigate();
 
-  // 통합 UI 상태 관리 (기존의 여러 훅들을 하나로 통합)
+  // 통합 UI 상태 관리
   const ui = useUIState(
     {
       // 모달 상태들
@@ -47,7 +45,7 @@ const GroupDetailPage = () => {
   );
 
   // ============================================================================
-  // 통합 API 관리 (기존의 useFirebaseData들을 통합)
+  // 통합 API 관리
   // ============================================================================
   
   // 그룹 정보 API
@@ -111,7 +109,7 @@ const GroupDetailPage = () => {
   });
 
   // ============================================================================
-  // 이벤트 핸들러들 (기존 로직 유지하되 새로운 훅 활용)
+  // 이벤트 핸들러들
   // ============================================================================
 
   // 그룹 데이터 새로고침
@@ -256,177 +254,136 @@ const GroupDetailPage = () => {
           {ui.get("success")}
         </Alert>
       )}
-      {ui.get("info") && (
-        <Alert variant="info" onClose={() => ui.clearNotifications()} dismissible>
-          {ui.get("info")}
-        </Alert>
-      )}
-      
-      <div className="mb-4">
-        <Button 
-          variant="outline-secondary" 
-          onClick={() => navigate("/groups")}
-          className="mb-3"
-        >
-          ← 그룹 목록으로
-        </Button>
-        
-        <Card className="shadow-sm">
-          <Card.Body>
-            <Row>
-              <Col md={8}>
-                <h1>{group.name}</h1>
-                
-                <div className="mb-3">
-                  {group.subject && Array.isArray(group.subject) && group.subject.map(subject => (
-                    <Badge 
-                      key={subject} 
-                      bg="primary" 
-                      className="me-1 mb-1 p-2"
-                    >
-                      {subject}
-                    </Badge>
-                  ))}
-                </div>
-                
-                <div className="mb-3">
-                  {group.tags && Array.isArray(group.tags) && group.tags.map(tag => (
-                    <Badge 
-                      key={tag} 
-                      bg="secondary" 
-                      className="me-1 mb-1"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                
-                <p className="text-muted">
-                  미팅 방식: {group.meetingType} | 
-                  인원: {group.memberCount || 1}/{group.maxMembers} |
-                  생성일: {group.createdAt ? (
-                    typeof group.createdAt.toLocaleDateString === "function" 
-                      ? group.createdAt.toLocaleDateString() 
-                      : new Date(group.createdAt).toLocaleDateString()
-                  ) : "날짜 정보 없음"}
-                </p>
-              </Col>
-              
-              <Col md={4} className="d-flex align-items-center justify-content-end">
-                {/* 가입 상태에 따른 버튼 표시 */}
-                {!ui.get("isMember") && !ui.get("hasPendingRequest") && (
-                  <Button 
-                    variant="primary" 
-                    onClick={() => ui.openModal("join")}
-                    disabled={ui.isLoading("joining")}
-                    className="w-100"
-                  >
-                    {ui.isLoading("joining") ? "처리 중..." : "가입 요청하기"}
-                  </Button>
-                )}
-                
-                {ui.get("hasPendingRequest") && (
-                  <Button 
-                    variant="outline-primary" 
-                    disabled
-                    className="w-100"
-                  >
-                    가입 요청 대기 중
-                  </Button>
-                )}
-                
-                {ui.get("isMember") && (
-                  <div className="text-center w-100">
-                    <Badge bg="success" className="p-2 mb-2">그룹 멤버</Badge>
-                    <Button 
-                      variant="outline-danger" 
-                      size="sm"
-                      className="w-100"
-                      onClick={() => ui.openModal("leave")}
-                    >
-                      그룹 탈퇴
-                    </Button>
-                  </div>
-                )}
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
-      </div>
-      
-      {/* 탭 메뉴 */}
-      <Tabs defaultActiveKey="info" className="mb-4">
-        <Tab eventKey="info" title="그룹 정보">
-          <GroupInfo group={group} isAdmin={ui.get("isAdmin")} />
-        </Tab>
-        
-        <Tab eventKey="members" title="멤버">
-          <GroupMembersList 
-            members={members} 
-            isAdmin={ui.get("isAdmin")}
-            currentUser={currentUser} 
-          />
-        </Tab>
 
-        <Tab eventKey="schedule" title="스케줄">
-          <GroupScheduleComponent 
-            group={group} 
-            members={members}
-          />
-        </Tab>
-        
-        {/* 관리자 전용 탭들 */}
-        {ui.get("isAdmin") && (
-          <Tab eventKey="settings" title="설정">
-            <Row className="mt-3">
-              <Col lg={6} className="mb-4">
-                <GroupSettings 
-                  group={group} 
-                  currentUser={currentUser} 
+      <Row>
+        {/* 왼쪽 컬럼: 그룹 정보 및 멤버 목록 */}
+        <Col lg={4}>
+          <GroupInfo group={group} />
+          
+          {ui.get("isMember") && (
+            <GroupMembersList 
+              members={members} 
+              currentUser={currentUser}
+              className="mt-4"
+            />
+          )}
+        </Col>
+
+        {/* 오른쪽 컬럼: 탭 컨텐츠 */}
+        <Col lg={8}>
+          <Tabs defaultActiveKey="info" className="mb-4">
+            {/* 기본 정보 탭 */}
+            <Tab eventKey="info" title="기본 정보">
+              <Card className="shadow-sm">
+                <Card.Body>
+                  <h3 className="mb-4">그룹 소개</h3>
+                  <p>{group.description}</p>
+                  
+                  <div className="mt-4">
+                    <h4>주제</h4>
+                    <div className="d-flex flex-wrap gap-2">
+                      {group.subject?.map((subject) => (
+                        <Badge key={subject} bg="primary">
+                          {subject}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <h4>태그</h4>
+                    <div className="d-flex flex-wrap gap-2">
+                      {group.tags?.map((tag) => (
+                        <Badge key={tag} bg="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Tab>
+
+            {/* 일정 탭 */}
+            {ui.get("isMember") && (
+              <Tab eventKey="schedule" title="일정">
+                <GroupScheduleComponent 
+                  groupId={group.id}
+                  currentUser={currentUser}
+                />
+              </Tab>
+            )}
+
+            {/* 관리 탭 */}
+            {ui.get("isAdmin") && (
+              <Tab eventKey="management" title="그룹 관리">
+                <GroupManagement
+                  group={group}
+                  members={members}
+                  currentUser={currentUser}
                   onUpdateSuccess={reloadGroupData}
                   onDeleteSuccess={handleDeleteSuccess}
-                />
-              </Col>
-              <Col lg={6}>
-                <MemberManagement 
-                  group={group} 
-                  members={members} 
-                  currentUser={currentUser}
                   onMemberRemoved={reloadGroupData}
                 />
-              </Col>
-            </Row>
-          </Tab>
+              </Tab>
+            )}
+
+            {/* 가입 요청 관리 탭 */}
+            {ui.get("isAdmin") && group.joinRequests?.length > 0 && (
+              <Tab eventKey="requests" title="가입 요청">
+                <JoinRequestsList
+                  group={group}
+                  currentUser={currentUser}
+                  onRequestProcessed={reloadGroupData}
+                />
+              </Tab>
+            )}
+          </Tabs>
+        </Col>
+      </Row>
+
+      {/* 액션 버튼들 */}
+      <div className="position-fixed bottom-0 end-0 p-3">
+        {!ui.get("isMember") && !ui.get("hasPendingRequest") && (
+          <Button
+            variant="primary"
+            size="lg"
+            className="rounded-circle shadow-lg me-2"
+            onClick={() => ui.openModal("join")}
+          >
+            가입하기
+          </Button>
         )}
         
-        {ui.get("isAdmin") && group.joinRequests && group.joinRequests.length > 0 && (
-          <Tab eventKey="requests" title={`가입 요청 (${group.joinRequests.length})`}>
-            <JoinRequestsList 
-              group={group} 
-              currentUser={currentUser}
-              onRequestProcessed={reloadGroupData}
-            />
-          </Tab>
+        {ui.get("isMember") && !ui.get("isAdmin") && (
+          <Button
+            variant="danger"
+            size="lg"
+            className="rounded-circle shadow-lg"
+            onClick={() => ui.openModal("leave")}
+          >
+            탈퇴하기
+          </Button>
         )}
-      </Tabs>
-      
-      {/* 모달들 */}
-      <JoinRequestModal 
-        show={ui.isModalOpen("join")} 
-        onHide={() => ui.closeModal("join")} 
-        onSubmit={handleJoinRequest}
+      </div>
+
+      {/* 통합 모달 */}
+      <GroupActionModal
+        show={ui.isModalOpen("join")}
+        onHide={() => ui.closeModal("join")}
+        type="join"
         group={group}
+        onJoinRequest={handleJoinRequest}
       />
-      
-      {group && currentUser && (
-        <LeaveGroupModal
-          show={ui.isModalOpen("leave")}
-          onHide={() => ui.closeModal("leave")}
-          group={group}
-          userId={currentUser.uid}
-          onLeaveSuccess={handleLeaveSuccess}
-        />
-      )}
+
+      <GroupActionModal
+        show={ui.isModalOpen("leave")}
+        onHide={() => ui.closeModal("leave")}
+        type="leave"
+        group={group}
+        userId={currentUser.uid}
+        onLeaveSuccess={handleLeaveSuccess}
+      />
     </Container>
   );
 };
