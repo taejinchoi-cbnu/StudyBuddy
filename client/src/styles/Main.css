@@ -5,8 +5,7 @@
 @import './core/Base.css';
 
 /* 컴포넌트 스타일 */
-@import './components/CommonComponents.css';
-@import './components/Components.css';
+@import './components/CommonComponents.css'; /* 통합된 공통 컴포넌트 스타일 */
 @import './components/Navigation.css';
 @import './components/BaseModal.css';
 @import './components/UniversalCard.css';

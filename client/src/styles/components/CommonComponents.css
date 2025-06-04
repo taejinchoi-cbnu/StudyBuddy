@@ -1,11 +1,203 @@
 /* ======================================================
-   통합 공통 컴포넌트 스타일 (Common + DashboardComponents)
+   통합 공통 컴포넌트 스타일 (Common + Components)
    ====================================================== */
 
 @import '../core/Variables.css';
 
 /* ======================================================
-   Hero Button 공통 스타일
+   1. 로딩 컴포넌트 스타일
+   ====================================================== */
+
+/* 전체 화면 로딩 오버레이 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%; 
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* 로딩 로고 */
+.loading-logo {
+  width: 60px;
+  height: 60px;
+  animation: blink 1s ease-in-out infinite;
+}
+
+/* 깜박임 애니메이션 */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* 기본 스피너 */
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 204, 196, 0.3);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+}
+
+/* 회전 애니메이션 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 로딩 컨테이너 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* 인라인 로더 */
+.loading-inline {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.loading-inline .loading-logo {
+  width: 40px;
+  height: 40px;
+}
+
+/* 로딩 텍스트 */
+.loading-text {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: var(--text-muted, #666);
+}
+
+/* ======================================================
+   2. 모달 컴포넌트 스타일
+   ====================================================== */
+
+/* 인증 모달 기본 스타일 */
+.auth-modal .modal-dialog {
+  max-width: 450px;
+  margin: 2rem auto;
+}
+
+.auth-modal .modal-content {
+  border-radius: 25px;
+  border: none;
+  background: var(--white);
+  box-shadow: var(--hover-shadow);
+  overflow: hidden;
+  position: relative;
+}
+
+/* 모달 로고 영역 */
+.modal-logo-section {
+  text-align: center;
+  padding: 2rem 1rem 1rem 1rem;
+  position: relative;
+}
+
+.modal-logo {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+}
+
+/* 닫기 버튼 */
+.auth-modal .btn-close-custom {
+  background: none !important;
+  box-shadow: none !important;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: all var(--transition-normal);
+  z-index: 10;
+  color: black;
+}
+
+.auth-modal .btn-close-custom:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  color: var(--accent-color);
+}
+
+.auth-modal .btn-close-custom i {
+  font-size: 2.2rem;
+  transition: all var(--transition-normal);
+}
+
+/* 모달 바디 및 폼 요소 */
+.auth-modal .modal-body {
+  padding: 1rem 2rem 1.5rem 2rem;
+}
+
+.auth-modal .form-control {
+  border-radius: 15px;
+  padding: 0.9rem 1.2rem;
+  border: 2px solid var(--border-color);
+  transition: all var(--transition-normal);
+}
+
+.auth-modal .form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(255, 204, 196, 0.25);
+}
+
+.auth-modal .btn-primary {
+  background-color: var(--accent-color);
+  border: none;
+  border-radius: 25px;
+  font-weight: 500;
+  padding: 0.9rem 2rem;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+}
+
+.auth-modal .btn-primary:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+}
+
+.auth-modal .btn-link {
+  color: var(--accent-color);
+  font-weight: 500;
+  transition: color var(--transition-normal);
+}
+
+.auth-modal .btn-link:hover {
+  color: var(--primary-dark);
+}
+
+/* 모달 푸터 */
+.auth-modal .modal-footer {
+  border-top: none;
+  padding: 0.5rem 2rem 2rem 2rem;
+  text-align: center;
+}
+
+/* ======================================================
+   3. Hero Button 공통 스타일
    ====================================================== */
 
 .hero-button {
@@ -76,7 +268,7 @@
 }
 
 /* ======================================================
-   Feature Card 공통 스타일
+   4. Feature Card 공통 스타일
    ====================================================== */
 
 .feature-card {
@@ -177,7 +369,7 @@
 }
 
 /* ======================================================
-   Animated Section 공통 스타일
+   5. Animated Section 공통 스타일
    ====================================================== */
 
 .animated-section {
@@ -199,7 +391,7 @@
 }
 
 /* ======================================================
-   공통 대시보드 카드 스타일
+   6. 공통 대시보드 카드 스타일
    ====================================================== */
 
 .dashboard-card-common {
@@ -255,74 +447,7 @@
 }
 
 /* ======================================================
-   공통 리스트 아이템 스타일
-   ====================================================== */
-
-.list-item-common {
-  padding: 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  transition: all var(--transition-fast);
-  background-color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 0.75rem;
-}
-
-.list-item-common:last-child {
-  margin-bottom: 0;
-}
-
-.list-item-common:hover {
-  background-color: var(--primary-color);
-  border-color: var(--primary-dark);
-  transform: translateX(3px);
-}
-
-.list-item-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.list-item-info {
-  flex: 1;
-}
-
-.list-item-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-  color: var(--text-color);
-}
-
-.list-item-subtitle {
-  font-size: 0.75rem;
-  color: #666;
-  line-height: 1.3;
-}
-
-.list-item-right {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* 리스트 아이템 변형 */
-.list-item-upcoming-event .list-item-subtitle {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.list-item-recommendation .list-item-title {
-  font-size: 0.85rem;
-}
-
-.list-item-recommendation .list-item-subtitle {
-  font-size: 0.75rem;
-}
-
-/* ======================================================
-   공통 통계 위젯 스타일
+   7. 공통 통계 위젯 스타일
    ====================================================== */
 
 .stat-widget-common {
@@ -394,114 +519,97 @@
 }
 
 /* ======================================================
-   공통 유틸리티 클래스
+   8. 다크모드 스타일
    ====================================================== */
 
-.hover-lift {
-  transition: transform var(--transition-normal);
+/* 로딩 다크모드 */
+.dark-mode .loading-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
-.hover-lift:hover {
-  transform: translateY(-3px);
-}
-
-.hover-highlight {
-  transition: background-color var(--transition-fast);
-}
-
-.hover-highlight:hover {
-  background-color: var(--primary-color);
-}
-
-.scroll-container {
-  max-height: 250px;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-}
-
-.scroll-container::-webkit-scrollbar {
-  width: 4px;
-}
-
-.scroll-container::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
-}
-
-.scroll-container::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: 2px;
-}
-
-/* 빈 상태 공통 스타일 */
-.empty-state-common {
-  text-align: center;
-  padding: 2rem 1rem;
-  color: var(--text-muted, #666);
-}
-
-.empty-state-common i {
-  font-size: 2rem;
+.dark-mode .loading-text {
   color: var(--text-muted);
-  margin-bottom: 0.5rem;
-  display: block;
 }
 
-.empty-state-common p {
-  margin-top: 0.5rem;
-  margin-bottom: 0;
-  font-size: 0.9rem;
+.dark-mode .loading-spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-color);
 }
 
-/* ======================================================
-   배지 공통 스타일
-   ====================================================== */
-
-.badge-count-common {
-  font-size: 0.8rem;
-  padding: 0.3rem 0.6rem;
-  border-radius: 12px;
-  font-weight: 500;
+/* 모달 다크모드 */
+.dark-mode .auth-modal .modal-content {
+  background-color: var(--dark-bg);
 }
 
-.badge-count-small {
-  font-size: 0.7rem;
-  padding: 0.2rem 0.5rem;
+.dark-mode .modal-logo-section {
+  background-color: var(--dark-bg);
 }
 
-.badge-count-large {
-  font-size: 0.9rem;
-  padding: 0.4rem 0.8rem;
-}
-
-/* ======================================================
-   다크모드 공통 스타일
-   ====================================================== */
-
-.dark-mode .dashboard-card-common {
-  background-color: var(--white);
+.dark-mode .auth-modal .form-control {
+  background-color: var(--dark-bg);
   border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.dark-mode .auth-modal .btn-primary {
+  background-color: var(--accent-color);
+}
+
+.dark-mode .auth-modal .btn-link {
+  color: var(--accent-color);
+}
+
+.dark-mode .auth-modal .btn-close-custom {
+  color: var(--text-color);
+}
+
+.dark-mode .auth-modal .btn-close-custom:hover {
+  color: var(--accent-color);
+}
+
+/* 버튼 다크모드 */
+.dark-mode .hero-button.hero-button-primary {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .hero-button.hero-button-primary:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+}
+
+.dark-mode .hero-button.hero-button-secondary {
+  color: var(--text-color);
+}
+
+/* 카드 다크모드 */
+.dark-mode .feature-card {
+  background-color: var(--dark-bg);
+  border-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+.dark-mode .feature-card-title {
+  color: var(--text-color);
+}
+
+.dark-mode .feature-card-description {
+  color: #ccc;
+}
+
+.dark-mode .dashboard-card-common {
+  background-color: var(--dark-bg);
+  border-color: var(--border-color);
+}
+
 .dark-mode .card-header-common {
-  background-color: var(--primary-color);
-  border-bottom-color: var(--border-color);
+  background-color: var(--dark-bg);
+  border-color: var(--border-color);
 }
 
 .dark-mode .card-title-common {
   color: var(--text-color);
 }
 
-.dark-mode .list-item-common {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: var(--border-color);
-}
-
-.dark-mode .list-item-common:hover {
-  background-color: var(--primary-color);
-}
-
+/* 통계 위젯 다크모드 */
 .dark-mode .stat-widget-common {
   background-color: rgba(255, 255, 255, 0.05);
   border-color: var(--border-color);
@@ -511,87 +619,128 @@
   background-color: var(--primary-color);
 }
 
+.dark-mode .stat-label-common {
+  color: #ccc;
+}
+
 /* ======================================================
-   반응형 공통 스타일
+   9. 반응형 스타일
    ====================================================== */
 
 @media (max-width: 992px) {
   .feature-card {
     flex-direction: column;
     text-align: center;
-    gap: 1.5rem;
+    padding: 2rem;
   }
-  
+
   .feature-card-image,
   .feature-card-content {
-    max-width: 100%;
+    flex: none;
+    width: 100%;
   }
-  
+
   .feature-card-content {
     padding-left: 0;
+    margin-top: 1.5rem;
   }
-  
+
   .feature-card-benefits {
-    grid-template-columns: 1fr;
+    justify-content: center;
   }
 }
 
 @media (max-width: 768px) {
+  /* 버튼 */
   .hero-button {
-    width: 100%;
-    text-align: center;
+    padding: 0.8rem 1.8rem;
+    font-size: 0.95rem;
   }
-  
+
+  /* 카드 */
   .feature-card {
     padding: 1.5rem;
   }
-  
+
   .feature-card-title {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
-  
+
   .feature-card-description {
     font-size: 0.95rem;
   }
 
   .dashboard-card-common {
-    min-height: 220px !important;
+    margin-bottom: 1rem;
   }
-  
+
   .card-header-common {
-    padding: 0.75rem 1rem;
+    padding: 0.8rem 1rem;
   }
-  
+
   .card-body-common {
     padding: 1rem;
   }
-  
-  .list-item-common {
-    padding: 0.5rem;
+
+  /* 모달 */
+  .auth-modal .modal-dialog {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
   }
-  
-  .list-item-title {
-    font-size: 0.85rem !important;
+
+  .modal-logo-section {
+    padding: 1.5rem 1rem 1rem 1rem;
   }
-  
-  .list-item-subtitle {
-    font-size: 0.7rem !important;
+
+  .modal-logo {
+    width: 120px;
+    height: 120px;
   }
-  
+
+  .auth-modal .modal-body {
+    padding: 1rem 1.5rem;
+  }
+
+  .auth-modal .modal-footer {
+    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  .auth-modal .btn-close-custom {
+    top: 0.8rem;
+    right: 0.8rem;
+    width: 30px;
+    height: 30px;
+  }
+
+  .auth-modal .btn-close-custom i {
+    font-size: 1.8rem;
+  }
+
+  /* 로딩 */
+  .loading-logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+  }
+
   .stat-widget-common {
     padding: 0.5rem;
   }
-  
+
   .stat-icon-common {
     width: 32px;
     height: 32px;
     font-size: 0.8rem;
   }
-  
+
   .stat-value-common {
     font-size: 1.1rem;
   }
-  
+
   .stat-label-common {
     font-size: 0.7rem;
   }
@@ -599,14 +748,14 @@
 
 @media (max-width: 480px) {
   .dashboard-card-common {
-    min-height: 200px !important;
+    border-radius: 12px;
   }
-  
+
   .card-title-common {
     font-size: 1rem;
   }
-  
+
   .scroll-container {
-    max-height: 200px;
+    padding: 0.5rem;
   }
 }
