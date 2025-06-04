@@ -2,17 +2,21 @@ import { useState, useEffect } from 'react';
 import { Card, ListGroup, Button, Badge, Alert, Spinner } from 'react-bootstrap';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 import { approveJoinRequest, rejectJoinRequest } from '../../utils/GroupService';
-import useLoading from '../../hooks/useLoading';
+import useUIState from '../../hooks/useUIState';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase';
 
 const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
   const { darkMode } = useDarkMode();
   const [requestProfiles, setRequestProfiles] = useState({});
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [isProcessing, startProcessing] = useLoading();
   const [processingId, setProcessingId] = useState(null); // 현재 처리 중인 요청 ID
+  
+  // 통합 UI 상태 관리
+  const ui = useUIState({
+    error: "",
+    success: "",
+    isProcessing: false
+  });
   
   // 컴포넌트가 마운트될 때 모든 요청자의 프로필 정보를 한 번에 로드
   useEffect(() => {
@@ -62,22 +66,21 @@ const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
   // 가입 요청 승인
   const handleApprove = async (userId) => {
     try {
-      setError('');
-      setSuccess('');
+      ui.clearAll();
       setProcessingId(userId); // 처리 중인 요청 ID 설정
       
-      await startProcessing(approveJoinRequest(group.id, userId, currentUser.uid));
-      
-      // 성공 메시지 표시
-      setSuccess(`요청이 성공적으로 승인되었습니다.`);
-      
-      // 잠시 후 그룹 데이터 새로고침
-      setTimeout(() => {
-        onRequestProcessed();
-      }, 1500);
+      await ui.startLoading("isProcessing", async () => {
+        await approveJoinRequest(group.id, userId, currentUser.uid);
+        ui.showSuccess(`요청이 성공적으로 승인되었습니다.`);
+        
+        // 잠시 후 그룹 데이터 새로고침
+        setTimeout(() => {
+          onRequestProcessed();
+        }, 1500);
+      });
     } catch (error) {
       console.error('Error approving request:', error);
-      setError(`요청 승인 중 오류가 발생했습니다: ${error.message}`);
+      ui.showError(`요청 승인 중 오류가 발생했습니다: ${error.message}`);
       setProcessingId(null); // 오류 시 처리 중인 요청 ID 초기화
     }
   };
@@ -85,22 +88,21 @@ const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
   // 가입 요청 거절
   const handleReject = async (userId) => {
     try {
-      setError('');
-      setSuccess('');
+      ui.clearAll();
       setProcessingId(userId); // 처리 중인 요청 ID 설정
       
-      await startProcessing(rejectJoinRequest(group.id, userId, currentUser.uid));
-      
-      // 성공 메시지 표시
-      setSuccess(`요청이 거절되었습니다.`);
-      
-      // 잠시 후 그룹 데이터 새로고침
-      setTimeout(() => {
-        onRequestProcessed();
-      }, 1500);
+      await ui.startLoading("isProcessing", async () => {
+        await rejectJoinRequest(group.id, userId, currentUser.uid);
+        ui.showSuccess(`요청이 거절되었습니다.`);
+        
+        // 잠시 후 그룹 데이터 새로고침
+        setTimeout(() => {
+          onRequestProcessed();
+        }, 1500);
+      });
     } catch (error) {
       console.error('Error rejecting request:', error);
-      setError(`요청 거절 중 오류가 발생했습니다: ${error.message}`);
+      ui.showError(`요청 거절 중 오류가 발생했습니다: ${error.message}`);
       setProcessingId(null); // 오류 시 처리 중인 요청 ID 초기화
     }
   };
@@ -122,15 +124,15 @@ const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
       <Card.Body>
         <h3 className="mb-3">가입 요청 ({group.joinRequests.length})</h3>
         
-        {error && (
-          <Alert variant="danger" onClose={() => setError('')} dismissible>
-            {error}
+        {ui.error && (
+          <Alert variant="danger" onClose={() => ui.clearAll()} dismissible>
+            {ui.error}
           </Alert>
         )}
         
-        {success && (
-          <Alert variant="success" onClose={() => setSuccess('')} dismissible>
-            {success}
+        {ui.success && (
+          <Alert variant="success" onClose={() => ui.clearAll()} dismissible>
+            {ui.success}
           </Alert>
         )}
         
@@ -152,7 +154,7 @@ const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
             return (
               <ListGroup.Item 
                 key={request.uid}
-                className={`${darkMode ? 'dark-mode' : ''} ${isProcessingThis && isProcessing ? 'processing-item' : ''}`}
+                className={`${darkMode ? 'dark-mode' : ''} ${isProcessingThis && ui.isProcessing ? 'processing-item' : ''}`}
               >
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
                   <div>
@@ -166,7 +168,7 @@ const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
                   </div>
                   
                   <div className="d-flex mt-2 mt-md-0">
-                    {isProcessingThis && isProcessing ? (
+                    {isProcessingThis && ui.isProcessing ? (
                       <div className="d-flex align-items-center">
                         <Spinner animation="border" size="sm" className="me-2" />
                         <span>처리 중...</span>
@@ -178,7 +180,7 @@ const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
                           size="sm" 
                           className="me-1"
                           onClick={() => handleApprove(request.uid)}
-                          disabled={isProcessing}
+                          disabled={ui.isProcessing}
                         >
                           승인
                         </Button>
@@ -186,7 +188,7 @@ const JoinRequestsList = ({ group, currentUser, onRequestProcessed }) => {
                           variant="danger" 
                           size="sm"
                           onClick={() => handleReject(request.uid)}
-                          disabled={isProcessing}
+                          disabled={ui.isProcessing}
                         >
                           거절
                         </Button>

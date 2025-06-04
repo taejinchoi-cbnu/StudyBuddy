@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { DarkModeProvider } from './contexts/DarkModeContext';
+import { useAuth } from './contexts/AuthContext';
 
 // Components
 import AppNavbar from './components/AppNavbar';
-import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -18,6 +18,21 @@ import SchedulePage from './pages/SchedulePage';
 // Styles
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// ProtectedRoute 컴포넌트를 App.jsx에 통합
+const ProtectedElement = ({ children }) => {
+  const { currentUser, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="d-flex justify-content-center mt-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>;
+  }
+  
+  return currentUser ? children : <Navigate to="/login" />;
+};
 
 // NavBar 렌더링을 위한 래퍼 컴포넌트
 const AppWithNavbar = () => {
@@ -35,18 +50,18 @@ const AppWithNavbar = () => {
         <Route 
           path="/dashboard" 
           element={
-            <ProtectedRoute>
+            <ProtectedElement>
               <DashboardPage />
-            </ProtectedRoute>
+            </ProtectedElement>
           } 
         />
         
         <Route 
           path="/profile" 
           element={
-            <ProtectedRoute>
+            <ProtectedElement>
               <ProfilePage />
-            </ProtectedRoute>
+            </ProtectedElement>
           } 
         />
         
@@ -54,36 +69,36 @@ const AppWithNavbar = () => {
         <Route 
           path="/groups" 
           element={
-            <ProtectedRoute>
+            <ProtectedElement>
               <GroupsPage />
-            </ProtectedRoute>
+            </ProtectedElement>
           } 
         />
         
         <Route 
           path="/groups/create" 
           element={
-            <ProtectedRoute>
+            <ProtectedElement>
               <CreateGroupPage />
-            </ProtectedRoute>
+            </ProtectedElement>
           } 
         />
         
         <Route 
           path="/groups/:groupId" 
           element={
-            <ProtectedRoute>
+            <ProtectedElement>
               <GroupDetailPage />
-            </ProtectedRoute>
+            </ProtectedElement>
           } 
         />
         
         <Route 
           path="/schedule" 
           element={
-            <ProtectedRoute>
+            <ProtectedElement>
               <SchedulePage />
-            </ProtectedRoute>
+            </ProtectedElement>
           } 
         />
         

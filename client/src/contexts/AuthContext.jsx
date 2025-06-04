@@ -9,7 +9,7 @@ import {
   updateEmail as firebaseUpdateEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import UseLoading from '../hooks/useLoading';
+import useUIState from '../hooks/useUIState';
 
 const AuthContext = createContext();
 
@@ -22,14 +22,16 @@ export function AuthProvider({ children }) {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // UseLoading 커스텀 훅을 각 인증 작업별로 적용
-  const [isSigningUp, startSignupLoading] = UseLoading();
-  const [isLoggingIn, startLoginLoading] = UseLoading();
-  const [isLoggingOut, startLogoutLoading] = UseLoading();
-  const [isResettingPassword, startResetPasswordLoading] = UseLoading();
-  const [isUpdatingProfile, startUpdateProfileLoading] = UseLoading();
+  // useUIState를 사용하여 로딩 상태 관리
+  const ui = useUIState({
+    isSigningUp: false,
+    isLoggingIn: false,
+    isLoggingOut: false,
+    isResettingPassword: false,
+    isUpdatingProfile: false
+  });
 
-  // 회원가입 함수 - UseLoading 훅을 사용하지 않는 버전
+  // 회원가입 함수
   async function signup(email, password, displayName, isVerified = true, certifiedDate = null) {
     console.log("AuthContext - signup 함수 호출됨:", { email, displayName, isVerified });
     
@@ -37,7 +39,7 @@ export function AuthProvider({ children }) {
       console.log("Firebase Auth - 계정 생성 시도");
       setLoading(true);
       
-      // Firebase 인증 - UseLoading 훅을 사용하지 않고 직접 호출
+      // Firebase 인증
       console.log("Firebase 인증 직접 호출");
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -72,19 +74,18 @@ export function AuthProvider({ children }) {
       return user;
     } catch (error) {
       console.error("회원가입 중 오류 발생:", error);
-      throw error; // 에러를 다시 throw
+      throw error;
     } finally {
       setLoading(false);
-      // isSigningUp 상태는 UseLoading 훅을 사용하지 않으므로 수동으로 업데이트
-      // 이 부분은 필요하지 않을 수 있음
     }
   }
 
   // 로그인 함수
   async function login(email, password) {
     try {
-      const result = await startLoginLoading(signInWithEmailAndPassword(auth, email, password));
-      return result;
+      return await ui.startLoading("isLoggingIn", async () => {
+        return await signInWithEmailAndPassword(auth, email, password);
+      });
     } catch (error) {
       console.error("로그인 오류:", error);
       throw error;
@@ -94,7 +95,9 @@ export function AuthProvider({ children }) {
   // 로그아웃 함수
   async function logout() {
     try {
-      await startLogoutLoading(signOut(auth));
+      await ui.startLoading("isLoggingOut", async () => {
+        await signOut(auth);
+      });
     } catch (error) {
       console.error("로그아웃 오류:", error);
       throw error;
@@ -104,7 +107,9 @@ export function AuthProvider({ children }) {
   // 비밀번호 재설정 함수
   async function resetPassword(email) {
     try {
-      await startResetPasswordLoading(sendPasswordResetEmail(auth, email));
+      await ui.startLoading("isResettingPassword", async () => {
+        await sendPasswordResetEmail(auth, email);
+      });
     } catch (error) {
       console.error("비밀번호 재설정 오류:", error);
       throw error;
@@ -201,7 +206,7 @@ export function AuthProvider({ children }) {
 
   // 사용자 프로필 업데이트
   async function updateUserProfile(profileData) {
-    return startUpdateProfileLoading(async () => {
+    return ui.startLoading("isUpdatingProfile", async () => {
       if (!currentUser) throw new Error('No authenticated user');
       
       const userDocRef = doc(firestore, 'users', currentUser.uid);
@@ -262,6 +267,7 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     userProfile,
+    loading,
     signup,
     login,
     logout,
@@ -269,15 +275,13 @@ export function AuthProvider({ children }) {
     fetchUserProfile,
     updateUserProfile,
     updateEmail,
-    clearTempUserData, // 호환성을 위해 유지
-    loading,
-    // 각 작업별 로딩 상태 추가
+    clearTempUserData,
     authLoading: {
-      signup: isSigningUp,
-      login: isLoggingIn,
-      logout: isLoggingOut,
-      resetPassword: isResettingPassword,
-      updateProfile: isUpdatingProfile
+      signup: ui.isSigningUp,
+      login: ui.isLoggingIn,
+      logout: ui.isLoggingOut,
+      resetPassword: ui.isResettingPassword,
+      updateProfile: ui.isUpdatingProfile
     }
   };
 

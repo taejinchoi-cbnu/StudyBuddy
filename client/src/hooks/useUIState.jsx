@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 
 /**
  * 통합 UI 상태 관리 훅
- * 모달, 로딩, 토글, 폼 상태 등을 모두 처리
+ * 모달, 로딩, 알림, 토글, 폼 상태 등을 모두 처리
  * 
  * @param {Object} initialState - 초기 상태 객체
  * @param {Object} options - 추가 옵션들
@@ -14,6 +14,7 @@ const useUIState = (initialState = {}, options = {}) => {
     localStorageKey = "ui-state",
     resetOnUnmount = false,
     debounceTime = 300,
+    showNotifications = true,
   } = options;
 
   // 로컬 스토리지에서 초기 상태 로드
@@ -125,6 +126,66 @@ const useUIState = (initialState = {}, options = {}) => {
     }
   }, [initialState]);
 
+  // 로딩 관리 헬퍼 함수들
+  const loadingHelpers = {
+    setLoading: useCallback((key, loading) => {
+      setValue(`${key}Loading`, loading);
+    }, [setValue]),
+
+    isLoading: useCallback((key) => {
+      return !!state[`${key}Loading`];
+    }, [state]),
+
+    startLoading: useCallback(async (key, asyncFn) => {
+      try {
+        loadingHelpers.setLoading(key, true);
+        const result = await asyncFn();
+        return result;
+      } finally {
+        if (mounted.current) {
+          loadingHelpers.setLoading(key, false);
+        }
+      }
+    }, [setValue]),
+  };
+
+  // 알림 관리 헬퍼 함수들
+  const notificationHelpers = {
+    showError: useCallback((message) => {
+      if (!mounted.current || !showNotifications) return;
+      setValue("error", message);
+      setValue("success", "");
+      setValue("info", "");
+    }, [setValue, showNotifications]),
+
+    showSuccess: useCallback((message) => {
+      if (!mounted.current || !showNotifications) return;
+      setValue("success", message);
+      setValue("error", "");
+      setValue("info", "");
+      setTimeout(() => {
+        if (mounted.current) setValue("success", "");
+      }, 3000);
+    }, [setValue, showNotifications]),
+
+    showInfo: useCallback((message) => {
+      if (!mounted.current || !showNotifications) return;
+      setValue("info", message);
+      setValue("error", "");
+      setValue("success", "");
+      setTimeout(() => {
+        if (mounted.current) setValue("info", "");
+      }, 5000);
+    }, [setValue, showNotifications]),
+
+    clearAll: useCallback(() => {
+      if (!mounted.current) return;
+      setValue("error", "");
+      setValue("success", "");
+      setValue("info", "");
+    }, [setValue]),
+  };
+
   // 모달 관리 헬퍼 함수들
   const modalHelpers = {
     openModal: useCallback((modalName) => {
@@ -152,29 +213,6 @@ const useUIState = (initialState = {}, options = {}) => {
       });
       updateState(updates);
     }, [state, updateState]),
-  };
-
-  // 로딩 관리 헬퍼 함수들
-  const loadingHelpers = {
-    setLoading: useCallback((key, loading) => {
-      setValue(`${key}Loading`, loading);
-    }, [setValue]),
-
-    isLoading: useCallback((key) => {
-      return !!state[`${key}Loading`];
-    }, [state]),
-
-    withLoading: useCallback(async (key, asyncFn) => {
-      try {
-        loadingHelpers.setLoading(key, true);
-        const result = await asyncFn();
-        return result;
-      } finally {
-        if (mounted.current) {
-          loadingHelpers.setLoading(key, false);
-        }
-      }
-    }, [setValue]),
   };
 
   // 토글 관리 헬퍼 함수들
@@ -278,6 +316,7 @@ const useUIState = (initialState = {}, options = {}) => {
     // 전문화된 헬퍼들
     ...modalHelpers,
     ...loadingHelpers,
+    ...notificationHelpers,
     ...toggleHelpers,
     ...formHelpers,
     ...utilities,

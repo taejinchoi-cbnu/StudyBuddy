@@ -2,18 +2,22 @@ import { useState } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 import { deleteGroup } from '../../utils/GroupService';
-import useLoading from '../../hooks/useLoading';
+import useUIState from '../../hooks/useUIState';
 
 const DeleteGroupModal = ({ show, onHide, group, userId, onDeleteSuccess }) => {
   const { darkMode } = useDarkMode();
   const [confirmText, setConfirmText] = useState('');
-  const [error, setError] = useState('');
-  const [isDeleting, startDeleting] = useLoading();
+  
+  // 통합 UI 상태 관리
+  const ui = useUIState({
+    error: "",
+    isDeleting: false
+  });
   
   // 확인 텍스트 초기화
   const resetForm = () => {
     setConfirmText('');
-    setError('');
+    ui.clearAll();
   };
   
   // 모달 닫기
@@ -26,18 +30,20 @@ const DeleteGroupModal = ({ show, onHide, group, userId, onDeleteSuccess }) => {
   const handleDeleteGroup = async () => {
     // 삭제 확인 텍스트 검증
     if (confirmText.trim().toLowerCase() !== '삭제하기') {
-      setError('삭제 확인을 위해 "삭제하기"를 정확히 입력해주세요.');
+      ui.showError('삭제 확인을 위해 "삭제하기"를 정확히 입력해주세요.');
       return;
     }
     
     try {
-      setError('');
-      await startDeleting(deleteGroup(group.id, userId));
-      resetForm();
-      onDeleteSuccess();
+      ui.clearAll();
+      await ui.startLoading("isDeleting", async () => {
+        await deleteGroup(group.id, userId);
+        resetForm();
+        onDeleteSuccess();
+      });
     } catch (error) {
       console.error('Error deleting group:', error);
-      setError(`그룹 삭제 중 오류가 발생했습니다: ${error.message}`);
+      ui.showError(`그룹 삭제 중 오류가 발생했습니다: ${error.message}`);
     }
   };
   
@@ -46,13 +52,13 @@ const DeleteGroupModal = ({ show, onHide, group, userId, onDeleteSuccess }) => {
       show={show} 
       onHide={handleClose}
       centered
-      className={darkMode ? 'dark-mode' : ''}
+      className={`base-modal ${darkMode ? "dark-mode" : ""}`}
     >
       <Modal.Header closeButton>
         <Modal.Title className="text-danger">그룹 삭제 확인</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
+        {ui.error && <Alert variant="danger" onClose={() => ui.clearAll()} dismissible>{ui.error}</Alert>}
         
         <div className="mb-4">
           <h5>"{group?.name}" 그룹을 정말 삭제하시겠습니까?</h5>
@@ -77,9 +83,9 @@ const DeleteGroupModal = ({ show, onHide, group, userId, onDeleteSuccess }) => {
         <Button 
           variant="danger" 
           onClick={handleDeleteGroup}
-          disabled={isDeleting || confirmText.trim().toLowerCase() !== '삭제하기'}
+          disabled={ui.isDeleting || confirmText.trim().toLowerCase() !== '삭제하기'}
         >
-          {isDeleting ? '처리 중...' : '그룹 삭제'}
+          {ui.isDeleting ? '처리 중...' : '그룹 삭제'}
         </Button>
       </Modal.Footer>
     </Modal>

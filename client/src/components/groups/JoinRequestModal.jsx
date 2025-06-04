@@ -25,7 +25,7 @@ const JoinRequestModal = ({ show, onHide, onSubmit, group }) => {
       show={show} 
       onHide={onHide}
       centered
-      className={darkMode ? 'dark-mode' : ''}
+      className={`base-modal ${darkMode ? "dark-mode" : ""}`}
     >
       <Modal.Header closeButton>
         <Modal.Title>"{group?.name}" 그룹 가입 요청</Modal.Title>
