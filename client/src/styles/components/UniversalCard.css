@@ -6,7 +6,7 @@
 
 /* 기본 카드 스타일 */
 .universal-card {
-  border-radius: 15px;
+  border-radius: 25px;
   box-shadow: var(--shadow);
   transition: all var(--transition-normal);
   border: 1px solid var(--border-color);
@@ -58,7 +58,7 @@
 /* 카드 콘텐츠 스타일 */
 .universal-card-content {
   flex: 1;
-  padding: 1.25rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
 }

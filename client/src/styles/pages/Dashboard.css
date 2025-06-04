@@ -49,6 +49,7 @@
   width: 100%;
   text-align: center;
   animation: fadeIn 0.8s ease;
+  margin-top: -2rem;
   margin-bottom: 1.5rem;
 }
 
@@ -92,10 +93,9 @@
 
 /* 개별 카드 스타일 */
 .dashboard-card {
-  border-radius: 15px;
   box-shadow: var(--shadow);
   transition: all var(--transition-normal);
-  border: 1px solid var(--border-color);
+  border: 3px solid var(--border-color);
   background-color: var(--white);
   min-height: 280px;
 }
@@ -107,10 +107,8 @@
 
 /* 카드 헤더 */
 .dashboard-card .card-header {
-  background-color: var(--primary-color);
-  border-bottom: 1px solid var(--border-color);
-  border-radius: 15px 15px 0 0 !important;
   padding: 1rem 1.25rem;
+  border-radius: 15px 15px 0px 0px;
 }
 
 .dashboard-card .card-title {
@@ -143,6 +141,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: -1rem;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border-color);
   background-color: rgba(255, 255, 255, 0.5);
@@ -339,9 +338,17 @@
 }
 
 .stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
+  justify-content: center; /* 가로 가운데 정렬 */
+  align-items: center;     /* 세로 가운데 정렬 */
+  height: 100%;
+}
+
+.stats-grid .stat-widget-common {
+  flex: 1 1 calc(50% - 0.375rem); /* 2개씩 배치, gap 고려 */
+  min-width: 0; /* flex item 축소 허용 */
 }
 
 .stat-item {

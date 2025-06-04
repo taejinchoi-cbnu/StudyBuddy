@@ -258,11 +258,12 @@
 }
 
 .stat-widget-compact .stat-value-common {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }
 
 .stat-label-common {
-  font-size: 0.9rem;
+  font-size: 0.6rem;
+  font-weight: 600;
   color: var(--text-muted);
   margin: 0;
   white-space: nowrap;

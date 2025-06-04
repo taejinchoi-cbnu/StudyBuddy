@@ -1,5 +1,5 @@
 /* ======================================================
-   그룹 상세 페이지 전용 스타일
+   그룹 상세 페이지 전용 스타일 - 다른 페이지와 UI/UX 통일
    ====================================================== */
 
    @import '../core/Variables.css';
@@ -30,7 +30,7 @@
    }
    
    /* ======================================================
-      그리드 레이아웃 시스템 (Groups.css 패턴 적용)
+      그리드 레이아웃 시스템 (기존 레이아웃 유지하되 스타일 개선)
       ====================================================== */
    
    .group-detail-grid {
@@ -53,10 +53,11 @@
    }
    
    /* ======================================================
-      그룹 정보 카드 섹션 (Dashboard.css 카드 패턴 적용)
+      그룹 정보 카드 섹션 (Dashboard.css 카드 패턴 완전 적용)
       ====================================================== */
    
-   .group-info-card {
+   .group-info-card,
+   .members-list-card {
      background-color: white;
      border-radius: 15px;
      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -65,15 +66,18 @@
      overflow: hidden;
    }
    
-   .group-info-card:hover {
+   .group-info-card:hover,
+   .members-list-card:hover {
      transform: translateY(-5px);
      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
    }
    
-   .group-info-card .card-body {
+   .group-info-card .card-body,
+   .members-list-card .card-body {
      padding: 2rem;
    }
    
+   /* 그룹 헤더 정보 */
    .group-header-section {
      margin-bottom: 2rem;
    }
@@ -155,26 +159,8 @@
    }
    
    /* ======================================================
-      멤버 리스트 카드 섹션 (Groups.css ListItem 패턴 적용)
+      멤버 리스트 카드 섹션 (ListItem 패턴 적용)
       ====================================================== */
-   
-   .members-list-card {
-     background-color: white;
-     border-radius: 15px;
-     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-     transition: all 0.3s ease;
-     border: 1px solid rgba(255, 255, 255, 0.2);
-     overflow: hidden;
-   }
-   
-   .members-list-card:hover {
-     transform: translateY(-5px);
-     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-   }
-   
-   .members-list-card .card-body {
-     padding: 2rem;
-   }
    
    .members-list-header {
      margin-bottom: 1.5rem;
@@ -267,7 +253,7 @@
    }
    
    /* ======================================================
-      탭 컨테이너 및 콘텐츠 영역 (Profile.css 패턴 적용)
+      탭 컨테이너 및 콘텐츠 영역 (Dashboard.css 카드 패턴 적용)
       ====================================================== */
    
    .group-detail-tabs {
@@ -342,6 +328,12 @@
      border-radius: 15px;
      border: 1px solid var(--border-color);
      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+     transition: all var(--transition-normal);
+   }
+   
+   .info-section:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
    }
    
    .info-section-title {
@@ -366,7 +358,7 @@
    
    .schedule-header {
      display: flex;
-     justify-content: between;
+     justify-content: space-between;
      align-items: center;
      margin-bottom: 1.5rem;
      padding-bottom: 1rem;
@@ -646,7 +638,7 @@
    }
    
    /* ======================================================
-      애니메이션 및 인터랙션 (전체 페이지 통일)
+      애니메이션 및 인터랙션
       ====================================================== */
    
    @keyframes fadeIn {
@@ -680,7 +672,8 @@
    
    .member-item,
    .group-tag,
-   .request-item {
+   .request-item,
+   .info-section {
      transition: all var(--transition-fast);
    }
    
@@ -690,7 +683,7 @@
    }
    
    /* ======================================================
-      반응형 스타일 (모든 페이지 통일 패턴)
+      반응형 스타일
       ====================================================== */
    
    @media (max-width: 1200px) {

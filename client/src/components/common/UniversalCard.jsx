@@ -13,6 +13,7 @@ const UniversalCard = ({
   children,
   onClick,
   className = "",
+  headerClassName = "", // 헤더 전용 클래스명 prop 추가
   ...props 
 }) => {
   const { darkMode } = useDarkMode();
@@ -32,7 +33,7 @@ const UniversalCard = ({
     if (!title && !icon && !headerAction) return null;
     
     return (
-      <div className="universal-card-header">
+      <div className={`universal-card-header ${headerClassName}`}>
         <div className="card-header-left">
           {icon && <i className={`${icon} me-2`}></i>}
           {title && <h5 className="card-title">{title}</h5>}

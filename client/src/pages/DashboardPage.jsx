@@ -422,7 +422,8 @@ const DashboardPage = () => {
                   variant="dashboard"
                   title="다가오는 일정"
                   icon="bi-calendar-event"
-                  className="h-100"
+                  className="dashboard-card"
+                  headerClassName="card-header"
                 >
                   <UpcomingEventsComponent 
                     userGroups={safeUserGroups}
@@ -438,7 +439,8 @@ const DashboardPage = () => {
                     variant="dashboard"
                     title="그룹 가입 요청"
                     icon="bi-envelope-fill"
-                    className="h-100"
+                    className="dashboard-card"
+                    headerClassName="card-header"
                   >
                     <GroupRequestsComponent 
                       userGroups={safeUserGroups}
@@ -454,7 +456,8 @@ const DashboardPage = () => {
                   variant="dashboard"
                   title="이런 그룹은 어때요?"
                   icon="bi-lightbulb"
-                  className="h-100"
+                  className="dashboard-card"
+                  headerClassName="card-header"
                 >
                   <GroupRecommendationComponent 
                     userGroups={safeUserGroups}
@@ -471,7 +474,8 @@ const DashboardPage = () => {
                   variant="dashboard"
                   title="미니 캘린더"
                   icon="bi-calendar3"
-                  className="h-100"
+                  className="dashboard-card"
+                  headerClassName="card-header"
                 >
                   <div className={`mini-calendar-component ${darkMode ? "dark-mode" : ""}`}>
                     <div className="calendar-header">
@@ -504,7 +508,8 @@ const DashboardPage = () => {
                   variant="dashboard"
                   title="미팅 통계"
                   icon="bi-graph-up"
-                  className="h-100"
+                  className="dashboard-card"
+                  headerClassName="card-header"
                 >
                   <div className={`meeting-stats-component ${darkMode ? "dark-mode" : ""}`}>
                     <div className="stats-grid">
@@ -547,9 +552,10 @@ const DashboardPage = () => {
                   variant="dashboard"
                   title="집중 타이머"
                   icon="bi-alarm"
-                  className="h-100"
+                  className="dashboard-card"
+                  headerClassName="card-header"
                 >
-                  <div className="d-flex align-items-center justify-content-center h-100">
+                  <div className="d-flex align-items-center justify-content-center">
                     <div className={`timer-card-component ${darkMode ? "dark-mode" : ""}`}>
                       {/* 세션 카운터 */}
                       {sessions > 0 && (

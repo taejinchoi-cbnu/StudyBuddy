@@ -34,13 +34,27 @@ const GroupScheduleComponent = ({ group, members }) => {
 
   // 컴포넌트 마운트 시 초기화 및 권한 확인
   useEffect(() => {
-    if (!currentUser || !members || !group) return;
+    if (!currentUser || !members || !group) {
+      console.log('초기화 조건 미충족:', { 
+        hasCurrentUser: !!currentUser, 
+        hasMembers: !!members, 
+        hasGroup: !!group 
+      });
+      return;
+    }
+    
+    console.log('멤버십 확인:', {
+      currentUserId: currentUser.uid,
+      members: members,
+      groupId: group.id
+    });
     
     // 멤버십 상태 확인
-    const isMember = members.some(member => member.userId === currentUser.uid);
-    const isAdmin = members.some(
-      member => member.userId === currentUser.uid && member.role === 'admin'
-    );
+    const member = members.find(m => m.userId === currentUser.uid);
+    const isMember = !!member;
+    const isAdmin = member?.role === 'admin';
+    
+    console.log('멤버십 상태:', { isMember, isAdmin, member });
     
     setUserStatus({ isMember, isAdmin });
     
@@ -280,15 +294,17 @@ const GroupScheduleComponent = ({ group, members }) => {
         setSuccess('일정이 삭제되었습니다.');
       } else {
         // 일정 추가
-        await saveGroupAppointment(group.id, appointmentData);
-        setAppointments(prev => [...prev, appointmentData]);
+        const savedAppointment = await saveGroupAppointment(group.id, appointmentData);
+        setAppointments(prev => [...prev, savedAppointment]);
         setSuccess('일정이 저장되었습니다.');
       }
     } catch (error) {
       console.error('일정 처리 오류:', error);
-      setError('일정 처리 중 오류가 발생했습니다.');
-    } finally {
-      startSaving();
+      if (action === 'delete') {
+        setError('일정 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+      } else {
+        setError('일정 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+      }
     }
   };
 
@@ -431,6 +447,7 @@ const GroupScheduleComponent = ({ group, members }) => {
                 existingAppointments={appointments}
                 mode={calculationDone ? "full" : "availability-only"}
                 showSteps={true}
+                isLoading={isSaving}
               />
             )}
           </Card.Body>
@@ -442,11 +459,11 @@ const GroupScheduleComponent = ({ group, members }) => {
             <Button
               variant="primary"
               onClick={calculateAvailableTimes}
-              disabled={!allMembersSubmitted()}
+              disabled={!allMembersSubmitted() || isSaving}
             >
               {!allMembersSubmitted() 
                 ? '모든 멤버가 시간을 입력해야 계산할 수 있습니다' 
-                : '가능한 시간 계산하기'}
+                : isSaving ? '계산 중...' : '가능한 시간 계산하기'}
             </Button>
             {!allMembersSubmitted() && (
               <small className="text-muted text-center mt-1">

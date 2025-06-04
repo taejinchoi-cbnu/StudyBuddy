@@ -315,7 +315,11 @@ const GroupDetailPage = () => {
                             <Button variant="primary">일정 추가</Button>
                           </div>
                         </div>
-                        <GroupScheduleComponent groupId={groupId} />
+                        <GroupScheduleComponent 
+                          group={group} 
+                          members={members}
+                          currentUser={currentUser}
+                        />
                       </div>
                     </div>
                   </div>

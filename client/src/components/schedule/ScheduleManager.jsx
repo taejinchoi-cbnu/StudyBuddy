@@ -9,6 +9,7 @@ const ScheduleManager = ({
   // 공통 props
   currentUser,
   isAdmin,
+  isLoading,
   
   // UnavailabilitySelector props
   userId,
@@ -42,17 +43,17 @@ const ScheduleManager = ({
     appointmentTitle: "",
     
     // 공통 상태
-    isLoading: false,
     error: "",
     success: "",
     currentStep: 1
   });
 
   const { darkMode } = useDarkMode();
-  const [isSaving, startSaving] = useLoading();
 
   // 시간 추가 핸들러
   const handleAddTime = () => {
+    if (isLoading) return;
+    
     const { selectedDay, startTime, endTime } = scheduleState;
     
     if (onAdd(userId, selectedDay, startTime, endTime)) {
@@ -67,29 +68,95 @@ const ScheduleManager = ({
 
   // 시간 선택이 유효한지 확인
   const isTimeSelectionValid = () => {
+    if (isLoading) return false;
+    
     const { selectedDay, startTime, endTime } = scheduleState;
     return selectedDay && startTime && endTime && startTime < endTime;
   };
 
+  // 시간 블록이 이미 일정으로 확정되었는지 확인
+  const isTimeBlockScheduled = (day, start, end) => {
+    return existingAppointments.some(app => 
+      app.day === day && 
+      app.start === start && 
+      app.end === end
+    );
+  };
+
+  // 시간 블록이 이미 선택되었는지 확인
+  const isTimeBlockSelected = (day, start, end) => {
+    if (!existingTimes || !Array.isArray(existingTimes)) {
+      console.log('existingTimes가 유효하지 않음:', existingTimes);
+      return false;
+    }
+    
+    const isSelected = existingTimes.some(time => 
+      time.day === day && 
+      time.start === start && 
+      time.end === end
+    );
+    
+    console.log('시간 블록 선택 확인:', {
+      day,
+      start,
+      end,
+      existingTimes,
+      isSelected
+    });
+    
+    return isSelected;
+  };
+
   // 시간 선택 핸들러
-  const handleSelectTime = (day, timeBlock) => {
+  const handleSelectTime = (day, block) => {
+    console.log('시간 선택 시도:', { day, block, isLoading });
+    
+    if (isLoading) {
+      console.log('로딩 중이므로 시간 선택 불가');
+      return;
+    }
+    
+    // 이미 선택된 시간인지 확인
+    if (isTimeBlockSelected(day, block.start, block.end)) {
+      console.log('이미 선택된 시간');
+      setScheduleState(prev => ({
+        ...prev,
+        error: "이미 선택된 시간입니다."
+      }));
+      return;
+    }
+    
+    console.log('시간 선택 성공');
     setScheduleState(prev => ({
       ...prev,
-      selectedTime: {
-        day,
-        start: timeBlock.start,
-        end: timeBlock.end
-      },
+      selectedTime: { day, ...block },
       showAppointmentModal: true
     }));
   };
 
-  // 일정 저장 핸들러
-  const handleSaveAppointment = () => {
+  // 일정 추가 핸들러
+  const handleAddAppointment = () => {
+    if (isLoading) return;
+    
     const { selectedTime, appointmentTitle } = scheduleState;
     
-    if (!appointmentTitle.trim()) return;
-    
+    if (!appointmentTitle.trim()) {
+      setScheduleState(prev => ({
+        ...prev,
+        error: "일정 제목을 입력해주세요."
+      }));
+      return;
+    }
+
+    // 이미 확정된 시간인지 확인
+    if (isTimeBlockScheduled(selectedTime.day, selectedTime.start, selectedTime.end)) {
+      setScheduleState(prev => ({
+        ...prev,
+        error: "이미 확정된 시간입니다."
+      }));
+      return;
+    }
+
     const appointmentData = {
       id: `appointment_${Date.now()}`,
       title: appointmentTitle,
@@ -98,75 +165,62 @@ const ScheduleManager = ({
       end: selectedTime.end,
       createdAt: new Date().toISOString()
     };
-    
+
     onSelectAppointment(appointmentData);
+    
     setScheduleState(prev => ({
       ...prev,
       showAppointmentModal: false,
-      appointmentTitle: "",
       selectedTime: null,
-      success: "일정이 확정되었습니다."
+      appointmentTitle: "",
+      success: "일정이 추가되었습니다."
     }));
   };
 
-  // 시간 간격 계산 함수
+  // 시간 계산 헬퍼 함수
   const calculateDuration = (start, end) => {
-    const [startHour, startMinute] = start.split(':').map(Number);
-    const [endHour, endMinute] = end.split(':').map(Number);
+    const startParts = start.split(':').map(Number);
+    const endParts = end.split(':').map(Number);
     
-    const startTotalMinutes = startHour * 60 + startMinute;
-    const endTotalMinutes = endHour * 60 + endMinute;
+    const startMinutes = startParts[0] * 60 + startParts[1];
+    const endMinutes = endParts[0] * 60 + endParts[1];
     
-    const durationMinutes = endTotalMinutes - startTotalMinutes;
-    
+    const durationMinutes = endMinutes - startMinutes;
     const hours = Math.floor(durationMinutes / 60);
     const minutes = durationMinutes % 60;
     
-    if (hours === 0) {
-      return `${minutes}분`;
-    } else if (minutes === 0) {
-      return `${hours}시간`;
-    } else {
-      return `${hours}시간 ${minutes}분`;
-    }
+    return `${hours}시간 ${minutes > 0 ? `${minutes}분` : ''}`;
   };
 
-  // 일정이 이미 있는지 확인하는 함수
-  const isTimeBlockScheduled = (day, start, end) => {
-    return existingAppointments.some(
-      app => app.day === day && app.start === start && app.end === end
-    );
-  };
-
-  // 렌더링 함수들
+  // 단계 표시기 렌더링
   const renderStepIndicator = () => {
     if (!showSteps) return null;
-
+    
     return (
       <div className="mb-4">
         <ProgressBar>
           <ProgressBar 
             variant="primary" 
-            now={scheduleState.currentStep * 33.33} 
-            label={`${scheduleState.currentStep}/3 단계`}
+            now={mode === "availability-only" ? 50 : 100} 
+            label={mode === "availability-only" ? "1/2" : "2/2"} 
           />
         </ProgressBar>
         <div className="d-flex justify-content-between mt-2">
-          <small>1. 개인 시간 설정</small>
-          <small>2. 가능 시간 확인</small>
-          <small>3. 일정 확정</small>
+          <small className="text-muted">불가능한 시간 입력</small>
+          <small className="text-muted">가능한 시간 확인</small>
         </div>
       </div>
     );
   };
 
+  // 불가능한 시간 입력 섹션 렌더링
   const renderUnavailabilitySection = () => {
     if (mode === "display-only") return null;
 
     return (
       <Card className="mb-4">
         <Card.Body>
-          <h4 className="mb-3">내 불가능한 시간 설정</h4>
+          <h4 className="mb-3">불가능한 시간 입력</h4>
           <Form>
             <Row className="mb-3">
               <Col md={3}>
@@ -179,6 +233,7 @@ const ScheduleManager = ({
                       selectedDay: e.target.value
                     }))}
                     required
+                    disabled={isLoading}
                   >
                     <option value="">요일 선택</option>
                     {days.map(day => (
@@ -198,7 +253,7 @@ const ScheduleManager = ({
                       startTime: e.target.value
                     }))}
                     required
-                    disabled={!scheduleState.selectedDay}
+                    disabled={!scheduleState.selectedDay || isLoading}
                   >
                     <option value="">시작 시간</option>
                     {timeSlots.map(time => (
@@ -218,7 +273,7 @@ const ScheduleManager = ({
                       endTime: e.target.value
                     }))}
                     required
-                    disabled={!scheduleState.selectedDay || !scheduleState.startTime}
+                    disabled={!scheduleState.selectedDay || !scheduleState.startTime || isLoading}
                   >
                     <option value="">종료 시간</option>
                     {timeSlots
@@ -237,7 +292,7 @@ const ScheduleManager = ({
                   disabled={!isTimeSelectionValid()}
                   className="w-100"
                 >
-                  추가
+                  {isLoading ? '처리 중...' : '추가'}
                 </Button>
               </Col>
             </Row>
@@ -252,8 +307,8 @@ const ScheduleManager = ({
                     key={index} 
                     bg="danger" 
                     className="me-2 mb-2 p-2" 
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => onRemove(index)}
+                    style={{ cursor: isLoading ? 'not-allowed' : 'pointer' }}
+                    onClick={() => !isLoading && onRemove(index)}
                   >
                     {time.day} {time.start} - {time.end} &times;
                   </Badge>
@@ -271,6 +326,7 @@ const ScheduleManager = ({
     );
   };
 
+  // 가능한 시간 표시 섹션 렌더링
   const renderAvailableTimesSection = () => {
     if (mode === "availability-only" || !availableTimeSlots || availableTimeSlots.length === 0) {
       return null;
@@ -313,9 +369,10 @@ const ScheduleManager = ({
                       <Button 
                         variant="outline-danger" 
                         size="sm"
-                        onClick={() => onSelectAppointment(app, 'delete')}
+                        onClick={() => !isLoading && onSelectAppointment(app, 'delete')}
+                        disabled={isLoading}
                       >
-                        삭제
+                        {isLoading ? '처리 중...' : '삭제'}
                       </Button>
                     )}
                   </div>
@@ -369,9 +426,9 @@ const ScheduleManager = ({
                               variant="outline-primary"
                               size="sm"
                               onClick={() => handleSelectTime(dayData.day, block)}
-                              disabled={isScheduled}
+                              disabled={isScheduled || isLoading}
                             >
-                              {isScheduled ? '확정됨' : '선택'}
+                              {isScheduled ? '확정됨' : isLoading ? '처리 중...' : '선택'}
                             </Button>
                           </div>
                         );
@@ -414,7 +471,7 @@ const ScheduleManager = ({
       {/* 일정 추가 모달 */}
       <Modal 
         show={scheduleState.showAppointmentModal} 
-        onHide={() => setScheduleState(prev => ({
+        onHide={() => !isLoading && setScheduleState(prev => ({
           ...prev,
           showAppointmentModal: false
         }))}
@@ -444,6 +501,7 @@ const ScheduleManager = ({
                 }))}
                 placeholder="예: 팀 프로젝트 미팅"
                 required
+                disabled={isLoading}
               />
             </Form.Group>
           </Form>
@@ -455,15 +513,16 @@ const ScheduleManager = ({
               ...prev,
               showAppointmentModal: false
             }))}
+            disabled={isLoading}
           >
             취소
           </Button>
           <Button 
             variant="primary" 
-            onClick={handleSaveAppointment}
-            disabled={!scheduleState.appointmentTitle.trim()}
+            onClick={handleAddAppointment}
+            disabled={isLoading}
           >
-            일정 확정
+            {isLoading ? '처리 중...' : '추가'}
           </Button>
         </Modal.Footer>
       </Modal>
