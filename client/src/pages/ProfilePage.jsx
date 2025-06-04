@@ -7,9 +7,7 @@ import { GROUP_TAGS } from '../utils/GroupConstants';
 import EmailVerificationService from '../utils/EmailVerificationService';
 import useNotification from '../hooks/useNotification';
 import useLoading from '../hooks/useLoading';
-
-// 컴포넌트 import
-import DashboardCard from '../components/common/DashboardCard';
+import UniversalCard from '../components/common/UniversalCard';
 
 // 모든 태그를 하나의 배열로 평탄화
 const ALL_TAGS = Object.values(GROUP_TAGS).flat();
@@ -345,7 +343,8 @@ const ProfilePage = () => {
             <Row className="g-4">
               {/* 이메일 인증 카드 */}
               <Col lg={12}>
-                <DashboardCard
+                <UniversalCard
+                  variant="dashboard"
                   title="이메일 인증"
                   icon="bi-envelope-check"
                   className="email-verification-card-compact"
@@ -422,12 +421,13 @@ const ProfilePage = () => {
                       </p>
                     )}
                   </div>
-                </DashboardCard>
+                </UniversalCard>
               </Col>
 
               {/* 기본 정보 카드 */}
               <Col lg={6}>
-                <DashboardCard
+                <UniversalCard
+                  variant="dashboard"
                   title="기본 정보"
                   icon="bi-person"
                   headerAction={
@@ -497,12 +497,13 @@ const ProfilePage = () => {
                       </Button>
                     )}
                   </Form>
-                </DashboardCard>
+                </UniversalCard>
               </Col>
 
               {/* 관심 분야 카드 */}
               <Col lg={6}>
-                <DashboardCard
+                <UniversalCard
+                  variant="dashboard"
                   title="관심 분야"
                   icon="bi-tags"
                 >
@@ -540,7 +541,7 @@ const ProfilePage = () => {
                       {isEditMode ? '태그를 클릭하면 제거됩니다.' : '편집 모드에서 수정할 수 있습니다.'}
                     </Form.Text>
                   </div>
-                </DashboardCard>
+                </UniversalCard>
               </Col>
             </Row>
           </Container>

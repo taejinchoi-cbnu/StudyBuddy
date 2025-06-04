@@ -1,415 +1,156 @@
 /* ======================================================
    UniversalCard - 통합 카드 컴포넌트 스타일
-   GroupCard, DashboardCard, FeatureCard 통합
    ====================================================== */
 
-   @import '../core/Variables.css';
+@import '../core/Variables.css';
 
-   /* ======================================================
-      기본 카드 스타일
-      ====================================================== */
-   
-   .universal-card {
-     border-radius: 15px;
-     box-shadow: var(--shadow);
-     transition: all var(--transition-normal);
-     border: 1px solid var(--border-color);
-     background-color: var(--white);
-     display: flex;
-     flex-direction: column;
-     height: 100%;
-     overflow: hidden;
-   }
-   
-   .universal-card:hover {
-     transform: translateY(-5px);
-     box-shadow: var(--hover-shadow);
-   }
-   
-   /* ======================================================
-      카드 헤더 스타일
-      ====================================================== */
-   
-   .universal-card-header {
-     display: flex;
-     justify-content: space-between;
-     align-items: center;
-     padding: 1rem 1.25rem;
-     background-color: var(--primary-color);
-     border-bottom: 1px solid var(--border-color);
-   }
-   
-   .card-header-left {
-     display: flex;
-     align-items: center;
-     flex: 1;
-   }
-   
-   .card-title-section {
-     flex: 1;
-   }
-   
-   .card-title-universal {
-     margin: 0;
-     font-weight: 600;
-     color: var(--text-color);
-     font-size: 1.1rem;
-     line-height: 1.3;
-   }
-   
-   .card-subtitle-universal {
-     margin: 0.25rem 0 0 0;
-     font-size: 0.9rem;
-     color: var(--text-muted, #666);
-     line-height: 1.2;
-   }
-   
-   .card-header-actions {
-     display: flex;
-     align-items: center;
-     gap: 0.5rem;
-   }
-   
-   /* ======================================================
-      카드 콘텐츠 스타일
-      ====================================================== */
-   
-   .universal-card-content {
-     flex: 1;
-     padding: 1.25rem;
-     display: flex;
-     flex-direction: column;
-   }
-   
-   .universal-card-description {
-     margin-bottom: 1rem;
-   }
-   
-   .universal-card-description p {
-     margin: 0;
-     line-height: 1.6;
-     color: var(--text-color);
-   }
-   
-   /* ======================================================
-      이미지 스타일 (Feature 카드용)
-      ====================================================== */
-   
-   .universal-card-image {
-     flex: 0 0 200px;
-     background: linear-gradient(135deg, #ffccc4 0%, #ff9a8b 100%);
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     position: relative;
-     overflow: hidden;
-   }
-   
-   .card-image {
-     width: 70%;
-     height: auto;
-     object-fit: contain;
-     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
-   }
-   
-   /* ======================================================
-      태그 스타일
-      ====================================================== */
-   
-   .universal-card-tags {
-     display: flex;
-     flex-wrap: wrap;
-     gap: 0.5rem;
-     margin-bottom: 1rem;
-   }
-   
-   .card-tag {
-     display: inline-block;
-     padding: 0.25rem 0.75rem;
-     background-color: var(--primary-color);
-     color: var(--text-color);
-     border-radius: 15px;
-     font-size: 0.85rem;
-     font-weight: 500;
-     border: 1px solid var(--border-color);
-   }
-   
-   /* ======================================================
-      배지 스타일
-      ====================================================== */
-   
-   .universal-card-badges {
-     display: flex;
-     flex-wrap: wrap;
-     gap: 0.5rem;
-     margin-bottom: 1rem;
-   }
-   
-   .card-badge {
-     display: inline-block;
-     padding: 0.3rem 0.6rem;
-     border-radius: 12px;
-     font-size: 0.8rem;
-     font-weight: 500;
-   }
-   
-   .card-badge.primary {
-     background-color: #007bff;
-     color: white;
-   }
-   
-   .card-badge.secondary {
-     background-color: #6c757d;
-     color: white;
-   }
-   
-   .card-badge.success {
-     background-color: #28a745;
-     color: white;
-   }
-   
-   .card-badge.warning {
-     background-color: #ffc107;
-     color: #333;
-   }
-   
-   .card-badge.danger {
-     background-color: #dc3545;
-     color: white;
-   }
-   
-   /* ======================================================
-      메타데이터 스타일 (Group 카드용)
-      ====================================================== */
-   
-   .universal-card-metadata {
-     display: flex;
-     flex-wrap: wrap;
-     gap: 1rem;
-     margin-top: auto;
-     padding-top: 1rem;
-     border-top: 1px solid var(--border-color);
-     font-size: 0.85rem;
-     color: var(--text-muted, #666);
-   }
-   
-   .metadata-item {
-     display: flex;
-     align-items: center;
-   }
-   
-   /* ======================================================
-      특징 목록 스타일 (Feature 카드용)
-      ====================================================== */
-   
-   .universal-card-benefits {
-     display: grid;
-     grid-template-columns: 1fr 1fr;
-     gap: 0.8rem;
-     margin-top: 1rem;
-   }
-   
-   .benefit-item {
-     display: flex;
-     align-items: center;
-     gap: 0.5rem;
-     font-size: 0.9rem;
-     color: #555;
-   }
-   
-   .benefit-icon {
-     width: 16px;
-     height: 16px;
-     background-color: #28a745;
-     border-radius: 50%;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     color: white;
-     font-size: 10px;
-     flex-shrink: 0;
-   }
-   
-   /* ======================================================
-      카드 변형별 특별 스타일
-      ====================================================== */
-   
-   /* Group 카드 변형 */
-   .universal-card-group {
-     cursor: pointer;
-     transition: all 0.3s ease;
-   }
-   
-   .universal-card-group:hover {
-     transform: translateY(-8px);
-     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-   }
-   
-   .universal-card-group .card-title-universal {
-     font-size: 1.3rem;
-     font-weight: 700;
-     color: #2c3e50;
-     margin-bottom: 1rem;
-   }
-   
-   /* Dashboard 카드 변형 */
-   .universal-card-dashboard .universal-card-header {
-     background-color: var(--primary-color);
-     border-bottom: 1px solid var(--border-color);
-   }
-   
-   .universal-card-dashboard .universal-card-content {
-     overflow-y: auto;
-     max-height: 300px;
-   }
-   
-   /* Feature 카드 변형 */
-   .universal-card-feature {
-     flex-direction: row;
-     align-items: center;
-     gap: 2rem;
-     padding: 2.5rem;
-     min-height: 250px;
-   }
-   
-   .universal-card-feature .universal-card-image {
-     flex: 0 0 300px;
-     height: 200px;
-     border-radius: 16px;
-   }
-   
-   .universal-card-feature .card-title-universal {
-     font-size: 1.8rem;
-     font-weight: 700;
-     color: #2c3e50;
-     margin-bottom: 1rem;
-   }
-   
-   .universal-card-feature .universal-card-description {
-     font-size: 1rem;
-     line-height: 1.6;
-     margin-bottom: 1.5rem;
-   }
-   
-   /* ======================================================
-      다크모드 스타일
-      ====================================================== */
-   
-   .universal-card.dark-mode {
-     background-color: var(--white);
-     border-color: var(--border-color);
-     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-   }
-   
-   .universal-card.dark-mode .universal-card-header {
-     background-color: var(--primary-color);
-     border-bottom-color: var(--border-color);
-   }
-   
-   .universal-card.dark-mode .card-title-universal {
-     color: var(--text-color);
-   }
-   
-   .universal-card.dark-mode .card-subtitle-universal {
-     color: var(--text-color);
-   }
-   
-   .universal-card.dark-mode .universal-card-description p {
-     color: var(--text-color);
-   }
-   
-   .universal-card.dark-mode .card-tag {
-     background-color: var(--primary-color);
-     color: var(--text-color);
-     border-color: var(--border-color);
-   }
-   
-   .universal-card.dark-mode .universal-card-metadata {
-     border-top-color: var(--border-color);
-     color: var(--text-color);
-   }
-   
-   .universal-card.dark-mode .benefit-item {
-     color: #ccc;
-   }
-   
-   /* Feature 카드 다크모드 특별 스타일 */
-   .universal-card-feature.dark-mode .card-title-universal {
-     color: var(--text-color);
-   }
-   
-   .universal-card-feature.dark-mode .universal-card-description p {
-     color: #ccc;
-   }
-   
-   /* ======================================================
-      반응형 스타일
-      ====================================================== */
-   
-   @media (max-width: 992px) {
-     /* Feature 카드 반응형 */
-     .universal-card-feature {
-       flex-direction: column;
-       text-align: center;
-       gap: 1.5rem;
-       padding: 2rem;
-     }
-     
-     .universal-card-feature .universal-card-image {
-       flex: none;
-       max-width: 100%;
-       height: 150px;
-     }
-     
-     .universal-card-benefits {
-       grid-template-columns: 1fr;
-     }
-   }
-   
-   @media (max-width: 768px) {
-     .universal-card {
-       border-radius: 12px;
-     }
-     
-     .universal-card-header {
-       padding: 0.75rem 1rem;
-     }
-     
-     .universal-card-content {
-       padding: 1rem;
-     }
-     
-     .card-title-universal {
-       font-size: 1rem;
-     }
-     
-     .universal-card-feature {
-       padding: 1.5rem;
-     }
-     
-     .universal-card-feature .card-title-universal {
-       font-size: 1.5rem;
-     }
-     
-     .universal-card-metadata {
-       flex-direction: column;
-       gap: 0.5rem;
-     }
-   }
-   
-   @media (max-width: 480px) {
-     .universal-card-feature .card-title-universal {
-       font-size: 1.3rem;
-     }
-     
-     .universal-card-tags,
-     .universal-card-badges {
-       gap: 0.25rem;
-     }
-     
-     .card-tag,
-     .card-badge {
-       font-size: 0.75rem;
-       padding: 0.2rem 0.5rem;
-     }
-   }
+/* 기본 카드 스타일 */
+.universal-card {
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+  transition: all var(--transition-normal);
+  border: 1px solid var(--border-color);
+  background-color: var(--white);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.universal-card.clickable {
+  cursor: pointer;
+}
+
+.universal-card.clickable:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+
+/* 카드 헤더 스타일 */
+.universal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background-color: var(--primary-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.card-title {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  line-height: 1.3;
+}
+
+.card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 카드 콘텐츠 스타일 */
+.universal-card-content {
+  flex: 1;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* variant별 스타일 */
+.universal-card-dashboard .universal-card-content {
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.universal-card-group {
+  transition: all 0.3s ease;
+}
+
+.universal-card-group .universal-card-content {
+  padding: 1.5rem;
+}
+
+.universal-card-group .card-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.universal-card-group .group-card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.universal-card-group .group-card-content p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.universal-card-feature {
+  flex-direction: row;
+  align-items: center;
+  gap: 2rem;
+  padding: 2.5rem;
+  min-height: 250px;
+}
+
+/* 다크모드 스타일 */
+.universal-card.dark-mode {
+  background-color: var(--dark-bg);
+  border-color: var(--dark-border);
+}
+
+.universal-card.dark-mode .universal-card-header {
+  background-color: var(--dark-primary);
+  border-color: var(--dark-border);
+}
+
+.universal-card.dark-mode .card-title {
+  color: var(--dark-text);
+}
+
+.universal-card.dark-mode .group-card-content p {
+  color: var(--dark-text-muted);
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .universal-card {
+    margin-bottom: 1rem;
+  }
+  
+  .universal-card-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .universal-card-content {
+    padding: 1rem;
+  }
+  
+  .card-title {
+    font-size: 1rem;
+  }
+  
+  .universal-card-group .universal-card-content {
+    padding: 1rem;
+  }
+  
+  .universal-card-group .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .universal-card-feature {
+    flex-direction: column;
+    padding: 1.5rem;
+    min-height: auto;
+  }
+}

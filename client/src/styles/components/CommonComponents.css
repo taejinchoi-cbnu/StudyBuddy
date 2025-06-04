@@ -197,298 +197,47 @@
 }
 
 /* ======================================================
-   3. Hero Button 공통 스타일
+   3. Stat Widget 스타일
    ====================================================== */
 
-.hero-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 25px;
-  font-weight: 500;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  text-decoration: none;
-  padding: 0.9rem 2.2rem;
-}
-
-.hero-button-primary {
-  background-color: #2c3e50;
-  color: white;
-  box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
-}
-
-.hero-button-primary:hover {
-  background-color: #34495e;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(44, 62, 80, 0.4);
-}
-
-.hero-button-secondary {
-  background: transparent;
-  color: #2c3e50;
-  padding: 0.9rem 1rem;
-  position: relative;
-}
-
-.hero-button-secondary:hover {
-  color: var(--accent-color);
-  transform: translateX(5px);
-}
-
-.hero-button-secondary::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: currentColor;
-  transform: scaleX(0);
-  transition: transform var(--transition-normal);
-}
-
-.hero-button-secondary:hover::after {
-  transform: scaleX(1);
-}
-
-/* 다크모드 버튼 스타일 */
-.hero-button.dark-mode.hero-button-primary {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-.hero-button.dark-mode.hero-button-primary:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
-}
-
-.hero-button.dark-mode.hero-button-secondary {
-  color: var(--text-color);
-}
-
-/* ======================================================
-   4. Feature Card 공통 스타일
-   ====================================================== */
-
-.feature-card {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
+.stat-widget-common {
   background-color: var(--white);
-  border-radius: 20px;
-  padding: 2.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.feature-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.feature-card-image {
-  flex: 0 0 300px;
-  height: 200px;
-  background: linear-gradient(135deg, #ffccc4 0%, #ff9a8b 100%);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.feature-image {
-  width: 70%;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
-}
-
-.feature-card-content {
-  flex: 1;
-  padding-left: 1rem;
-}
-
-.feature-card-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #2c3e50;
-  line-height: 1.3;
-}
-
-.feature-card-description {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #666;
-  margin-bottom: 1.5rem;
-}
-
-.feature-card-benefits {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
-}
-
-.benefit-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.benefit-icon {
-  width: 16px;
-  height: 16px;
-  background-color: #28a745;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 10px;
-}
-
-/* 다크모드 Feature Card */
-.feature-card.dark-mode {
-  background-color: var(--white);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.feature-card.dark-mode .feature-card-title {
-  color: var(--text-color);
-}
-
-.feature-card.dark-mode .feature-card-description {
-  color: #ccc;
-}
-
-/* ======================================================
-   5. Animated Section 공통 스타일
-   ====================================================== */
-
-.animated-section {
-  /* 서비스 소개와 CTA 섹션을 위한 기본 애니메이션 */
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* 특정 섹션은 항상 보이도록 오버라이드 */
-.animated-section.features-section {
-  opacity: 1 !important;
-  transform: none !important;
-}
-
-.animated-section.animate-in {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ======================================================
-   6. 공통 대시보드 카드 스타일
-   ====================================================== */
-
-.dashboard-card-common {
-  border-radius: var(--card-border-radius, 15px);
+  border-radius: 15px;
+  padding: 1.5rem;
   box-shadow: var(--shadow);
   transition: all var(--transition-normal);
-  border: 1px solid var(--border-color);
-  background-color: var(--white);
   display: flex;
-  flex-direction: column;
-  height: 100%;
+  align-items: center;
+  gap: 1rem;
 }
 
-.dashboard-card-common:hover {
+.stat-widget-common:hover {
   transform: translateY(-5px);
   box-shadow: var(--hover-shadow);
 }
 
-/* 카드 헤더 */
-.card-header-common {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.25rem;
-  background-color: var(--primary-color);
-  border-bottom: 1px solid var(--border-color);
-  border-radius: var(--card-border-radius, 15px) var(--card-border-radius, 15px) 0 0;
-}
-
-.card-header-left {
-  display: flex;
-  align-items: center;
-}
-
-.card-title-common {
-  margin: 0;
-  font-weight: 600;
-  color: var(--text-color);
-  font-size: 1.1rem;
-}
-
-.card-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* 카드 바디 */
-.card-body-common {
-  flex: 1;
-  padding: 1.25rem;
-  overflow-y: auto;
-}
-
-/* ======================================================
-   7. 공통 통계 위젯 스타일
-   ====================================================== */
-
-.stat-widget-common {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  transition: all var(--transition-fast);
-}
-
-.stat-widget-common:hover {
-  background-color: var(--primary-color);
-  transform: scale(1.05);
-}
-
 .stat-widget-compact {
-  padding: 0.5rem;
+  padding: 1rem;
 }
 
 .stat-icon-common {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.5rem;
   color: white;
-  font-size: 0.9rem;
   flex-shrink: 0;
 }
 
 .stat-widget-compact .stat-icon-common {
-  width: 32px;
-  height: 32px;
-  font-size: 0.8rem;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
 }
 
-/* 통계 아이콘 색상 */
 .stat-icon-common.bg-info { background-color: #17a2b8; }
 .stat-icon-common.bg-warning { background-color: #ffc107; color: #333; }
 .stat-icon-common.bg-success { background-color: #28a745; }
@@ -498,45 +247,43 @@
 
 .stat-content-common {
   flex: 1;
-  text-align: left;
+  min-width: 0;
 }
 
 .stat-value-common {
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-size: 1.5rem;
+  font-weight: 600;
   color: var(--text-color);
-  line-height: 1;
+  margin-bottom: 0.25rem;
 }
 
 .stat-widget-compact .stat-value-common {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .stat-label-common {
-  font-size: 0.75rem;
-  color: #666;
-  margin-top: 0.1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ======================================================
-   8. 다크모드 스타일
-   ====================================================== */
-
-/* 로딩 다크모드 */
+/* 다크모드 스타일 */
 .dark-mode .loading-overlay {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .dark-mode .loading-text {
-  color: var(--text-muted);
+  color: var(--dark-text-muted);
 }
 
 .dark-mode .loading-spinner {
   border-color: rgba(255, 255, 255, 0.1);
-  border-top-color: var(--accent-color);
+  border-top-color: var(--dark-primary);
 }
 
-/* 모달 다크모드 */
 .dark-mode .auth-modal .modal-content {
   background-color: var(--dark-bg);
 }
@@ -547,214 +294,100 @@
 
 .dark-mode .auth-modal .form-control {
   background-color: var(--dark-bg);
-  border-color: var(--border-color);
-  color: var(--text-color);
+  border-color: var(--dark-border);
+  color: var(--dark-text);
 }
 
 .dark-mode .auth-modal .btn-primary {
-  background-color: var(--accent-color);
+  background-color: var(--dark-primary);
 }
 
 .dark-mode .auth-modal .btn-link {
-  color: var(--accent-color);
+  color: var(--dark-accent);
 }
 
 .dark-mode .auth-modal .btn-close-custom {
-  color: var(--text-color);
+  color: var(--dark-text);
 }
 
 .dark-mode .auth-modal .btn-close-custom:hover {
-  color: var(--accent-color);
+  color: var(--dark-accent);
 }
 
-/* 버튼 다크모드 */
-.dark-mode .hero-button.hero-button-primary {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-.dark-mode .hero-button.hero-button-primary:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
-}
-
-.dark-mode .hero-button.hero-button-secondary {
-  color: var(--text-color);
-}
-
-/* 카드 다크모드 */
-.dark-mode .feature-card {
-  background-color: var(--dark-bg);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.dark-mode .feature-card-title {
-  color: var(--text-color);
-}
-
-.dark-mode .feature-card-description {
-  color: #ccc;
-}
-
-.dark-mode .dashboard-card-common {
-  background-color: var(--dark-bg);
-  border-color: var(--border-color);
-}
-
-.dark-mode .card-header-common {
-  background-color: var(--dark-bg);
-  border-color: var(--border-color);
-}
-
-.dark-mode .card-title-common {
-  color: var(--text-color);
-}
-
-/* 통계 위젯 다크모드 */
 .dark-mode .stat-widget-common {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: var(--border-color);
+  background-color: var(--dark-bg);
 }
 
 .dark-mode .stat-widget-common:hover {
-  background-color: var(--primary-color);
+  box-shadow: var(--dark-hover-shadow);
 }
 
 .dark-mode .stat-label-common {
-  color: #ccc;
+  color: var(--dark-text-muted);
 }
 
-/* ======================================================
-   9. 반응형 스타일
-   ====================================================== */
-
-@media (max-width: 992px) {
-  .feature-card {
-    flex-direction: column;
-    text-align: center;
-    padding: 2rem;
-  }
-
-  .feature-card-image,
-  .feature-card-content {
-    flex: none;
-    width: 100%;
-  }
-
-  .feature-card-content {
-    padding-left: 0;
-    margin-top: 1.5rem;
-  }
-
-  .feature-card-benefits {
-    justify-content: center;
-  }
-}
-
+/* 반응형 스타일 */
 @media (max-width: 768px) {
-  /* 버튼 */
-  .hero-button {
-    padding: 0.8rem 1.8rem;
-    font-size: 0.95rem;
-  }
-
-  /* 카드 */
-  .feature-card {
-    padding: 1.5rem;
-  }
-
-  .feature-card-title {
-    font-size: 1.5rem;
-  }
-
-  .feature-card-description {
-    font-size: 0.95rem;
-  }
-
-  .dashboard-card-common {
-    margin-bottom: 1rem;
-  }
-
-  .card-header-common {
-    padding: 0.8rem 1rem;
-  }
-
-  .card-body-common {
-    padding: 1rem;
-  }
-
-  /* 모달 */
   .auth-modal .modal-dialog {
     margin: 1rem;
-    max-width: calc(100% - 2rem);
   }
-
+  
   .modal-logo-section {
     padding: 1.5rem 1rem 1rem 1rem;
   }
-
+  
   .modal-logo {
     width: 120px;
     height: 120px;
   }
-
+  
   .auth-modal .modal-body {
-    padding: 1rem 1.5rem;
+    padding: 1rem;
   }
-
+  
   .auth-modal .modal-footer {
-    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+    padding: 0.5rem 1rem 1.5rem 1rem;
   }
-
+  
   .auth-modal .btn-close-custom {
-    top: 0.8rem;
-    right: 0.8rem;
     width: 30px;
     height: 30px;
   }
-
+  
   .auth-modal .btn-close-custom i {
     font-size: 1.8rem;
   }
-
-  /* 로딩 */
+  
   .loading-logo {
     width: 50px;
     height: 50px;
   }
-
+  
   .loading-spinner {
     width: 40px;
     height: 40px;
   }
-
+  
   .stat-widget-common {
-    padding: 0.5rem;
+    padding: 1.25rem;
   }
-
+  
   .stat-icon-common {
-    width: 32px;
-    height: 32px;
-    font-size: 0.8rem;
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
   }
-
+  
   .stat-value-common {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
   }
-
+  
   .stat-label-common {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
   }
 }
 
 @media (max-width: 480px) {
-  .dashboard-card-common {
-    border-radius: 12px;
-  }
-
-  .card-title-common {
-    font-size: 1rem;
-  }
-
   .scroll-container {
     padding: 0.5rem;
   }

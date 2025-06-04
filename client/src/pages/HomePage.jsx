@@ -1,11 +1,8 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import AppNavbar from "../components/AppNavbar";
-import FeatureCard from "../components/common/FeatureCard";
-import HeroButton from "../components/common/HeroButton";
-import AnimatedSection from "../components/common/AnimatedSection";
 import logoHome from "../assets/logoHome.png";
 import logoSmall from "../assets/logoSmall.png";
 import logoHello from "../assets/logoHello.png";
@@ -20,6 +17,11 @@ const HomePage = () => {
   
   // AppNavbar에 대한 참조 생성 (모달 제어용)
   const navbarRef = useRef();
+  
+  // 애니메이션 섹션 참조
+  const serviceIntroRef = useRef(null);
+  const featuresRef = useRef(null);
+  const ctaRef = useRef(null);
   
   // 이벤트 핸들러 함수들 (성능 최적화를 위해 useCallback 사용)
   
@@ -68,6 +70,84 @@ const HomePage = () => {
     }
   ];
 
+  // 애니메이션 섹션 처리
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // 섹션 자체에 애니메이션 클래스 추가
+          entry.target.classList.add("animate-in");
+          
+          // animate-target 클래스를 가진 자식 요소들에도 애니메이션 적용
+          const animateTargets = entry.target.querySelectorAll('.animate-target');
+          animateTargets.forEach((target, index) => {
+            setTimeout(() => {
+              target.classList.add("animate-in");
+            }, index * 300); // 순차적 애니메이션
+          });
+        }
+      },
+      { threshold: 0.7 }
+    );
+    
+    // 각 섹션 관찰 시작
+    [serviceIntroRef, featuresRef, ctaRef].forEach(ref => {
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+    });
+    
+    return () => {
+      // 컴포넌트 언마운트 시 관찰 중단
+      [serviceIntroRef, featuresRef, ctaRef].forEach(ref => {
+        if (ref.current) {
+          observer.unobserve(ref.current);
+        }
+      });
+    };
+  }, []);
+
+  // HeroButton 컴포넌트 직접 구현
+  const renderHeroButton = (variant, onClick, children, className = "") => {
+    const baseClass = "hero-button";
+    const variantClass = `${baseClass}-${variant}`;
+    const darkModeClass = darkMode ? "dark-mode" : "";
+    
+    return (
+      <button
+        type="button"
+        className={`${baseClass} ${variantClass} ${darkModeClass} ${className}`}
+        onClick={onClick}
+      >
+        {children}
+      </button>
+    );
+  };
+
+  // FeatureCard 컴포넌트 직접 구현
+  const renderFeatureCard = (feature, index) => (
+    <div key={index} className={`feature-card ${darkMode ? "dark-mode" : ""}`}>
+      <div className="feature-card-image">
+        <img src={feature.imgSrc} alt={feature.imgAlt} className="feature-image" />
+      </div>
+      <div className="feature-card-content">
+        <h3 className="feature-card-title">{feature.title}</h3>
+        <p className="feature-card-description">{feature.description}</p>
+        
+        {feature.benefits && (
+          <div className="feature-card-benefits">
+            {feature.benefits.map((benefit, benefitIndex) => (
+              <div key={benefitIndex} className="benefit-item">
+                <div className="benefit-icon">✓</div>
+                <span>{benefit}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className={`main-layout home-page ${darkMode ? "dark-mode" : ""}`}>
       {/* 네비게이션 바 */}
@@ -98,26 +178,11 @@ const HomePage = () => {
               {/* 로그인 상태에 따른 버튼 표시 */}
               <div className="hero-buttons">
                 {currentUser ? (
-                  <HeroButton 
-                    variant="primary"
-                    onClick={navigateToDashboard}
-                  >
-                    대시보드로 이동
-                  </HeroButton>
+                  renderHeroButton("primary", navigateToDashboard, "대시보드로 이동")
                 ) : (
                   <>
-                    <HeroButton 
-                      variant="primary"
-                      onClick={handleSignup}
-                    >
-                      시작하기
-                    </HeroButton>
-                    <HeroButton 
-                      variant="secondary"
-                      onClick={handleLogin}
-                    >
-                      로그인 »
-                    </HeroButton>
+                    {renderHeroButton("primary", handleSignup, "시작하기")}
+                    {renderHeroButton("secondary", handleLogin, "로그인 »")}
                   </>
                 )}
               </div>
@@ -136,7 +201,10 @@ const HomePage = () => {
         </section>
 
         {/* 서비스 소개 섹션 */}
-        <AnimatedSection className="service-intro-section">
+        <section 
+          ref={serviceIntroRef}
+          className={`animated-section service-intro-section ${darkMode ? "dark-mode" : ""}`}
+        >
           <div className="service-intro-content">
             <div className="service-image-container">
               <img 
@@ -163,32 +231,32 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-        </AnimatedSection>
+        </section>
 
         {/* 주요 특징 섹션 */}
-          <AnimatedSection className="features-section">
-            {features.map((feature, index) => (
-              <div key={index} className="feature-wrapper animate-target">
-                <FeatureCard {...feature} />
-              </div>
-            ))}
-          </AnimatedSection>
+        <section 
+          ref={featuresRef}
+          className={`animated-section features-section ${darkMode ? "dark-mode" : ""}`}
+        >
+          {features.map((feature, index) => (
+            <div key={index} className="feature-wrapper animate-target">
+              {renderFeatureCard(feature, index)}
+            </div>
+          ))}
+        </section>
 
         {/* CTA(Call To Action) 섹션 - 비로그인 사용자에게만 표시 */}
         {!currentUser && (
-          <AnimatedSection className="cta-section">
+          <section 
+            ref={ctaRef}
+            className={`animated-section cta-section ${darkMode ? "dark-mode" : ""}`}
+          >
             <h2 className="cta-title">함께 배우고 성장하세요</h2>
             <p className="cta-text">
               오늘 StudyBuddy에 가입하고 스터디 그룹 활동을 시작해보세요!
             </p>
-            <HeroButton 
-              variant="primary"
-              onClick={handleSignup}
-              className="cta-button"
-            >
-              지금 가입하기
-            </HeroButton>
-          </AnimatedSection>
+            {renderHeroButton("primary", handleSignup, "지금 가입하기", "cta-button")}
+          </section>
         )}
       </main>
     </div>

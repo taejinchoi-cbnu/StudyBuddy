@@ -7,8 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import LoadingSpinner from "../components/LoadingSpinner";
 import useFirebaseData from "../hooks/useFirebaseData";
-import GroupCard from "../components/groups/GroupCard";
-import DashboardCard from "../components/common/DashboardCard";
+import UniversalCard from "../components/common/UniversalCard";
 import ListItem from "../components/common/ListItem";
 
 const GroupsPage = () => {
@@ -258,6 +257,88 @@ const GroupsPage = () => {
   // 더보기 버튼 표시 여부
   const hasMore = groups && displayedGroups.length < groups.length;
 
+  // 그룹 카드 렌더링 함수
+  const renderGroupCard = (group, isMember) => {
+    const formatDate = (timestamp) => {
+      if (!timestamp) return '날짜 정보 없음';
+      
+      let date;
+      if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+        date = timestamp.toDate();
+      } else if (timestamp.seconds) {
+        date = new Date(timestamp.seconds * 1000);
+      } else {
+        date = new Date(timestamp);
+      }
+      
+      if (isNaN(date.getTime())) {
+        return '날짜 정보 없음';
+      }
+      
+      return date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    };
+
+    return (
+      <UniversalCard
+        variant="group"
+        title={group.name || '제목 없음'}
+        headerAction={isMember && <Badge bg="success" pill>참여중</Badge>}
+        onClick={() => handleGroupClick(group.id)}
+        className="h-100"
+      >
+        <div className="group-card-content">
+          <p className="mb-2">
+            {group.description 
+              ? (group.description.length > 100
+                  ? `${group.description.substring(0, 100)}...`
+                  : group.description)
+              : '설명 없음'}
+          </p>
+          
+          <div className="mb-3">
+            {group.subject && Array.isArray(group.subject) && group.subject.map(subject => (
+              <Badge 
+                key={subject} 
+                bg="primary" 
+                className="me-1 mb-1"
+              >
+                {subject}
+              </Badge>
+            ))}
+          </div>
+          
+          <div className="mb-3">
+            {group.tags && Array.isArray(group.tags) && group.tags.slice(0, 5).map(tag => (
+              <Badge 
+                key={tag} 
+                bg="secondary" 
+                className="me-1 mb-1"
+              >
+                {tag}
+              </Badge>
+            ))}
+            {group.tags && Array.isArray(group.tags) && group.tags.length > 5 && (
+              <Badge bg="light" text="dark">+{group.tags.length - 5}</Badge>
+            )}
+          </div>
+          
+          <div className="d-flex justify-content-between align-items-center mt-auto">
+            <small className="text-muted">
+              {group.memberCount || 1}명 참여 중
+            </small>
+            <small className="text-muted">
+              {group.createdAt ? formatDate(group.createdAt) : '최근 생성됨'}
+            </small>
+          </div>
+        </div>
+      </UniversalCard>
+    );
+  };
+
   return (
     <div className={`page-container ${darkMode ? "dark-mode" : ""}`}>
       {/* 네비게이션바 */}
@@ -330,7 +411,8 @@ const GroupsPage = () => {
             <h3 className="mb-3">모든 스터디 그룹</h3>
 
             {/* 검색 및 필터 */}
-            <DashboardCard
+            <UniversalCard
+              variant="dashboard"
               title="그룹 검색 및 필터"
               icon="bi-search"
               headerAction={
@@ -409,7 +491,7 @@ const GroupsPage = () => {
                   }
                 </div>
               </div>
-            </DashboardCard>
+            </UniversalCard>
 
             {/* 그룹 목록 */}
             {displayGroups.length > 0 ? (
@@ -417,10 +499,7 @@ const GroupsPage = () => {
                 {displayGroups.map(group => (
                   <Col key={group.id}>
                     <div className="group-card-wrapper hover-lift">
-                      <GroupCard
-                        group={group}
-                        isMember={false}
-                      />
+                      {renderGroupCard(group, false)}
                     </div>
                   </Col>
                 ))}
