@@ -35,26 +35,11 @@
    .groups-header-section {
      padding: 2rem 0;
      text-align: center;
-     margin-bottom: 2rem;
+     margin-top: 0.7rem;
+     margin-bottom: 1.5rem;
+
    }
-   
-   .groups-header-content {
-     display: flex;
-     justify-content: space-between;
-     align-items: center;
-     max-width: var(--container-max-width);
-     margin: 0 auto;
-     gap: 2rem;
-   }
-   
-   .groups-main-title {
-     font-size: 3rem;
-     font-weight: 700;
-     color: #2c3e50;
-     margin: 0;
-     line-height: 1.2;
-   }
-   
+      
    .create-group-btn {
      display: inline-flex;
      align-items: center;
@@ -67,8 +52,7 @@
      font-size: 1rem;
      cursor: pointer;
      transition: all var(--transition-normal);
-     text-decoration: none;
-     padding: 0.9rem 2.2rem;
+     padding: 0.9rem 2rem;
      box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
    }
    
@@ -82,20 +66,7 @@
    /* ======================================================
       Groups 섹션 스타일
       ====================================================== */
-   
-   .my-groups-section,
-   .all-groups-section {
-     background-color: white;
-     padding: 3rem 0;
-     margin: 1rem 0;
-     border-radius: 30px;
-     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-     position: relative;
-   }
-   
-   .my-groups-section {
-     margin-top: 0;
-   }
+
    
    .groups-container {
      max-width: var(--container-max-width);
@@ -444,7 +415,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    max-width: 800px; /* 리스트가 너무 넓어지지 않도록 제한 */
   }
   
   /* 내 그룹 아이템 변형 스타일 */

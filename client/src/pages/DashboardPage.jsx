@@ -415,14 +415,14 @@ const DashboardPage = () => {
 
           {/* 첫 번째 카드 행: 다가오는 일정 + 그룹 요청 + 그룹 추천 */}
           <Container className="dashboard-cards-container">
-            <Row className="g-4 mb-4">
+            <Row className="g-4 mb-4 ">
               {/* 다가오는 일정 카드 */}
               <Col lg={showAdminCards ? 4 : 6} md={6} sm={12}>
                 <UniversalCard
                   variant="dashboard"
                   title="다가오는 일정"
                   icon="bi-calendar-event"
-                  className="dashboard-card"
+                  className="dashboard-card card-component"
                   headerClassName="card-header"
                 >
                   <UpcomingEventsComponent 
@@ -439,7 +439,7 @@ const DashboardPage = () => {
                     variant="dashboard"
                     title="그룹 가입 요청"
                     icon="bi-envelope-fill"
-                    className="dashboard-card"
+                    className="dashboard-card card-component"
                     headerClassName="card-header"
                   >
                     <GroupRequestsComponent 

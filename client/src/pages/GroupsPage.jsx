@@ -354,7 +354,7 @@ const GroupsPage = () => {
         ) : (
           <>
             {/* 페이지 헤더 */}
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-4 groups-header-section">
               <h1>스터디 그룹</h1>
               <Button
                 variant="primary"
@@ -371,7 +371,7 @@ const GroupsPage = () => {
             {/* 내 스터디 그룹 섹션 */}
             {currentUser && userGroups && userGroups.length > 0 && (
               <>
-                <h3 className="mb-3">내 스터디 그룹</h3>
+                <h3 className="mb-5">내 스터디 그룹</h3>
                 <div className="my-groups-list mb-5">
                   {userGroups.map(group => (
                     <ListItem
@@ -408,13 +408,14 @@ const GroupsPage = () => {
               </>
             )}
 
-            <h3 className="mb-3">모든 스터디 그룹</h3>
+            <h3 className="mb-5">모든 스터디 그룹</h3>
 
             {/* 검색 및 필터 */}
             <UniversalCard
               variant="dashboard"
               title="그룹 검색 및 필터"
               icon="bi-search"
+              
               headerAction={
                 <Button
                   variant="outline-secondary"

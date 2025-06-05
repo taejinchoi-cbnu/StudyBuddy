@@ -9,7 +9,7 @@
   border-radius: 25px;
   box-shadow: var(--shadow);
   transition: all var(--transition-normal);
-  border: 1px solid var(--border-color);
+  border: 2px solid var(--border-color);
   background-color: var(--white);
   display: flex;
   flex-direction: column;
@@ -33,6 +33,7 @@
   padding: 1rem 1.25rem;
   background-color: var(--primary-color);
   border-bottom: 1px solid var(--border-color);
+  border-radius: 15px 15px 0px 0px;
 }
 
 .card-header-left {
