@@ -83,13 +83,6 @@ const GroupRequestsComponent = ({ userGroups = [], onDataChange }) => {
     <div className={`group-requests-component card-component ${darkMode ? "dark-mode" : ""}`}>
       {/* 카드 헤더 액션 */}
       <div className="card-component-header">
-        <div className="header-info">
-          {getTotalRequests() > 0 && (
-            <Badge bg="danger" pill className="total-requests-badge">
-              총 {getTotalRequests()}개 요청
-            </Badge>
-          )}
-        </div>
         <Button
           variant="outline-secondary"
           size="sm"
@@ -99,6 +92,14 @@ const GroupRequestsComponent = ({ userGroups = [], onDataChange }) => {
         >
           <i className={`bi bi-arrow-clockwise ${isRefreshing ? 'spin' : ''}`}></i>
         </Button>
+        <div className="header-info">
+          {getTotalRequests() > 0 && (
+            <Badge bg="danger" pill className="total-requests-badge">
+              총 {getTotalRequests()}개 요청
+            </Badge>
+          )}
+        </div>
+
       </div>
 
       {/* 에러 메시지 */}
@@ -109,7 +110,7 @@ const GroupRequestsComponent = ({ userGroups = [], onDataChange }) => {
       )}
       
       {/* 컨텐츠 영역 */}
-      <div className="card-component-content">
+      <div className="card-component-content" style={{border: "2px solid var(--accent-color)", padding: "0.8rem 2rem", borderRadius: "25px" }}>
         {isProcessing ? (
           <div className="text-center py-3">
             <Spinner animation="border" size="sm" />

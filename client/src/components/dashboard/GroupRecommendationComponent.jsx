@@ -1,4 +1,3 @@
-// src/components/dashboard/GroupRecommendationComponent.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge, Spinner, Alert } from "react-bootstrap";
@@ -72,7 +71,7 @@ const GroupRecommendationComponent = ({ userGroups = [] }) => {
   }
 
   return (
-    <div className={`group-recommendation-component ${darkMode ? "dark-mode" : ""}`}>
+    <div className={`group-recommendation-component ${darkMode ? "dark-mode" : ""}`} style={{textAlign: "center"}}>
       {recommendedGroups.length > 0 ? (
         <div className="scroll-container">
           {recommendedGroups.map((group) => (
@@ -105,7 +104,7 @@ const GroupRecommendationComponent = ({ userGroups = [] }) => {
         </div>
       ) : (
         <div className="empty-state-common">
-          <img src={logoQuestion} style={{width: "3rem", height: "3rem", margin: "2rem 0 1.5rem 7rem" }} />
+          <img src={logoQuestion} style={{width: "3rem", height: "3rem", marginTop: "5rem"}} />
           <p>관심사와 맞는 그룹을 찾지 못했습니다.</p>
         </div>
       )}

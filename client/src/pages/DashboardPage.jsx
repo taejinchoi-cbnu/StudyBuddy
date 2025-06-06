@@ -51,7 +51,7 @@ const DashboardPage = () => {
     const timerId = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-    
+
     return () => {
       clearInterval(timerId);
     };
@@ -62,7 +62,7 @@ const DashboardPage = () => {
     const updateGreeting = () => {
       const now = new Date();
       const hour = now.getHours();
-      
+
       // 시간대별 메시지 설정
       let newTimeOfDay = "";
       if (hour >= 6 && hour < 9) {
@@ -78,14 +78,14 @@ const DashboardPage = () => {
       } else {
         newTimeOfDay = "좋은 새벽입니다.";
       }
-      
+
       setTimeOfDay(newTimeOfDay);
     };
-    
+
     // 초기 실행 및 1분마다 업데이트
     updateGreeting();
     const intervalId = setInterval(updateGreeting, 60000);
-    
+
     return () => clearInterval(intervalId);
   }, []);
 
@@ -164,7 +164,7 @@ const DashboardPage = () => {
       },
       transform: (eventsData) => {
         if (!Array.isArray(eventsData)) return [];
-        
+
         return eventsData.map(event => ({
           ...event,
           start: event.start?.toDate ? event.start.toDate() : new Date(event.start),
@@ -180,13 +180,13 @@ const DashboardPage = () => {
     if (!Array.isArray(userGroups) || !currentUser) {
       return false;
     }
-    
+
     return userGroups.some(group => {
-      return group.createdBy === currentUser.uid || 
-             (group.members && Array.isArray(group.members) && 
-              group.members.some(member => 
-                member.userId === currentUser.uid && member.role === "admin"
-              ));
+      return group.createdBy === currentUser.uid ||
+              (group.members && Array.isArray(group.members) &&
+               group.members.some(member =>
+                 member.userId === currentUser.uid && member.role === "admin"
+               ));
     });
   };
 
@@ -207,30 +207,30 @@ const DashboardPage = () => {
   useEffect(() => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    
+
     // 이번 달 첫째 날과 마지막 날
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-    
+
     // 첫째 주 시작일 (일요일부터)
     const startDate = new Date(firstDay);
     startDate.setDate(firstDay.getDate() - firstDay.getDay());
-    
+
     // 3x3 = 9일만 표시 (중앙 주간)
     const days = [];
     const centerWeekStart = new Date(currentDate);
     centerWeekStart.setDate(currentDate.getDate() - currentDate.getDay());
-    
+
     for (let i = 0; i < 9; i++) {
       const day = new Date(centerWeekStart);
       day.setDate(centerWeekStart.getDate() + i);
-      
+
       // 해당 날짜에 이벤트가 있는지 확인
       const hasEvent = userEvents.some(event => {
         const eventDate = new Date(event.start);
         return eventDate.toDateString() === day.toDateString();
       });
-      
+
       days.push({
         date: day,
         day: day.getDate(),
@@ -239,7 +239,7 @@ const DashboardPage = () => {
         hasEvent
       });
     }
-    
+
     setCalendarDays(days);
   }, [currentDate, userEvents]);
 
@@ -282,28 +282,28 @@ const DashboardPage = () => {
   // 타이머 실행
   useEffect(() => {
     let timerId;
-    
+
     if (timerRunning && secondsLeft > 0) {
       timerId = setInterval(() => {
         setSecondsLeft(prev => {
           if (prev <= 1) {
             setTimerRunning(false);
             setSessions(prevSessions => prevSessions + 1);
-            
+
             if (Notification.permission === "granted") {
               new Notification("⏰ 시간이 완료되었습니다!", {
                 icon: "/favicon.ico",
                 badge: "/favicon.ico"
               });
             }
-            
+
             return inputMinutes * 60;
           }
           return prev - 1;
         });
       }, 1000);
     }
-    
+
     return () => {
       if (timerId) clearInterval(timerId);
     };
@@ -383,7 +383,7 @@ const DashboardPage = () => {
     <Container fluid className={`dashboard-layout ${darkMode ? "dark-mode" : ""}`}>
       <div className="main-area-full">
         <div className="navbar-spacer"></div>
-        
+
         <main className="dashboard-content">
           {/* 에러 메시지 표시 */}
           {(groupsError || eventsError) && (
@@ -425,7 +425,7 @@ const DashboardPage = () => {
                   className="dashboard-card card-component"
                   headerClassName="card-header"
                 >
-                  <UpcomingEventsComponent 
+                  <UpcomingEventsComponent
                     userGroups={safeUserGroups}
                     onDataChange={refreshData}
                   />
@@ -442,7 +442,7 @@ const DashboardPage = () => {
                     className="dashboard-card card-component"
                     headerClassName="card-header"
                   >
-                    <GroupRequestsComponent 
+                    <GroupRequestsComponent
                       userGroups={safeUserGroups}
                       onDataChange={refreshData}
                     />
@@ -459,7 +459,7 @@ const DashboardPage = () => {
                   className="dashboard-card"
                   headerClassName="card-header"
                 >
-                  <GroupRecommendationComponent 
+                  <GroupRecommendationComponent
                     userGroups={safeUserGroups}
                   />
                 </UniversalCard>
@@ -480,16 +480,16 @@ const DashboardPage = () => {
                   <div className={`mini-calendar-component ${darkMode ? "dark-mode" : ""}`}>
                     <div className="calendar-header">
                       <h6 className="month-year">
-                        {currentDate.toLocaleDateString('ko-KR', { 
-                          year: 'numeric', 
-                          month: 'long' 
+                        {currentDate.toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: 'long'
                         })}
                       </h6>
                     </div>
-                    
+
                     <div className="calendar-grid">
                       {calendarDays.map((day, index) => (
-                        <div 
+                        <div
                           key={index}
                           className={`calendar-day ${day.isToday ? 'today' : ''} ${!day.isCurrentMonth ? 'other-month' : ''}`}
                         >
@@ -511,38 +511,46 @@ const DashboardPage = () => {
                   className="dashboard-card"
                   headerClassName="card-header"
                 >
-                  <div className={`meeting-stats-component ${darkMode ? "dark-mode" : ""}`}>
-                    <div className="stats-grid">
-                      <StatWidget 
-                        icon="bi-people-fill" 
-                        label="참여 그룹" 
+                  {/* 여기부터 2x2 그리드 적용 */}
+                  <Row className={`meeting-stats-component g-2 ${darkMode ? "dark-mode" : ""}`}>
+                    <Col xs={6}> {/* 작은 화면에서도 2x2 유지를 위해 col-6 적용 */}
+                      <StatWidget
+                        icon="bi-people-fill"
+                        label="참여 그룹"
                         value={stats.totalGroups}
                         color="info"
                         size="compact"
                       />
-                      <StatWidget 
-                        icon="bi-calendar-event" 
-                        label="예정 미팅" 
+                    </Col>
+                    <Col xs={6}>
+                      <StatWidget
+                        icon="bi-calendar-event"
+                        label="예정 미팅"
                         value={stats.upcomingMeetings}
                         color="warning"
                         size="compact"
                       />
-                      <StatWidget 
-                        icon="bi-calendar-week" 
-                        label="이번 주" 
+                    </Col>
+                    <Col xs={6}>
+                      <StatWidget
+                        icon="bi-calendar-week"
+                        label="이번 주"
                         value={stats.thisWeekMeetings}
                         color="success"
                         size="compact"
                       />
-                      <StatWidget 
-                        icon="bi-check-circle" 
-                        label="완료 미팅" 
+                    </Col>
+                    <Col xs={6}>
+                      <StatWidget
+                        icon="bi-check-circle"
+                        label="완료 미팅"
                         value={stats.completedMeetings}
                         color="secondary"
                         size="compact"
                       />
-                    </div>
-                  </div>
+                    </Col>
+                  </Row>
+                  {/* 여기까지 2x2 그리드 적용 */}
                 </UniversalCard>
               </Col>
 
@@ -567,7 +575,7 @@ const DashboardPage = () => {
                       )}
 
                       {/* 타이머 메인 영역 */}
-                      <div className="timer-card-content">
+                      <div className="timer-card-content" style={{marginTop: "3.5rem"}}>
                         {/* 타이머 디스플레이 */}
                         <div className="timer-display-section" onClick={handleTimeClick}>
                           {isEditing ? (
@@ -596,11 +604,11 @@ const DashboardPage = () => {
                             </>
                           )}
                         </div>
-                        
+
                         {/* 진행률 바 */}
                         {timerRunning && (
                           <div className="timer-progress">
-                            <div 
+                            <div
                               className="timer-progress-bar"
                               style={{
                                 width: `${((inputMinutes * 60) - secondsLeft) / (inputMinutes * 60) * 100}%`
@@ -608,11 +616,11 @@ const DashboardPage = () => {
                             ></div>
                           </div>
                         )}
-                        
+
                         {/* 타이머 컨트롤 */}
                         <div className="timer-controls-section">
-                          <Button 
-                            variant={timerRunning ? "warning" : "primary"} 
+                          <Button
+                            variant={timerRunning ? "warning" : "primary"}
                             onClick={toggleTimer}
                             className="timer-control-btn"
                             size="sm"
@@ -623,10 +631,10 @@ const DashboardPage = () => {
                               <><i className="bi bi-play-fill"></i> 시작</>
                             )}
                           </Button>
-                          
+
                           {(timerRunning || secondsLeft !== inputMinutes * 60) && (
-                            <Button 
-                              variant="outline-secondary" 
+                            <Button
+                              variant="outline-secondary"
                               onClick={resetTimer}
                               className="timer-control-btn"
                               size="sm"
