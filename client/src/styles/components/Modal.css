@@ -45,9 +45,30 @@
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
 }
 
+.auth-modal .btn-primary {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  border-radius: 25px !important;
+  padding: 0.8rem 2rem !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.auth-modal .btn-primary:hover {
+  background-color: var(--primary-dark) !important;
+  border-color: var(--primary-dark) !important;
+  transform: translateY(-2px) !important;
+}
+
+.auth-modal .btn-link {
+  color: var(--accent-color) !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+}
+
 /* 닫기 버튼 */
 .btn-close-custom {
-  background: none !important;
+  background-color: transparent !important;
   position: absolute;
   top: 1rem;
   right: 1rem;
