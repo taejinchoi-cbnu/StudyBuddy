@@ -348,7 +348,7 @@ const AppNavbar = forwardRef((props, ref) => {
             aria-label="Close"
             onClick={handleLoginModalClose}
           >
-            <i className="bi bi-x-circle"></i>
+            <i className="bi bi-x-circle fs-2"></i>
           </Button>
         </div>
         
@@ -428,7 +428,7 @@ const AppNavbar = forwardRef((props, ref) => {
             aria-label="Close"
             onClick={handleSignupModalClose}
           >
-            <i className="bi bi-x-circle"></i>
+            <i className="bi bi-x-circle fs-2"></i>
           </Button>
         </div>
         
@@ -541,7 +541,7 @@ const AppNavbar = forwardRef((props, ref) => {
             aria-label="Close"
             onClick={handleForgotPasswordModalClose}
           >
-            <i className="bi bi-x-circle"></i>
+            <i className="bi bi-x-circle fs-2"></i>
           </Button>
         </div>
         

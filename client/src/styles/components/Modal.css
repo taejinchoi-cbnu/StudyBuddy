@@ -46,7 +46,7 @@
 }
 
 .auth-modal .btn-primary {
-  background-color: var(--accent-color) !important;
+  background-color: var(--accent-color);
   border-color: var(--accent-color) !important;
   border-radius: 25px !important;
   padding: 0.8rem 2rem !important;
@@ -55,7 +55,7 @@
 }
 
 .auth-modal .btn-primary:hover {
-  background-color: var(--primary-dark) !important;
+  background-color: var(--primary-dark);
   border-color: var(--primary-dark) !important;
   transform: translateY(-2px) !important;
 }
@@ -74,8 +74,8 @@
   right: 1rem;
   border: none;
   border-radius: 50%;
-  width: 35px;
-  height: 35px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
