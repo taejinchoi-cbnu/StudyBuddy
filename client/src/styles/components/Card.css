@@ -1,0 +1,93 @@
+/* ======================================================
+   Card 컴포넌트 스타일 - UniversalCard + Stat/List 통합
+   ====================================================== */
+
+/* 기본 카드 스타일 (UniversalCard) */
+.universal-card {
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: all var(--transition-normal);
+  border: 2px solid var(--border-color);
+  background-color: var(--white);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.universal-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hover-shadow);
+}
+
+/* 카드 변형 */
+.universal-card.dashboard {
+  background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+}
+
+.universal-card.group {
+  border-left: 4px solid var(--accent-color);
+}
+
+.universal-card.feature {
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Stat Widget (CommonComponents에서 이동) */
+.stat-widget-common {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* List Item (CommonComponents에서 이동) */
+.list-item-common {
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.list-item-common:hover {
+  background-color: var(--light-gray);
+  transform: translateX(5px);
+}
+
+/* 다크모드 스타일 */
+.dark-mode .universal-card {
+  background-color: var(--white);
+  color: var(--text-color);
+}
+
+.dark-mode .stat-widget-common {
+  background-color: var(--white);
+}
+
+.dark-mode .list-item-common {
+  background-color: var(--white);
+}
+
+.dark-mode .list-item-common:hover {
+  background-color: var(--dark-gray);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .universal-card {
+    margin: 0.5rem;
+  }
+  
+  .stat-widget-common {
+    padding: 1rem;
+  }
+  
+  .list-item-common {
+    padding: 0.75rem;
+  }
+} 

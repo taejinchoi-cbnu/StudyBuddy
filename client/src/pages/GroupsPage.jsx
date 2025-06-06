@@ -9,6 +9,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import useFirebaseData from "../hooks/useFirebaseData";
 import UniversalCard from "../components/common/UniversalCard";
 import ListItem from "../components/common/ListItem";
+import logoQuestion from "../assets/logoQuestion.png";
 
 const GroupsPage = () => {
   const { currentUser } = useAuth();
@@ -353,26 +354,14 @@ const GroupsPage = () => {
           </div>
         ) : (
           <>
-            {/* 페이지 헤더 */}
-            <div className="d-flex justify-content-between align-items-center mb-4 groups-header-section">
-              <h1>스터디 그룹</h1>
-              <Button
-                variant="primary"
-                onClick={() => navigate("/groups/create")}
-                className="create-group-btn"
-              >
-                새 그룹 만들기
-              </Button>
-            </div>
-
             {/* 에러 메시지 표시 */}
             {error && <div className="alert alert-danger">{error}</div>}
 
             {/* 내 스터디 그룹 섹션 */}
             {currentUser && userGroups && userGroups.length > 0 && (
               <>
-                <h3 className="mb-5">내 스터디 그룹</h3>
-                <div className="my-groups-list mb-5">
+                <h3 className="mb-4" style={{marginTop: "2rem", fontSize: "2.2rem"}}>참가중인 그룹</h3>
+                <div className="my-groups-list mb-2">
                   {userGroups.map(group => (
                     <ListItem
                       key={group.id}
@@ -407,8 +396,16 @@ const GroupsPage = () => {
                 </div>
               </>
             )}
-
-            <h3 className="mb-5">모든 스터디 그룹</h3>
+            <div className="d-flex justify-content-between align-items-center mb-1 groups-header-section">
+            <h3 style={{fontSize: "2.2rem"}}>모든 스터디 그룹</h3>
+              <Button
+                variant="primary"
+                onClick={() => navigate("/groups/create")}
+                className="create-group-btn"
+              >
+                새 그룹 만들기
+              </Button>
+            </div>
 
             {/* 검색 및 필터 */}
             <UniversalCard
@@ -424,7 +421,6 @@ const GroupsPage = () => {
                   disabled={isLoading}
                   className="refresh-btn"
                 >
-                  <i className={`bi bi-arrow-clockwise ${isLoading ? 'spin' : ''}`}></i>
                 </Button>
               }
               className={`mb-4 ${isFilterAnimating ? 'filter-animating' : ''}`}
@@ -440,7 +436,6 @@ const GroupsPage = () => {
                     />
                     {isSearching && (
                       <InputGroup.Text>
-                        <i className="bi bi-search spinning"></i>
                       </InputGroup.Text>
                     )}
                   </InputGroup>
@@ -507,7 +502,7 @@ const GroupsPage = () => {
               </Row>
             ) : (
               <div className="text-center my-5">
-                <i className="bi bi-search" style={{ fontSize: "3rem", color: "var(--text-muted)" }}></i>
+                <img src={logoQuestion} style={{ width: "3rem", height: "3rem" }}/>
                 <p className="mt-3 text-muted">
                   {isSearching ? "검색 중..." : "검색 조건에 맞는 그룹이 없습니다."}
                 </p>
@@ -536,6 +531,7 @@ const GroupsPage = () => {
                   disabled={isLoadingMore}
                 >
                   {isLoadingMore ? "로딩 중..." : "더 보기"}
+                  <LoadingSpinner />
                 </Button>
               </div>
             )}

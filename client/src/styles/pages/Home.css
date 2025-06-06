@@ -453,77 +453,42 @@
    다크모드 스타일
    ====================================================== */
 
-.dark-mode.main-layout.home-page {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
-}
+.dark-mode {
+  .main-layout.home-page {
+    background: linear-gradient(135deg, #2c2c2c 0%, #664d4a 100%);
+  }
 
-.dark-mode .hero-title {
-  color: var(--dark-text);
-}
+  .hero-title {
+    color: var(--text-color);
+  }
 
-.dark-mode .hero-description {
-  color: var(--dark-text-muted);
-}
+  .hero-description {
+    color: var(--text-muted);
+  }
 
-.dark-mode .service-intro-section {
-  background-color: var(--dark-bg);
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
-}
+  .service-intro-section {
+    background-color: var(--white);
+  }
 
-.dark-mode .service-title {
-  color: var(--dark-text);
-}
+  .service-title {
+    color: var(--text-color);
+  }
 
-.dark-mode .service-subtitle {
-  color: var(--dark-text-muted);
-}
+  .service-subtitle {
+    color: var(--text-muted);
+  }
 
-.dark-mode .cta-section {
-  background-color: var(--dark-bg);
-}
+  .hero-button-primary {
+    background-color: var(--accent-color);
+  }
 
-.dark-mode .cta-title {
-  color: var(--dark-text);
-}
+  .hero-button-primary:hover {
+    background-color: var(--primary-dark);
+  }
 
-.dark-mode .cta-text {
-  color: var(--dark-text-muted);
-}
-
-.dark-mode .cta-button {
-  background-color: var(--dark-primary);
-}
-
-.dark-mode .cta-button:hover {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-}
-
-/* 히어로 버튼 다크모드 */
-.dark-mode .hero-button-primary {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-.dark-mode .hero-button-primary:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
-}
-
-.dark-mode .hero-button-secondary {
-  color: var(--dark-text);
-}
-
-/* Feature Card 다크모드 */
-.dark-mode .feature-card {
-  background-color: var(--dark-bg);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.dark-mode .feature-card-title {
-  color: var(--dark-text);
-}
-
-.dark-mode .feature-card-description {
-  color: var(--dark-text-muted);
+  .hero-button-secondary {
+    color: var(--text-color);
+  }
 }
 
 /* ======================================================
@@ -532,8 +497,8 @@
 
 @media (max-width: 1200px) {
   .hero-section,
-  .service-intro-section {
-    padding: 3rem 1.5rem;
+  .service-intro-content {
+    padding: 2rem;
   }
 }
 
@@ -542,7 +507,6 @@
     flex-direction: column;
     text-align: center;
     gap: 2rem;
-    padding: 2rem 1.5rem;
   }
 
   .hero-content,
@@ -565,24 +529,16 @@
   .service-intro-content {
     flex-direction: column;
     text-align: center;
-    gap: 2rem;
   }
 
   .feature-card {
     flex-direction: column;
     text-align: center;
-    padding: 2rem;
   }
 
   .feature-card-image,
   .feature-card-content {
-    flex: none;
     width: 100%;
-  }
-
-  .feature-card-content {
-    padding-left: 0;
-    margin-top: 1.5rem;
   }
 
   .feature-card-benefits {
@@ -627,8 +583,7 @@
   }
 
   .hero-button {
-    padding: 0.8rem 1.8rem;
-    font-size: 0.95rem;
+    width: 100%;
   }
 
   .feature-card {
@@ -640,7 +595,7 @@
   }
 
   .feature-card-description {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 }
 

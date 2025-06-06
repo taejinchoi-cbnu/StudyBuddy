@@ -1,0 +1,64 @@
+/* ======================================================
+   LoadingSpinner 컴포넌트 스타일
+   ====================================================== */
+
+/* 전체 화면 로딩 오버레이 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* 로딩 로고 */
+.loading-logo {
+  width: 60px;
+  height: 60px;
+  animation: blink 1s ease-in-out infinite;
+}
+
+/* 기본 스피너 */
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 204, 196, 0.3);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+}
+
+/* 깜박임 애니메이션 */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* 다크모드 스타일 */
+.dark-mode .loading-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .loading-spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: var(--primary-color);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .loading-logo {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+  }
+} 

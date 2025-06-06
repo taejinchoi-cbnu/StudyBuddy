@@ -1,4 +1,7 @@
-/* 프로필 페이지 전용 스타일 */
+/* ======================================================
+   프로필 페이지 전용 스타일
+   ====================================================== */
+
 @import '../core/Variables.css';
 
 /* ======================================================
@@ -35,14 +38,14 @@
 .profile-main-title {
   font-size: 3rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--text-color);
   margin: 0 0 1rem 0;
   line-height: 1.2;
 }
 
 .profile-subtitle {
   font-size: 1.2rem;
-  color: #666;
+  color: var(--text-muted);
   margin: 0;
 }
 
@@ -64,7 +67,7 @@
    ====================================================== */
 
 .email-verification-card-compact .card-body-common {
-  padding: 1rem 1.25rem; /* 기본보다 줄어든 패딩 */
+  padding: 1rem 1.25rem;
 }
 
 .email-verification-status {
@@ -131,7 +134,7 @@
 
 .interest-tag:hover {
   background-color: var(--accent-color);
-  color: white;
+  color: var(--white);
   transform: scale(1.05);
 }
 
@@ -153,7 +156,7 @@
 }
 
 .interests-empty {
-  color: var(--text-muted, #666);
+  color: var(--text-muted);
   font-style: italic;
   text-align: center;
   padding: 1rem;
@@ -185,13 +188,13 @@
   font-weight: 500;
   padding: 0.9rem 2rem;
   transition: all var(--transition-normal);
-  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+  box-shadow: var(--shadow);
 }
 
 .profile-btn-primary:hover:not(:disabled) {
   background-color: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
+  box-shadow: var(--hover-shadow);
 }
 
 .profile-btn-primary:disabled {
@@ -204,59 +207,61 @@
    다크모드 스타일
    ====================================================== */
 
-.dark-mode.main-layout.profile-page {
-  background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%);
-}
+.dark-mode {
+  .main-layout.profile-page {
+    background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%);
+  }
 
-.dark-mode .profile-main-title {
-  color: var(--text-color);
-}
+  .profile-main-title {
+    color: var(--text-color);
+  }
 
-.dark-mode .profile-subtitle {
-  color: #ccc;
-}
+  .profile-subtitle {
+    color: var(--text-muted);
+  }
 
-.dark-mode .verification-badge.verified {
-  background-color: rgba(40, 167, 69, 0.2);
-  color: #4caf50;
-}
+  .verification-badge.verified {
+    background-color: rgba(40, 167, 69, 0.2);
+    color: #4caf50;
+  }
 
-.dark-mode .verification-badge.not-verified {
-  background-color: rgba(255, 193, 7, 0.2);
-  color: #ffb74d;
-}
+  .verification-badge.not-verified {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffb74d;
+  }
 
-.dark-mode .interest-tag {
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  border-color: var(--border-color);
-}
+  .interest-tag {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+  }
 
-.dark-mode .interest-tag:hover {
-  background-color: var(--accent-color);
-  color: white;
-}
+  .interest-tag:hover {
+    background-color: var(--accent-color);
+    color: var(--white);
+  }
 
-.dark-mode .interests-empty {
-  background-color: rgba(255, 255, 255, 0.02);
-  color: var(--text-color);
-  border-color: var(--border-color);
-}
+  .interests-empty {
+    background-color: rgba(255, 255, 255, 0.02);
+    color: var(--text-color);
+    border-color: var(--border-color);
+  }
 
-.dark-mode .profile-form-section .form-control:disabled {
-  background-color: var(--white);
-  border-color: var(--border-color);
-  color: var(--text-color);
-}
+  .profile-form-section .form-control:disabled {
+    background-color: var(--white);
+    border-color: var(--border-color);
+    color: var(--text-color);
+  }
 
-.dark-mode .profile-btn-primary {
-  background-color: var(--accent-color);
-  box-shadow: 0 4px 8px rgba(153, 77, 66, 0.4);
-}
+  .profile-btn-primary {
+    background-color: var(--accent-color);
+    box-shadow: var(--shadow);
+  }
 
-.dark-mode .profile-btn-primary:hover:not(:disabled) {
-  background-color: var(--primary-dark);
-  box-shadow: 0 6px 12px rgba(153, 77, 66, 0.6);
+  .profile-btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-dark);
+    box-shadow: var(--hover-shadow);
+  }
 }
 
 /* ======================================================
@@ -267,10 +272,9 @@
   .main-layout.profile-page .main-content {
     padding: 1.5rem;
   }
-  
+
   .profile-container {
-    max-width: 100%;
-    padding: 0 1rem;
+    max-width: 900px;
   }
 }
 
@@ -278,11 +282,11 @@
   .profile-main-title {
     font-size: 2.5rem;
   }
-  
+
   .profile-subtitle {
     font-size: 1.1rem;
   }
-  
+
   .email-verification-card-compact .card-body-common {
     padding: 0.75rem 1rem;
   }
@@ -292,29 +296,28 @@
   .main-layout.profile-page .main-content {
     padding: 1rem;
   }
-  
+
   .profile-header-section {
-    padding: 1rem 0;
-    margin-bottom: 1.5rem;
+    padding: 1.5rem 0;
   }
-  
+
   .profile-main-title {
     font-size: 2rem;
   }
-  
+
   .profile-subtitle {
     font-size: 1rem;
   }
-  
+
   .interests-display {
-    gap: 0.3rem;
+    gap: 0.4rem;
   }
-  
+
   .interest-tag {
-    font-size: 0.8rem;
     padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
   }
-  
+
   .verification-badge {
     font-size: 0.8rem;
     padding: 0.2rem 0.4rem;
@@ -325,25 +328,24 @@
   .profile-main-title {
     font-size: 1.8rem;
   }
-  
+
   .email-verification-status {
     flex-direction: column;
-    align-items: flex-start;
     gap: 0.5rem;
+    align-items: flex-start;
   }
-  
+
   .interests-display {
-    flex-direction: column;
-    align-items: stretch;
+    gap: 0.3rem;
   }
-  
+
   .interest-tag {
-    text-align: center;
-    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
   }
-  
+
   .profile-btn-primary {
-    font-size: 0.9rem;
+    width: 100%;
     padding: 0.8rem 1.5rem;
   }
 }

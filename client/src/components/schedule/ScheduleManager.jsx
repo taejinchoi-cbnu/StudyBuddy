@@ -3,7 +3,7 @@ import { Card, Form, Button, Row, Col, Badge, Table, Alert, Modal, ProgressBar }
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 import useLoading from '../../hooks/useLoading';
-import '../../styles/ScheduleManager.css';
+import '../../styles/components/ScheduleManager.css';
 
 const ScheduleManager = ({
   // 공통 props

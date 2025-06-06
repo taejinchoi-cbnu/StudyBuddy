@@ -6,6 +6,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useDarkMode } from "../../contexts/DarkModeContext";
 import { getAllGroups } from "../../utils/GroupService";
 import ListItem from "../common/ListItem";
+import logoQuestion from "../../assets/logoQuestion.png";
+
 
 const GroupRecommendationComponent = ({ userGroups = [] }) => {
   const { currentUser, userProfile } = useAuth();
@@ -103,7 +105,7 @@ const GroupRecommendationComponent = ({ userGroups = [] }) => {
         </div>
       ) : (
         <div className="empty-state-common">
-          <i className="bi bi-search"></i>
+          <img src={logoQuestion} style={{width: "3rem", height: "3rem", margin: "2rem 0 1.5rem 7rem" }} />
           <p>관심사와 맞는 그룹을 찾지 못했습니다.</p>
         </div>
       )}

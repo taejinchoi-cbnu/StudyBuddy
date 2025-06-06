@@ -268,7 +268,7 @@ const GroupDetailPage = () => {
           {/* 오른쪽 컬럼 */}
           <div className="group-detail-right-column">
             <div className="group-detail-tabs">
-              <Nav variant="tabs" activeKey={activeKey} onSelect={setActiveKey} className="mb-3">
+              <Nav variant="tabs" activeKey={activeKey} onSelect={setActiveKey} className="mb-2">
                 <Nav.Item>
                   <Nav.Link eventKey="info">기본 정보</Nav.Link>
                 </Nav.Item>

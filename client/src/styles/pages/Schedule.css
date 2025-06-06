@@ -1,32 +1,34 @@
-/* 일정 페이지 디자인 */
+/* ======================================================
+   일정 페이지 전용 스타일
+   ====================================================== */
 
 @import '../core/Variables.css';
 
-/* 페이지 레이아웃 기본 설정 */
+/* ======================================================
+   페이지 레이아웃
+   ====================================================== */
+
 .schedule-page {
-  padding-top: 80px;
-  padding: 75px 20px 20px 20px;
+  padding: 75px 20px 20px;
   min-height: 100vh;
   background-color: var(--light-bg);
 }
 
-/* 다크모드 페이지 배경 */
-.dark-mode .schedule-page {
-  background-color: var(--light-bg);
-}
-
 .schedule-header {
-  margin: 0px 15px;
+  margin: 0 15px;
 }
 
-/* 새 일정 추가 버튼 */
+/* ======================================================
+   일정 추가 버튼
+   ====================================================== */
+
 .add-schedule-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0.6rem 1.1rem;
   background-color: var(--accent-color);
-  color: #ffffff;
+  color: var(--white);
   border: none;
   border-radius: 25px;
   font-size: 1.1rem;
@@ -34,29 +36,20 @@
   text-decoration: none;
   cursor: pointer;
   transition: all var(--transition-normal);
-  box-shadow: 0 4px 8px rgba(204, 102, 89, 0.3);
+  box-shadow: var(--shadow);
   margin: 0.5rem;
 }
 
 .add-schedule-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(204, 102, 89, 0.4);
-  color: #ffffff;
+  box-shadow: var(--hover-shadow);
+  color: var(--white);
 }
 
-/* 다크모드 버튼 스타일 */
-.dark-mode .add-schedule-btn {
-  background-color: var(--accent-color);
-  color: #ffffff;
-  box-shadow: 0 4px 8px rgba(153, 77, 66, 0.4);
-}
+/* ======================================================
+   스케줄 카드
+   ====================================================== */
 
-.dark-mode .add-schedule-btn:hover {
-  box-shadow: 0 6px 12px rgba(153, 77, 66, 0.6);
-  color: #ffffff;
-}
-
-/* 스케줄 카드 스타일 */
 .schedule-card {
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   border-radius: 12px;
@@ -70,18 +63,15 @@
   box-shadow: var(--hover-shadow);
 }
 
-.dark-mode .schedule-card {
-  background-color: var(--white);
-  border: 1px solid var(--border-color);
-}
+/* ======================================================
+   캘린더 스타일
+   ====================================================== */
 
-/* 캘린더 컨테이너 */
 .calendar-container {
   width: 100%;
   height: 100%;
 }
 
-/* 캘린더 기본 스타일 */
 .rbc-calendar {
   width: 100%;
   min-height: 600px;
@@ -91,7 +81,6 @@
   overflow: hidden;
 }
 
-/* 캘린더 헤더 */
 .rbc-header {
   padding: 12px 8px;
   font-weight: 600;
@@ -100,7 +89,6 @@
   color: var(--text-color);
 }
 
-/* 캘린더 툴바 */
 .rbc-toolbar {
   margin-bottom: 20px;
   padding: 15px;
@@ -128,114 +116,43 @@
 
 .rbc-toolbar button.rbc-active {
   background-color: var(--accent-color);
-  color: #ffffff;
+  color: var(--white);
   border-color: var(--accent-color);
-  box-shadow: 0 2px 4px rgba(204, 102, 89, 0.3);
+  box-shadow: var(--shadow);
 }
 
-/* 이벤트 스타일 */
 .rbc-event {
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 500;
   border: none;
-  color: #ffffff;
+  color: var(--white);
 }
 
 .rbc-event.rbc-selected {
   background-color: var(--accent-color) !important;
-  box-shadow: 0 2px 8px rgba(204, 102, 89, 0.4);
+  box-shadow: var(--shadow);
 }
 
-/* 그룹 이벤트와 개인 이벤트 구분 */
 .rbc-event.group-event {
-  background-color: #007bff;
-  border-left: 4px solid #0056b3;
+  background-color: var(--primary-color);
+  border-left: 4px solid var(--primary-dark);
 }
 
 .rbc-event.personal-event {
-  background-color: #28a745;
-  border-left: 4px solid #1e7e34;
+  background-color: var(--success-color);
+  border-left: 4px solid var(--success-dark);
 }
 
-/* 오늘 날짜 하이라이트 */
 .rbc-today {
   background-color: rgba(255, 204, 196, 0.15);
 }
 
-/* 다크모드 캘린더 스타일 */
-.dark-mode .rbc-calendar {
-  background-color: #2d2d2d;
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-}
+/* ======================================================
+   이벤트 폼
+   ====================================================== */
 
-.dark-mode .rbc-header {
-  background-color: #3d3d3d;
-  color: var(--text-color);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.dark-mode .rbc-toolbar {
-  background-color: var(--white);
-  border: 1px solid var(--border-color);
-}
-
-.dark-mode .rbc-toolbar button {
-  background-color: #3d3d3d;
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-}
-
-.dark-mode .rbc-toolbar button:hover {
-  background-color: var(--primary-color);
-  color: var(--text-color);
-}
-
-.dark-mode .rbc-toolbar button.rbc-active {
-  background-color: var(--accent-color);
-  color: #ffffff;
-}
-
-/* 다크모드 월간/주간/일간 뷰 */
-.dark-mode .rbc-month-view,
-.dark-mode .rbc-time-view,
-.dark-mode .rbc-agenda-view {
-  background-color: #2d2d2d;
-  border: 1px solid var(--border-color);
-}
-
-/* 다크모드 테두리 */
-.dark-mode .rbc-month-row + .rbc-month-row,
-.dark-mode .rbc-day-bg + .rbc-day-bg,
-.dark-mode .rbc-time-header-content,
-.dark-mode .rbc-time-content,
-.dark-mode .rbc-time-header.rbc-overflowing,
-.dark-mode .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
-  border-color: var(--border-color);
-}
-
-/* 다크모드 비활성 날짜 */
-.dark-mode .rbc-off-range-bg {
-  background-color: #1a1a1a;
-}
-
-/* 다크모드 오늘 날짜 */
-.dark-mode .rbc-today {
-  background-color: rgba(102, 77, 74, 0.25);
-}
-
-/* 다크모드 이벤트 팝업 */
-.dark-mode .rbc-overlay {
-  background-color: #3d3d3d;
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* 이벤트 폼 컨테이너 */
 .event-form-container {
   background-color: var(--white);
   border-radius: 12px;
@@ -245,40 +162,111 @@
   border: 1px solid var(--border-color);
 }
 
-.dark-mode .event-form-container {
-  background-color: var(--white);
-  border: 1px solid var(--border-color);
-}
+/* ======================================================
+   로딩 상태
+   ====================================================== */
 
-/* 로딩 오버레이 */
 .calendar-loading {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  min-height: 400px;
+  background-color: var(--white);
   border-radius: 8px;
+  box-shadow: var(--shadow);
 }
 
-.dark-mode .calendar-loading {
-  background-color: rgba(45, 45, 45, 0.8);
+/* ======================================================
+   다크모드 스타일
+   ====================================================== */
+
+.dark-mode {
+  .schedule-page {
+    background-color: var(--dark-bg);
+  }
+
+  .schedule-card {
+    background-color: var(--dark-bg);
+    border-color: var(--border-color);
+  }
+
+  .rbc-calendar {
+    background-color: var(--dark-bg);
+    border-color: var(--border-color);
+  }
+
+  .rbc-header {
+    background-color: var(--dark-bg);
+    border-color: var(--border-color);
+  }
+
+  .rbc-toolbar {
+    background-color: var(--dark-bg);
+    border-color: var(--border-color);
+  }
+
+  .rbc-toolbar button {
+    background-color: var(--dark-bg);
+    border-color: var(--border-color);
+  }
+
+  .rbc-toolbar button:hover {
+    background-color: var(--primary-color);
+  }
+
+  .rbc-month-view,
+  .rbc-time-view,
+  .rbc-agenda-view {
+    background-color: var(--dark-bg);
+    border-color: var(--border-color);
+  }
+
+  .rbc-month-row + .rbc-month-row,
+  .rbc-day-bg + .rbc-day-bg,
+  .rbc-time-header-content,
+  .rbc-time-content,
+  .rbc-time-header.rbc-overflowing,
+  .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+    border-color: var(--border-color);
+  }
+
+  .rbc-off-range-bg {
+    background-color: var(--dark-bg);
+  }
+
+  .rbc-today {
+    background-color: rgba(102, 77, 74, 0.25);
+  }
+
+  .rbc-overlay {
+    background-color: var(--dark-bg);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow);
+  }
+
+  .event-form-container {
+    background-color: var(--dark-bg);
+    border-color: var(--border-color);
+  }
+
+  .calendar-loading {
+    background-color: var(--dark-bg);
+  }
 }
 
-/* 반응형 스타일 */
+/* ======================================================
+   반응형 스타일
+   ====================================================== */
+
 @media (max-width: 992px) {
   .schedule-page {
-    padding: 75px 15px 15px 15px;
+    padding: 65px 15px 15px;
   }
-  
+
   .rbc-toolbar {
     padding: 10px;
   }
-  
+
   .rbc-toolbar button {
     padding: 6px 12px;
     font-size: 0.9rem;
@@ -287,52 +275,52 @@
 
 @media (max-width: 768px) {
   .schedule-page {
-    padding: 75px 10px 10px 10px;
+    padding: 60px 10px 10px;
   }
-  
+
   .rbc-calendar {
     min-height: 500px;
   }
-  
+
   .rbc-toolbar {
     flex-direction: column;
-    align-items: stretch;
     gap: 10px;
   }
-  
+
   .rbc-toolbar .rbc-btn-group {
-    justify-content: center;
+    display: flex;
     flex-wrap: wrap;
-  }
-  
-  .rbc-toolbar button {
-    margin: 2px;
-    flex: 1;
-    min-width: 80px;
-  }
-  
-  .add-schedule-btn {
-    width: 100%;
     justify-content: center;
+    gap: 5px;
+  }
+
+  .rbc-toolbar button {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+  }
+
+  .add-schedule-btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
   .schedule-page {
-    padding: 75px 8px 8px 8px;
+    padding: 55px 5px 5px;
   }
-  
+
   .rbc-calendar {
-    min-height: 450px;
+    min-height: 400px;
   }
-  
+
   .rbc-header {
     padding: 8px 4px;
     font-size: 0.9rem;
   }
-  
+
   .rbc-event {
-    font-size: 0.75rem;
     padding: 2px 4px;
+    font-size: 0.8rem;
   }
 }

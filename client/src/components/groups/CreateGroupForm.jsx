@@ -157,7 +157,7 @@ const CreateGroupForm = () => {
         
         <Card className="shadow-sm create-group-card">
           <Card.Body>
-            <h2 className="text-center mb-4">새 스터디 그룹 만들기</h2>
+            <h2 className="text-center mb-4">새 그룹 만들기</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             
             <Form onSubmit={handleSubmit}>
@@ -181,7 +181,7 @@ const CreateGroupForm = () => {
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="그룹에 대한 설명을 입력하세요"
+                  placeholder="그룹에 대한 설명을 입력하세요 (자세하게 설명할수록 좋습니다.) "
                   required
                 />
               </Form.Group>
@@ -308,7 +308,7 @@ const CreateGroupForm = () => {
               <Button 
                 variant="primary" 
                 type="submit" 
-                className="w-100 mt-3 create-group-button" 
+                className="w-100 mt-3 create-group-btn" 
                 disabled={isSubmitting}
               >
                 {isSubmitting ? '그룹 생성 중...' : '그룹 생성하기'}

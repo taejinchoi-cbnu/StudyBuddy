@@ -1,31 +1,30 @@
-/* 공통 변수 (모든 스타일시트에서 import 해야함!!) */
+/* ======================================================
+   CSS 변수 정의 - 전역에서 사용되는 변수만 포함
+   ====================================================== */
 
-/* 디자인 시스템 변수 */
 :root {
-  /* 주요 색상 */
+  /* 색상 시스템 */
   --primary-color: #ffccc4;
   --primary-dark: #cc9991;
   --accent-color: #cc6659;
   --text-color: #4d4d4d;
+  --text-muted: #666666;
   
-  /* 배경 및 기본 색상 */
+  /* 배경 색상 */
   --light-bg: #fafafa;
   --white: #ffffff;
   
-  /* 효과 */
+  /* 그림자 효과 */
   --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   --hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  
+  /* 테두리 */
   --border-color: #ffccc4;
+  --border-radius: 15px;
   
   /* 레이아웃 */
   --navbar-height: 55px;
   --container-max-width: 1200px;
-  
-  /* 반응형 중단점 */
-  --breakpoint-sm: 576px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 992px;
-  --breakpoint-xl: 1200px;
   
   /* 애니메이션 */
   --transition-fast: 0.2s ease;
@@ -39,6 +38,7 @@
   --primary-dark: #50403e;
   --accent-color: #994d42;
   --text-color: #e6e6e6;
+  --text-muted: #cccccc;
   --light-bg: #333333;
   --white: #404040;
   --shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
