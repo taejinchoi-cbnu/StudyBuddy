@@ -423,7 +423,7 @@
 
 .dark-mode {
   .main-layout.home-page {
-    background: linear-gradient(135deg, #2c2c2c 0%, #664d4a 100%);
+    background: #2c2c2c;
   }
 
   .hero-title {
@@ -455,6 +455,11 @@
   }
 
   .hero-button-secondary {
+    color: var(--text-color);
+  }
+
+  .feature-card-title, .feature-card-description,
+  .feature-card-benefits > *, .cta-title {
     color: var(--text-color);
   }
 }

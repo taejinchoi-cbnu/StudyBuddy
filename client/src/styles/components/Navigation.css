@@ -200,11 +200,6 @@
      color: var(--light-bg);
    }
    
-   .dark-mode .signup-button {
-     background-color: var(--primary-color) !important;
-     color: #333 !important;
-   }
-   
    /* ======================================================
       반응형 네비게이션 바
       ====================================================== */
