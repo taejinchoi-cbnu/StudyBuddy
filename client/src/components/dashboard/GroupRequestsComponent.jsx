@@ -110,7 +110,7 @@ const GroupRequestsComponent = ({ userGroups = [], onDataChange }) => {
       )}
       
       {/* 컨텐츠 영역 */}
-      <div className="card-component-content" style={{border: "2px solid var(--accent-color)", padding: "0.8rem 2rem", borderRadius: "25px" }}>
+      <div className="card-component-content" style={{ padding: "0.8rem 2rem", borderRadius: "25px" }}>
         {isProcessing ? (
           <div className="text-center py-3">
             <Spinner animation="border" size="sm" />

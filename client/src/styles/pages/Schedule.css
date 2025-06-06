@@ -15,7 +15,9 @@
 }
 
 .schedule-header {
-  margin: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0.6rem;
 }
 
 /* ======================================================
@@ -174,6 +176,37 @@
   background-color: var(--white);
   border-radius: 8px;
   box-shadow: var(--shadow);
+}
+
+/* 일정 페이지 버튼 스타일 */
+.schedule-page .btn,
+.event-form-container .btn,
+.schedule-manager .btn {
+  border-radius: 25px !important;
+  font-weight: 500 !important;
+  padding: 0.7rem 1.5rem !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.schedule-page .btn-primary {
+  background-color: var(--accent-color) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.schedule-page .btn-primary:hover {
+  background-color: var(--primary-dark) !important;
+  transform: translateY(-2px) !important;
+}
+
+.schedule-page .btn-outline-danger {
+  color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  background: transparent !important;
+}
+
+input, textarea {
+  box-shadow: none !important;
 }
 
 /* ======================================================

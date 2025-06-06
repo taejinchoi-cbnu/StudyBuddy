@@ -302,11 +302,12 @@
    탭 컨텐츠
    ====================================================== */
 
-.tab-content-area {
+.tab-content {
   background-color: var(--white);
   border-radius: 12px;
   padding: 2rem;
   box-shadow: var(--shadow);
+  margin-top: 2rem;
 }
 
 .tab-pane-content {

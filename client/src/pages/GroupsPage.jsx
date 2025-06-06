@@ -259,92 +259,115 @@ const GroupsPage = () => {
   const hasMore = groups && displayedGroups.length < groups.length;
 
   // 그룹 카드 렌더링 함수
-  const renderGroupCard = (group, isMember) => {
-    const formatDate = (timestamp) => {
-      if (!timestamp) return '날짜 정보 없음';
-      
-      let date;
-      if (timestamp.toDate && typeof timestamp.toDate === 'function') {
-        date = timestamp.toDate();
-      } else if (timestamp.seconds) {
-        date = new Date(timestamp.seconds * 1000);
-      } else {
-        date = new Date(timestamp);
-      }
-      
-      if (isNaN(date.getTime())) {
-        return '날짜 정보 없음';
-      }
-      
-      return date.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    };
-
-    return (
-      <UniversalCard
-        variant="group"
-        title={group.name || '제목 없음'}
-        headerAction={isMember && <Badge bg="success" pill>참여중</Badge>}
-        onClick={() => handleGroupClick(group.id)}
-        className="h-100"
-      >
-        <div className="group-card-content">
-          <p className="mb-2">
-            {group.description 
-              ? (group.description.length > 100
-                  ? `${group.description.substring(0, 100)}...`
-                  : group.description)
-              : '설명 없음'}
-          </p>
-          
-          <div className="mb-3">
-            {group.subject && Array.isArray(group.subject) && group.subject.map(subject => (
-              <Badge 
-                key={subject} 
-                bg="primary" 
-                className="me-1 mb-1"
-              >
-                {subject}
-              </Badge>
-            ))}
-          </div>
-          
-          <div className="mb-3">
-            {group.tags && Array.isArray(group.tags) && group.tags.slice(0, 5).map(tag => (
-              <Badge 
-                key={tag} 
-                bg="secondary" 
-                className="me-1 mb-1"
-              >
-                {tag}
-              </Badge>
-            ))}
-            {group.tags && Array.isArray(group.tags) && group.tags.length > 5 && (
-              <Badge bg="light" text="dark">+{group.tags.length - 5}</Badge>
-            )}
-          </div>
-          
-          <div className="d-flex justify-content-between align-items-center mt-auto">
-            <small className="text-muted">
-              {group.memberCount || 1}명 참여 중
-            </small>
-            <small className="text-muted">
-              {group.createdAt ? formatDate(group.createdAt) : '최근 생성됨'}
-            </small>
-          </div>
-        </div>
-      </UniversalCard>
-    );
+// 그룹 카드 렌더링 함수 - 완전히 새로 작성
+const renderGroupCard = (group, isMember) => {
+  const formatDate = (timestamp) => {
+    if (!timestamp) return "최근 생성됨";
+    
+    let date;
+    if (timestamp.toDate && typeof timestamp.toDate === "function") {
+      date = timestamp.toDate();
+    } else if (timestamp.seconds) {
+      date = new Date(timestamp.seconds * 1000);
+    } else {
+      date = new Date(timestamp);
+    }
+    
+    if (isNaN(date.getTime())) {
+      return "최근 생성됨";
+    }
+    
+    return date.toLocaleDateString("ko-KR", {
+      month: "short",
+      day: "numeric"
+    });
   };
+
+  return (
+    <UniversalCard
+      variant="group"
+      onClick={() => handleGroupClick(group.id)}
+      className="group-card-item"
+    >
+      {/* 카드 헤더 */}
+      <div className="group-card-header">
+        <div className="group-title-section">
+          <h5 className="group-title">{group.name || "제목 없음"}</h5>
+          {isMember && <Badge bg="success" className="member-badge">참여중</Badge>}
+        </div>
+        <div className="group-meta-line">
+          <span className="member-count">
+            <i className="bi bi-people-fill me-1"></i>
+            {group.memberCount || 1}/{group.maxMembers}
+          </span>
+          <span className="meeting-type">
+            <i className="bi bi-geo-alt-fill me-1"></i>
+            {group.meetingType}
+          </span>
+        </div>
+      </div>
+
+      {/* 카드 바디 */}
+      <div className="group-card-body">
+        <p className="group-description">
+          {group.description 
+            ? (group.description.length > 85
+                ? `${group.description.substring(0, 85)}...`
+                : group.description)
+            : "설명이 없습니다."}
+        </p>
+
+        {/* 태그 섹션 */}
+        <div className="group-tags-section">
+          {group.tags && Array.isArray(group.tags) && group.tags.length > 0 ? (
+            <div className="group-tags-list">
+              {group.tags.slice(0, 3).map(tag => (
+                <Badge 
+                  key={tag} 
+                  bg="light" 
+                  text="dark"
+                  className="group-tag-item"
+                >
+                  {tag}
+                </Badge>
+              ))}
+              {group.tags.length > 3 && (
+                <Badge bg="secondary" className="group-tag-more">
+                  +{group.tags.length - 3}
+                </Badge>
+              )}
+            </div>
+          ) : (
+            <div className="no-tags">
+              <Badge bg="outline-secondary" className="no-tags-badge">
+                태그 없음
+              </Badge>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 카드 푸터 */}
+      <div className="group-card-footer">
+        <small className="creation-date">
+          <i className="bi bi-calendar3 me-1"></i>
+          {formatDate(group.createdAt)}
+        </small>
+        <div className="group-status">
+          {group.memberCount >= group.maxMembers ? (
+            <Badge bg="danger" className="status-badge">모집완료</Badge>
+          ) : (
+            <Badge bg="primary" className="status-badge">모집중</Badge>
+          )}
+        </div>
+      </div>
+    </UniversalCard>
+  );
+};
 
   return (
     <div className={`page-container ${darkMode ? "dark-mode" : ""}`}>
       {/* 네비게이션바 */}
-      <div className="navbar-spacer"></div>
-
       <Container className={`mt-4 ${darkMode ? "dark-mode" : ""}`}>
         {/* 로딩 상태 */}
         {isLoading ? (
@@ -423,7 +446,7 @@ const GroupsPage = () => {
                 >
                 </Button>
               }
-              className={`mb-4 ${isFilterAnimating ? 'filter-animating' : ''}`}
+              className={`mb-4 search-filter-card ${isFilterAnimating ? 'filter-animating' : ''}`}
             >
               <Row>
                 <Col md={6} className="mb-3">
@@ -448,6 +471,7 @@ const GroupsPage = () => {
                       as="select"
                       value={selectedSubject}
                       onChange={(e) => handleSubjectChange(e.target.value)}
+                      style={{boxShadow: "none"}}
                     >
                       <option value="">모든 주제</option>
                       {GROUP_SUBJECTS && GROUP_SUBJECTS.map(subject => (

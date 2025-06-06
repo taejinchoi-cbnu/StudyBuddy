@@ -311,7 +311,7 @@ const GroupScheduleComponent = ({ group, members }) => {
   // 그룹 멤버가 아닌 경우 접근 제한
   if (!userStatus.isMember) {
     return (
-      <Card className={`shadow-sm ${darkMode ? 'dark-mode' : ''}`}>
+      <Card className={`${darkMode ? 'dark-mode' : ''}`}>
         <Card.Body className="text-center py-5">
           <h4 className="mb-3">접근 권한이 없습니다</h4>
           <p>이 기능은 그룹 멤버만 사용할 수 있습니다.</p>
@@ -321,23 +321,23 @@ const GroupScheduleComponent = ({ group, members }) => {
   }
 
   return (
-    <Card className={`shadow-sm ${darkMode ? 'dark-mode' : ''}`}>
+    <Card className={`${darkMode ? 'dark-mode' : ''}`}>
       <Card.Body>
         <h3 className="mb-3">그룹 스케줄 조정</h3>
         
         {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
         {success && <Alert variant="success" onClose={() => setSuccess('')} dismissible>{success}</Alert>}
         
-        <div className="mb-4">
+        <div className="mb-3">
           <p>
-            모든 그룹 멤버들의 가능한 시간을 찾아드립니다. 
-            먼저 각자 참여할 수 <strong>없는</strong> 시간을 입력해주세요.
+            모든 그룹 멤버들의 가능한 시간을 찾아드립니다.</p> <br/>
+            <p>먼저 각자 참여할 수 <strong>없는</strong> 시간을 입력해주세요.
           </p>
         </div>
         
         {/* 확정된 일정 섹션 */}
         {appointments.length > 0 && (
-          <Card className="mb-4">
+          <Card className="mb-3">
             <Card.Header>
               <div className="d-flex justify-content-between align-items-center">
                 <h4 className="mb-0">확정된 그룹 일정</h4>
