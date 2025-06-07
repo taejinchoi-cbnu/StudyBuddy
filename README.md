@@ -3,7 +3,7 @@
 # StudyBuddy 🎓✨
 ![웹 아이콘](client/src/assets/logoHome.png)
 <div align="center">
-  <img src="https://github.com/user-attachments/client/src/assets/logoHome.png" width="150"/><br>
+  <img src="(client/src/assets/logoHome.png" width="150"/><br>
   <p><strong>StudyBuddy는 학생들이 효율적으로 스터디 그룹을 형성하고 관리할 수 있도록 도와주는 웹 애플리케이션입니다.</strong></p>
 </div>
 
