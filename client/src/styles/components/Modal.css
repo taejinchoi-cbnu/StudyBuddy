@@ -92,19 +92,26 @@
 
 /* 다크모드 스타일 통합 */
 .dark-mode .base-modal .modal-content,
-.dark-mode .auth-modal .modal-content
-, .form-control {
+.dark-mode .auth-modal .modal-content {
   background-color: var(--white);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
 
-  label, span {
-    color: var(--text-color);
-  }
-  .form-text, input::placeholder, .text-muted {
-    opacity: 0.5;
-    color: var(--text-color) !important;
-  }
+.dark-mode .auth-modal .form-control {
+  background-color: var(--white);
+  color: var(--text-color);
+}
 
+.dark-mode .auth-modal label,
+.dark-mode .auth-modal span {
+  color: var(--text-color);
+}
+
+.dark-mode .auth-modal .form-text,
+.dark-mode .auth-modal input::placeholder,
+.dark-mode .auth-modal .text-muted {
+  opacity: 0.5;
+  color: var(--text-color) !important;
 }
 
 /* 반응형 스타일 통합 */

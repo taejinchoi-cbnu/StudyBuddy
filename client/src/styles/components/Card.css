@@ -20,17 +20,8 @@
 }
 
 /* 카드 변형 */
-.universal-card.dashboard {
-  background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
-}
-
 .universal-card.group {
   border-left: 4px solid var(--accent-color);
-}
-
-.universal-card.feature {
-  text-align: center;
-  padding: 2rem;
 }
 
 /* Stat Widget (CommonComponents에서 이동) */
@@ -74,7 +65,7 @@
 }
 
 .dark-mode .list-item-common:hover {
-  background-color: var(--dark-gray);
+  background-color: var(--primary-color);
 }
 
 /* 반응형 */

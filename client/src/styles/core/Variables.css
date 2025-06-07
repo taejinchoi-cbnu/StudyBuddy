@@ -10,6 +10,13 @@
   --text-color: #4d4d4d;
   --text-muted: #666666;
   
+  /* 상태 색상 */
+  --success-color: #28a745;
+  --success-dark: #1e7e34;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #17a2b8;
+  
   /* 배경 색상 */
   --light-bg: #fafafa;
   --white: #ffffff;

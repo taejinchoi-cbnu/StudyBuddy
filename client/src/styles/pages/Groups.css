@@ -2,8 +2,6 @@
    그룹 페이지 전용 스타일
    ====================================================== */
 
-@import '../core/Variables.css';
-
    /* ======================================================
       Groups Page 전체 레이아웃
       ====================================================== */
@@ -260,20 +258,6 @@
      box-shadow: 0 0 0 0.2rem rgba(255, 204, 196, 0.25);
    }
    
-   .spinning {
-     animation: spin 1s linear infinite;
-   }
-   
-   @keyframes spin {
-     from { transform: rotate(0deg); }
-     to { transform: rotate(360deg); }
-   }
-   
-   .filter-animating {
-     transition: all 0.3s ease;
-     opacity: 0.7;
-   }
-   
    .tag-badge.tag-selected {
      transform: scale(1.05);
      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -458,15 +442,6 @@
     opacity: 0.7;
   }
   
-  /* 그룹 카드 래퍼에 호버 효과 */
-  .group-card-wrapper {
-    height: 100%;
-    transition: transform var(--transition-normal);
-  }
-  
-  .group-card-wrapper:hover {
-    transform: translateY(-5px);
-  }
   
   /* 다크모드 스타일 */
   .dark-mode .list-item-common.list-item-my-group {

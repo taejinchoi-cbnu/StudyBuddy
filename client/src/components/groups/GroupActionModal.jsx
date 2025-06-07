@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import BaseModal, { ConfirmModal, DeleteModal, FormModal } from '../common/BaseModal';
+import BaseModal from '../common/BaseModal';
 import { Form } from 'react-bootstrap';
 import { useDarkMode } from '../../contexts/DarkModeContext';
 import { leaveGroup, deleteGroup } from '../../utils/GroupService';
@@ -61,8 +61,8 @@ const GroupActionModal = ({
       case 'join':
         return {
           title: `"${group?.name}" 그룹 가입 요청`,
-          component: FormModal,
-          primaryButton: { text: '요청 보내기', variant: 'primary' },
+          primaryButton: { text: '요청 보내기', variant: 'primary', icon: 'bi-check-lg' },
+          secondaryButton: { text: '취소', variant: 'secondary', icon: 'bi-x-lg' },
           content: (
             <>
               <p>그룹 관리자에게 가입 요청을 보냅니다.</p>
@@ -86,8 +86,9 @@ const GroupActionModal = ({
       case 'leave':
         return {
           title: '그룹 탈퇴 확인',
-          component: ConfirmModal,
-          primaryButton: { text: '탈퇴하기', variant: 'danger' },
+          headerVariant: 'warning',
+          primaryButton: { text: '탈퇴하기', variant: 'warning', icon: 'bi-check-lg' },
+          secondaryButton: { text: '취소', variant: 'secondary', icon: 'bi-x-lg' },
           content: (
             <>
               <p>정말 "{group?.name}" 그룹에서 탈퇴하시겠습니까?</p>
@@ -99,9 +100,12 @@ const GroupActionModal = ({
       case 'delete':
         return {
           title: '그룹 삭제 확인',
-          component: DeleteModal,
+          headerVariant: 'danger',
+          confirmationRequired: true,
           confirmationText: '삭제하기',
-          primaryButton: { text: '그룹 삭제', variant: 'danger' },
+          confirmationPlaceholder: '삭제하기',
+          primaryButton: { text: '그룹 삭제', variant: 'danger', icon: 'bi-trash' },
+          secondaryButton: { text: '취소', variant: 'secondary', icon: 'bi-x-lg' },
           content: (
             <>
               <h5>"{group?.name}" 그룹을 정말 삭제하시겠습니까?</h5>
@@ -120,13 +124,12 @@ const GroupActionModal = ({
   const config = getModalConfig();
   if (!config) return null;
 
-  const ModalComponent = config.component;
-
   return (
-    <ModalComponent
+    <BaseModal
       show={show}
       onHide={onHide}
       title={config.title}
+      headerVariant={config.headerVariant}
       error={ui.error}
       onClearMessages={() => ui.clearAll()}
       primaryButton={{
@@ -135,18 +138,25 @@ const GroupActionModal = ({
         disabled: ui.isProcessing || (type === 'join' && joinMessage.length > 300)
       }}
       secondaryButton={{
-        text: '취소',
+        ...config.secondaryButton,
         onClick: onHide
       }}
       isLoading={ui.isProcessing}
       loadingText="처리 중..."
-      confirmationRequired={type === 'delete'}
+      confirmationRequired={config.confirmationRequired || false}
       confirmationText={config.confirmationText}
+      confirmationPlaceholder={config.confirmationPlaceholder}
+      onConfirmationChange={(value) => {
+        // Handle confirmation input for delete modal
+        if (type === 'delete') {
+          // Add confirmation validation if needed
+        }
+      }}
       onSubmit={type === 'join' ? handleAction : undefined}
       className={`group-action-modal ${darkMode ? "dark-mode" : ""}`}
     >
       {config.content}
-    </ModalComponent>
+    </BaseModal>
   );
 };
 

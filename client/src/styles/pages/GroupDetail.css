@@ -2,8 +2,6 @@
    그룹 상세 페이지 전용 스타일
    ====================================================== */
 
-@import '../core/Variables.css';
-
 /* ======================================================
    페이지 레이아웃
    ====================================================== */
@@ -252,12 +250,12 @@
 }
 
 .member-role-badge.admin {
-  background-color: var(--danger-color);
+  background-color: #dc3545;
   color: var(--white);
 }
 
 .member-role-badge.member {
-  background-color: var(--success-color);
+  background-color: #28a745;
   color: var(--white);
 }
 
@@ -362,8 +360,8 @@
    ====================================================== */
 
 .pending-request-notice {
-  background-color: var(--warning-bg);
-  color: var(--warning-color);
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #856404;
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
@@ -373,8 +371,8 @@
 }
 
 .member-only-notice {
-  background-color: var(--info-bg);
-  color: var(--info-color);
+  background-color: rgba(13, 202, 240, 0.1);
+  color: #055160;
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
@@ -383,29 +381,6 @@
   gap: 0.5rem;
 }
 
-/* ======================================================
-   애니메이션
-   ====================================================== */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
 /* ======================================================
    다크모드 스타일
@@ -504,13 +479,13 @@
   }
 
   .pending-request-notice {
-    background-color: var(--warning-bg);
-    color: var(--warning-color);
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
   }
 
   .member-only-notice {
-    background-color: var(--info-bg);
-    color: var(--info-color);
+    background-color: rgba(13, 202, 240, 0.2);
+    color: #0dcaf0;
   }
 }
 

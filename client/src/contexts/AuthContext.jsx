@@ -33,26 +33,20 @@ export function AuthProvider({ children }) {
 
   // 회원가입 함수
   async function signup(email, password, displayName, isVerified = true, certifiedDate = null) {
-    console.log("AuthContext - signup 함수 호출됨:", { email, displayName, isVerified });
     
     try {
-      console.log("Firebase Auth - 계정 생성 시도");
       setLoading(true);
       
       // Firebase 인증
-      console.log("Firebase 인증 직접 호출");
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
       if (!user || !user.uid) {
-        console.error("Firebase 인증은 성공했지만 유효한 사용자 객체를 받지 못했습니다.");
         throw new Error("사용자 계정 생성에 실패했습니다.");
       }
       
-      console.log("Firebase Auth - 계정 생성 성공:", user.uid);
       
       // Firestore에 사용자 프로필 문서 생성
-      console.log("Firestore - 사용자 프로필 생성 시도");
       try {
         await setDoc(doc(firestore, 'users', user.uid), {
           uid: user.uid,
@@ -65,7 +59,6 @@ export function AuthProvider({ children }) {
           certified_date: certifiedDate || new Date().toISOString(),
           createdAt: serverTimestamp()
         });
-        console.log("Firestore - 사용자 프로필 생성 성공");
       } catch (firestoreError) {
         console.error("Firestore 프로필 생성 오류:", firestoreError);
         // Firestore 오류가 발생해도 인증은 성공했으므로 사용자 객체 반환
@@ -171,11 +164,9 @@ export function AuthProvider({ children }) {
     if (!currentUser) throw new Error('No authenticated user');
     
     try {
-      console.log(`이메일 업데이트 시작: ${currentUser.email} -> ${newEmail}`);
       
       // Firebase Authentication 이메일 업데이트
       await firebaseUpdateEmail(auth.currentUser, newEmail);
-      console.log('Firebase Auth 이메일 업데이트 성공');
       
       // 충북대 이메일인지 확인
       const isChungbukEmail = newEmail.endsWith('@chungbuk.ac.kr');
@@ -240,11 +231,6 @@ export function AuthProvider({ children }) {
     });
   }
   
-  // clearTempUserData 함수는 실제로 사용되지 않지만, 인터페이스 호환성을 위해 유지
-  function clearTempUserData() {
-    // 임시 데이터 저장이 필요 없으므로 빈 함수로 유지
-    console.log("임시 사용자 데이터 관련 함수 호출됨 - 이 함수는 더 이상 사용되지 않습니다.");
-  }
 
   // 인증 상태 변경 감지
   useEffect(() => {
@@ -275,7 +261,6 @@ export function AuthProvider({ children }) {
     fetchUserProfile,
     updateUserProfile,
     updateEmail,
-    clearTempUserData,
     authLoading: {
       signup: ui.isSigningUp,
       login: ui.isLoggingIn,

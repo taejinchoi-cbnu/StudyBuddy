@@ -39,7 +39,6 @@ const DashboardPage = () => {
   });
 
   // 타이머 관련 상태
-  const [timerMode, setTimerMode] = useState("work");
   const [timerRunning, setTimerRunning] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(20 * 60);
   const [sessions, setSessions] = useState(0);

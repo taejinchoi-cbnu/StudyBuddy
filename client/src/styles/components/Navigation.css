@@ -1,7 +1,5 @@
 /* 네비게이션 바 관련 스타일 */
 
-@import '../core/Variables.css';
-
 /* 기본 네비게이션 바 스타일 */
 .dashboard-navbar {
   background-color: transparent;

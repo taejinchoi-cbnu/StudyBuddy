@@ -3,14 +3,14 @@
 }
 
 .schedule-manager.dark-mode {
-  color: var(--text-primary);
+  color: var(--text-color);
 }
 
 /* 단계 표시기 스타일 */
 .schedule-manager .progress {
   height: 8px;
   border-radius: 4px;
-  background-color: var(--bg-secondary);
+  background-color: var(--light-bg);
 }
 
 .schedule-manager .progress-bar {
@@ -31,17 +31,17 @@
 /* 시간 선택 폼 스타일 */
 .schedule-manager .form-label {
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--text-color);
 }
 
 .schedule-manager .form-select {
   border-color: var(--border-color);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--white);
+  color: var(--text-color);
 }
 
 .schedule-manager .form-select:disabled {
-  background-color: var(--bg-secondary);
+  background-color: var(--light-bg);
   cursor: not-allowed;
 }
 
@@ -64,8 +64,8 @@
 }
 
 .schedule-manager .table th {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
+  background-color: var(--light-bg);
+  color: var(--text-color);
   font-weight: 600;
   border-color: var(--border-color);
 }
@@ -77,7 +77,7 @@
 
 /* 모달 스타일 */
 .schedule-manager .modal-content {
-  background-color: var(--bg-primary);
+  background-color: var(--white);
   border-color: var(--border-color);
 }
 
@@ -90,7 +90,7 @@
 }
 
 .schedule-manager .modal-title {
-  color: var(--text-primary);
+  color: var(--text-color);
 }
 
 /* 버튼 스타일 */

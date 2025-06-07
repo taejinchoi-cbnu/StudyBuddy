@@ -2,8 +2,6 @@
    일정 페이지 전용 스타일
    ====================================================== */
 
-@import '../core/Variables.css';
-
 /* ======================================================
    페이지 레이아웃
    ====================================================== */
@@ -143,8 +141,8 @@
 }
 
 .rbc-event.personal-event {
-  background-color: var(--success-color);
-  border-left: 4px solid var(--success-dark);
+  background-color: #28a745;
+  border-left: 4px solid #1e7e34;
 }
 
 .rbc-today {
@@ -215,31 +213,31 @@ input, textarea {
 
 .dark-mode {
   .schedule-page {
-    background-color: var(--dark-bg);
+    background-color: var(--light-bg);
   }
 
   .schedule-card {
-    background-color: var(--dark-bg);
+    background-color: var(--white);
     border-color: var(--border-color);
   }
 
   .rbc-calendar {
-    background-color: var(--dark-bg);
+    background-color: var(--white);
     border-color: var(--border-color);
   }
 
   .rbc-header {
-    background-color: var(--dark-bg);
+    background-color: var(--light-bg);
     border-color: var(--border-color);
   }
 
   .rbc-toolbar {
-    background-color: var(--dark-bg);
+    background-color: var(--white);
     border-color: var(--border-color);
   }
 
   .rbc-toolbar button {
-    background-color: var(--dark-bg);
+    background-color: var(--white);
     border-color: var(--border-color);
   }
 
@@ -250,7 +248,7 @@ input, textarea {
   .rbc-month-view,
   .rbc-time-view,
   .rbc-agenda-view {
-    background-color: var(--dark-bg);
+    background-color: var(--white);
     border-color: var(--border-color);
   }
 
@@ -264,7 +262,7 @@ input, textarea {
   }
 
   .rbc-off-range-bg {
-    background-color: var(--dark-bg);
+    background-color: var(--light-bg);
   }
 
   .rbc-today {
@@ -272,18 +270,18 @@ input, textarea {
   }
 
   .rbc-overlay {
-    background-color: var(--dark-bg);
+    background-color: var(--white);
     border-color: var(--border-color);
     box-shadow: var(--shadow);
   }
 
   .event-form-container {
-    background-color: var(--dark-bg);
+    background-color: var(--white);
     border-color: var(--border-color);
   }
 
   .calendar-loading {
-    background-color: var(--dark-bg);
+    background-color: var(--white);
   }
 }
 

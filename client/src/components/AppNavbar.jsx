@@ -8,8 +8,6 @@ import logoSmall from "../assets/logoSmall.png";
 import logoLogin from "../assets/logoLogin.png";
 import EmailVerificationService from "../utils/EmailVerificationService";
 import useNotification from "../hooks/useNotification";
-import useModal from "../hooks/useModal";
-
 const AppNavbar = forwardRef((props, ref) => {
   // 컨텍스트 및 훅
   const { 
@@ -34,13 +32,35 @@ const AppNavbar = forwardRef((props, ref) => {
     clearAll 
   } = useNotification();
   
-  // 통합 모달 관리 (login, signup, forgot)
-  const {
-    openModal,
-    closeModal,
-    switchModal,
-    isOpen
-  } = useModal(["login", "signup", "forgot"]);
+  // 모달 상태 관리
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  
+  // 모달 헬퍼 함수들
+  const openModal = (type) => {
+    if (type === "login") setShowLoginModal(true);
+    else if (type === "signup") setShowSignupModal(true);
+    else if (type === "forgot") setShowForgotModal(true);
+  };
+  
+  const closeModal = (type) => {
+    if (type === "login") setShowLoginModal(false);
+    else if (type === "signup") setShowSignupModal(false);
+    else if (type === "forgot") setShowForgotModal(false);
+  };
+  
+  const switchModal = (from, to) => {
+    closeModal(from);
+    openModal(to);
+  };
+  
+  const isOpen = (type) => {
+    if (type === "login") return showLoginModal;
+    else if (type === "signup") return showSignupModal;
+    else if (type === "forgot") return showForgotModal;
+    return false;
+  };
   
   // 폼 상태 관리
   const [email, setEmail] = useState("");
