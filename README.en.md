@@ -1,9 +1,11 @@
 [한국어](README.md) | **English**
 
 # StudyBuddy 🎓✨
-![Web Icon](client/src/assets/logoHome.png)
-
-StudyBuddy is a web application designed to help students efficiently form and manage study groups.
+<div align="center">
+  <img src="client/src/assets/logoHome.png" width="250"/><br>
+  <p><strong>StudyBuddy is a web application designed to help students efficiently form and manage study groups.
+</strong></p>
+</div>
 
 ## 📝 Project Overview
 
