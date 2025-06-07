@@ -4,7 +4,6 @@ const StatWidget = ({
   icon, 
   value, 
   label, 
-  color = "primary",
   size = "default" // compact, default
 }) => {
   const { darkMode } = useDarkMode();

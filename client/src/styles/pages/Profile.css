@@ -1,351 +1,561 @@
 /* ======================================================
-   프로필 페이지 전용 스타일
+   프로필 페이지 전용 스타일 - 스코프 제한
    ====================================================== */
 
-@import '../core/Variables.css';
+   @import '../core/Variables.css';
 
-/* ======================================================
-   프로필 페이지 레이아웃
-   ====================================================== */
-
-.main-layout.profile-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%);
-  color: var(--text-color);
-  transition: background-color var(--transition-normal), color var(--transition-normal);
-}
-
-.main-layout.profile-page .main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 2rem;
-  overflow-y: auto;
-}
-
-/* ======================================================
-   프로필 헤더 섹션
-   ====================================================== */
-
-.profile-header-section {
-  text-align: center;
-  margin-bottom: 2rem;
-  padding: 2rem 0;
-}
-
-.profile-main-title {
-  font-size: 3rem;
-  font-weight: 700;
-  color: var(--text-color);
-  margin: 0 0 1rem 0;
-  line-height: 1.2;
-}
-
-.profile-subtitle {
-  font-size: 1.2rem;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-/* ======================================================
-   프로필 카드 섹션
-   ====================================================== */
-
-.profile-cards-section {
-  flex: 1;
-}
-
-.profile-container {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-/* ======================================================
-   이메일 인증 카드 컴팩트 스타일
-   ====================================================== */
-
-.email-verification-card-compact .card-body-common {
-  padding: 1rem 1.25rem;
-}
-
-.email-verification-status {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.verification-badge-container {
-  margin-bottom: 0.5rem;
-}
-
-.verification-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.verification-badge.verified {
-  background-color: rgba(40, 167, 69, 0.1);
-  color: #28a745;
-  border: 1px solid rgba(40, 167, 69, 0.2);
-}
-
-.verification-badge.not-verified {
-  background-color: rgba(255, 193, 7, 0.1);
-  color: #856404;
-  border: 1px solid rgba(255, 193, 7, 0.2);
-}
-
-/* ======================================================
-   관심 분야 태그 스타일
-   ====================================================== */
-
-.interests-section {
-  width: 100%;
-}
-
-.interests-display {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  min-height: 40px;
-  align-items: flex-start;
-}
-
-.interest-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.4rem 0.8rem;
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  border: 1px solid var(--border-color);
-}
-
-.interest-tag:hover {
-  background-color: var(--accent-color);
-  color: var(--white);
-  transform: scale(1.05);
-}
-
-.interest-tag.disabled {
-  cursor: default;
-  opacity: 0.8;
-}
-
-.interest-tag.disabled:hover {
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  transform: none;
-}
-
-.remove-icon {
-  margin-left: 0.5rem;
-  font-weight: bold;
-  opacity: 0.7;
-}
-
-.interests-empty {
-  color: var(--text-muted);
-  font-style: italic;
-  text-align: center;
-  padding: 1rem;
-  background-color: rgba(0, 0, 0, 0.02);
-  border-radius: 8px;
-  border: 1px dashed var(--border-color);
-  width: 100%;
-}
-
-/* ======================================================
-   프로필 폼 섹션
-   ====================================================== */
-
-.profile-form-section {
-  width: 100%;
-}
-
-.profile-form-section .form-control:disabled {
-  background-color: var(--light-bg);
-  border-color: var(--border-color);
-  opacity: 0.8;
-  cursor: not-allowed;
-}
-
-.profile-btn-primary {
-  background-color: var(--accent-color);
-  border: none;
-  border-radius: 25px;
-  font-weight: 500;
-  padding: 0.9rem 2rem;
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow);
-}
-
-.profile-btn-primary:hover:not(:disabled) {
-  background-color: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: var(--hover-shadow);
-}
-
-.profile-btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ======================================================
-   다크모드 스타일
-   ====================================================== */
-
-.dark-mode {
-  .main-layout.profile-page {
-    background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%);
-  }
-
-  .profile-main-title {
-    color: var(--text-color);
-  }
-
-  .profile-subtitle {
-    color: var(--text-muted);
-  }
-
-  .verification-badge.verified {
-    background-color: rgba(40, 167, 69, 0.2);
-    color: #4caf50;
-  }
-
-  .verification-badge.not-verified {
-    background-color: rgba(255, 193, 7, 0.2);
-    color: #ffb74d;
-  }
-
-  .interest-tag {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border-color: var(--border-color);
-  }
-
-  .interest-tag:hover {
-    background-color: var(--accent-color);
-    color: var(--white);
-  }
-
-  .interests-empty {
-    background-color: rgba(255, 255, 255, 0.02);
-    color: var(--text-color);
-    border-color: var(--border-color);
-  }
-
-  .profile-form-section .form-control:disabled {
-    background-color: var(--white);
-    border-color: var(--border-color);
-    color: var(--text-color);
-  }
-
-  .profile-btn-primary {
-    background-color: var(--accent-color);
-    box-shadow: var(--shadow);
-  }
-
-  .profile-btn-primary:hover:not(:disabled) {
-    background-color: var(--primary-dark);
-    box-shadow: var(--hover-shadow);
-  }
-}
-
-/* ======================================================
-   반응형 스타일
-   ====================================================== */
-
-@media (max-width: 1200px) {
-  .main-layout.profile-page .main-content {
-    padding: 1.5rem;
-  }
-
-  .profile-container {
-    max-width: 900px;
-  }
-}
-
-@media (max-width: 992px) {
-  .profile-main-title {
-    font-size: 2.5rem;
-  }
-
-  .profile-subtitle {
-    font-size: 1.1rem;
-  }
-
-  .email-verification-card-compact .card-body-common {
-    padding: 0.75rem 1rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .main-layout.profile-page .main-content {
-    padding: 1rem;
-  }
-
-  .profile-header-section {
-    padding: 1.5rem 0;
-  }
-
-  .profile-main-title {
-    font-size: 2rem;
-  }
-
-  .profile-subtitle {
-    font-size: 1rem;
-  }
-
-  .interests-display {
-    gap: 0.4rem;
-  }
-
-  .interest-tag {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.85rem;
-  }
-
-  .verification-badge {
-    font-size: 0.8rem;
-    padding: 0.2rem 0.4rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .profile-main-title {
-    font-size: 1.8rem;
-  }
-
-  .email-verification-status {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-
-  .interests-display {
-    gap: 0.3rem;
-  }
-
-  .interest-tag {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.8rem;
-  }
-
-  .profile-btn-primary {
-    width: 100%;
-    padding: 0.8rem 1.5rem;
-  }
-}
+   /* ======================================================
+      프로필 페이지 레이아웃 - 스코프 제한
+      ====================================================== */
+   
+   .main-layout.profile-page {
+     display: flex;
+     flex-direction: column;
+     min-height: 100vh;
+     background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%);
+     color: var(--text-color);
+     transition: background-color var(--transition-normal), color var(--transition-normal);
+   }
+   
+   .main-layout.profile-page .main-content {
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+     padding: 2rem;
+     overflow-y: auto;
+   }
+   
+   /* ======================================================
+      프로필 헤더 섹션 - 스코프 제한
+      ====================================================== */
+   
+   .main-layout.profile-page .profile-header-section {
+     text-align: center;
+     margin-bottom: 2rem;
+     padding: 2rem 0;
+   }
+   
+   .main-layout.profile-page .profile-main-title {
+     font-size: 3rem;
+     font-weight: 700;
+     color: var(--text-color);
+     margin: 0 0 1rem 0;
+     line-height: 1.2;
+   }
+   
+   .main-layout.profile-page .profile-subtitle {
+     font-size: 1.2rem;
+     color: var(--text-muted);
+     margin: 0;
+   }
+   
+   /* ======================================================
+      프로필 카드 섹션 - 개선된 버전 (프로필 페이지 전용)
+      ====================================================== */
+   
+   .main-layout.profile-page .profile-cards-section {
+     flex: 1;
+   }
+   
+   .main-layout.profile-page .profile-container {
+     max-width: 1000px;
+     margin: 0 auto;
+   }
+   
+   /* 프로필 페이지 전용 카드 스타일 */
+   .main-layout.profile-page .universal-card {
+     background: linear-gradient(135deg, var(--white) 0%, #fefefe 100%);
+     border: 2px solid var(--border-color);
+     border-radius: 16px;
+     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+     transition: all var(--transition-normal);
+     overflow: hidden;
+   }
+   
+   .main-layout.profile-page .universal-card:hover {
+     transform: translateY(-3px);
+     box-shadow: 0 12px 32px rgba(204, 102, 89, 0.15);
+     border-color: var(--accent-color);
+   }
+   
+   /* 프로필 페이지 전용 카드 헤더 */
+   .main-layout.profile-page .universal-card-header {
+     background: linear-gradient(135deg, var(--primary-color) 0%, #ffe8e4 100%);
+     padding: 1.5rem 1.5rem 1.25rem 1.5rem;
+     border-bottom: 2px solid var(--accent-color);
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+   }
+   
+   .main-layout.profile-page .universal-card-header h5.card-title {
+     font-size: 1.3rem;
+     font-weight: 700;
+     color: var(--text-color);
+     margin: 0;
+     display: flex;
+     align-items: center;
+     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+   }
+   
+   .main-layout.profile-page .universal-card-header i {
+     font-size: 1.2rem;
+     color: var(--accent-color);
+     margin-right: 0.75rem;
+     padding: 0.5rem;
+     background: rgba(255, 255, 255, 0.2);
+     border-radius: 50%;
+   }
+   
+   /* 프로필 페이지 전용 카드 컨텐츠 */
+   .main-layout.profile-page .universal-card-content {
+     padding: 2rem;
+     background: var(--white);
+   }
+   
+   /* ======================================================
+      이메일 인증 카드 컴팩트 스타일 - 프로필 페이지 전용
+      ====================================================== */
+   
+   .main-layout.profile-page .email-verification-card-compact .universal-card-content {
+     padding: 1.5rem 2rem;
+   }
+   
+   .main-layout.profile-page .email-verification-status {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     flex-wrap: wrap;
+     gap: 1rem;
+   }
+   
+   .main-layout.profile-page .verification-badge-container {
+     margin-bottom: 0.75rem;
+   }
+   
+   .main-layout.profile-page .verification-badge {
+     display: inline-flex;
+     align-items: center;
+     padding: 0.5rem 1rem;
+     border-radius: 20px;
+     font-size: 0.9rem;
+     font-weight: 600;
+     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+     transition: all var(--transition-fast);
+   }
+   
+   .main-layout.profile-page .verification-badge.verified {
+     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+     color: white;
+     border: none;
+   }
+   
+   .main-layout.profile-page .verification-badge.not-verified {
+     background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+     color: white;
+     border: none;
+   }
+   
+   .main-layout.profile-page .verification-badge:hover {
+     transform: scale(1.05);
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+   }
+   
+   /* ======================================================
+      관심 분야 태그 스타일 - 프로필 페이지 전용
+      ====================================================== */
+   
+   .main-layout.profile-page .interests-section {
+     width: 100%;
+   }
+   
+   .main-layout.profile-page .interests-display {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 0.75rem;
+     margin-bottom: 1.5rem;
+     min-height: 60px;
+     align-items: flex-start;
+     padding: 1rem;
+     background: linear-gradient(135deg, #fafafa 0%, #f8f9fa 100%);
+     border-radius: 12px;
+     border: 2px dashed var(--border-color);
+   }
+   
+   .main-layout.profile-page .interest-tag {
+     display: inline-flex;
+     align-items: center;
+     padding: 0.6rem 1rem;
+     background: linear-gradient(135deg, var(--primary-color) 0%, #ffe0dc 100%);
+     color: var(--text-color);
+     border-radius: 25px;
+     font-size: 0.9rem;
+     font-weight: 600;
+     cursor: pointer;
+     transition: all var(--transition-normal);
+     border: 2px solid var(--primary-dark);
+     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+   }
+   
+   .main-layout.profile-page .interest-tag:hover {
+     background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-dark) 100%);
+     color: var(--white);
+     transform: translateY(-2px) scale(1.05);
+     box-shadow: 0 6px 16px rgba(204, 102, 89, 0.3);
+   }
+   
+   .main-layout.profile-page .interest-tag.disabled {
+     cursor: default;
+     opacity: 0.7;
+     background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+     color: var(--text-muted);
+     border-color: #dee2e6;
+   }
+   
+   .main-layout.profile-page .interest-tag.disabled:hover {
+     background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+     color: var(--text-muted);
+     transform: none;
+     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+   }
+   
+   .main-layout.profile-page .remove-icon {
+     margin-left: 0.5rem;
+     font-weight: bold;
+     opacity: 0.8;
+     padding: 0.2rem;
+     border-radius: 50%;
+     background: rgba(255, 255, 255, 0.2);
+     transition: all var(--transition-fast);
+   }
+   
+   .main-layout.profile-page .interest-tag:hover .remove-icon {
+     background: rgba(255, 255, 255, 0.3);
+     opacity: 1;
+   }
+   
+   .main-layout.profile-page .interests-empty {
+     color: var(--text-muted);
+     font-style: italic;
+     text-align: center;
+     padding: 2rem;
+     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+     border-radius: 12px;
+     border: 2px dashed var(--border-color);
+     width: 100%;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     gap: 0.5rem;
+   }
+   
+   .main-layout.profile-page .interests-empty::before {
+     content: "🏷️";
+     font-size: 2rem;
+     opacity: 0.5;
+   }
+   
+   /* ======================================================
+      프로필 폼 섹션 - 프로필 페이지 전용
+      ====================================================== */
+   
+   .main-layout.profile-page .profile-form-section {
+     width: 100%;
+   }
+   
+   .main-layout.profile-page .profile-form-section .form-group {
+     margin-bottom: 1.5rem;
+   }
+   
+   .main-layout.profile-page .profile-form-section .form-label {
+     font-weight: 600;
+     color: var(--text-color);
+     margin-bottom: 0.75rem;
+     font-size: 1rem;
+     display: flex;
+     align-items: center;
+   }
+   
+   .main-layout.profile-page .profile-form-section .form-label::before {
+     content: "📝";
+     margin-right: 0.5rem;
+     font-size: 0.9rem;
+   }
+   
+   .main-layout.profile-page .profile-form-section .form-control {
+     border: 2px solid var(--border-color);
+     border-radius: 12px;
+     padding: 0.75rem 1rem;
+     font-size: 1rem;
+     transition: all var(--transition-normal);
+     background: linear-gradient(135deg, var(--white) 0%, #fafafa 100%);
+   }
+   
+   .main-layout.profile-page .profile-form-section .form-control:focus {
+     border-color: var(--accent-color);
+     box-shadow: 0 0 0 3px rgba(204, 102, 89, 0.1);
+     background: var(--white);
+   }
+   
+   .main-layout.profile-page .profile-form-section .form-control:disabled {
+     background: linear-gradient(135deg, var(--light-bg) 0%, #e9ecef 100%);
+     border-color: #dee2e6;
+     opacity: 0.8;
+     cursor: not-allowed;
+   }
+   
+   .main-layout.profile-page .profile-form-section .form-text {
+     font-size: 0.85rem;
+     color: var(--text-muted);
+     margin-top: 0.5rem;
+     font-style: italic;
+   }
+   
+   .main-layout.profile-page .profile-btn-primary {
+     background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-dark) 100%);
+     border: none;
+     border-radius: 30px;
+     font-weight: 600;
+     font-size: 1.1rem;
+     padding: 1rem 2.5rem;
+     transition: all var(--transition-normal);
+     box-shadow: 0 4px 15px rgba(204, 102, 89, 0.3);
+     color: white;
+     text-transform: uppercase;
+     letter-spacing: 0.5px;
+   }
+   
+   .main-layout.profile-page .profile-btn-primary:hover:not(:disabled) {
+     background: linear-gradient(135deg, var(--primary-dark) 0%, #8b3f3a 100%);
+     transform: translateY(-2px);
+     box-shadow: 0 8px 25px rgba(204, 102, 89, 0.4);
+   }
+   
+   .main-layout.profile-page .profile-btn-primary:disabled {
+     opacity: 0.6;
+     cursor: not-allowed;
+     transform: none;
+     background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+   }
+   
+   /* 프로필 페이지 전용 헤더 액션 버튼 */
+   .main-layout.profile-page .universal-card-header .btn {
+     background: rgba(255, 255, 255, 0.2);
+     border: 2px solid rgba(255, 255, 255, 0.3);
+     color: var(--text-color);
+     border-radius: 20px;
+     padding: 0.5rem 1rem;
+     font-weight: 600;
+     font-size: 0.85rem;
+     transition: all var(--transition-fast);
+     backdrop-filter: blur(5px);
+   }
+   
+   .main-layout.profile-page .universal-card-header .btn:hover {
+     background: rgba(255, 255, 255, 0.3);
+     border-color: rgba(255, 255, 255, 0.5);
+     color: var(--text-color);
+     transform: translateY(-1px);
+     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+   }
+   
+   .main-layout.profile-page .universal-card-header .btn i {
+     background: none;
+     padding: 0;
+     margin-right: 0.4rem;
+     font-size: 0.85rem;
+   }
+   
+   /* ======================================================
+      다크모드 스타일 - 프로필 페이지 전용
+      ====================================================== */
+   
+   .dark-mode .main-layout.profile-page {
+     background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%);
+   }
+   
+   .dark-mode .main-layout.profile-page .universal-card {
+     background: linear-gradient(135deg, var(--white) 0%, #505050 100%);
+     border-color: var(--border-color);
+   }
+   
+   .dark-mode .main-layout.profile-page .universal-card:hover {
+     box-shadow: 0 12px 32px rgba(204, 102, 89, 0.3);
+     border-color: var(--accent-color);
+   }
+   
+   .dark-mode .main-layout.profile-page .universal-card-header {
+     background: linear-gradient(135deg, var(--primary-color) 0%, #664d4a 100%);
+   }
+   
+   .dark-mode .main-layout.profile-page .universal-card-header h5.card-title {
+     color: var(--text-color);
+   }
+   
+   .dark-mode .main-layout.profile-page .universal-card-content {
+     background: var(--white);
+   }
+   
+   .dark-mode .main-layout.profile-page .profile-main-title {
+     color: var(--text-color);
+   }
+   
+   .dark-mode .main-layout.profile-page .profile-subtitle {
+     color: var(--text-muted);
+   }
+   
+   .dark-mode .main-layout.profile-page .verification-badge.verified {
+     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+   }
+   
+   .dark-mode .main-layout.profile-page .verification-badge.not-verified {
+     background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+   }
+   
+   .dark-mode .main-layout.profile-page .interest-tag {
+     background: linear-gradient(135deg, var(--primary-color) 0%, #ffe0dc 100%);
+     color: var(--text-color);
+     border-color: var(--border-color);
+   }
+   
+   .dark-mode .main-layout.profile-page .interest-tag:hover {
+     background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-dark) 100%);
+     color: var(--white);
+   }
+   
+   .dark-mode .main-layout.profile-page .interests-empty {
+     background: linear-gradient(135deg, var(--white) 0%, #505050 100%);
+     color: var(--text-color);
+     border-color: var(--border-color);
+   }
+   
+   .dark-mode .main-layout.profile-page .interests-display {
+     background: linear-gradient(135deg, var(--white) 0%, #505050 100%);
+     border-color: var(--border-color);
+   }
+   
+   .dark-mode .main-layout.profile-page .profile-form-section .form-control {
+     background: linear-gradient(135deg, var(--white) 0%, #505050 100%);
+     border-color: var(--border-color);
+     color: var(--text-color);
+   }
+   
+   .dark-mode .main-layout.profile-page .profile-form-section .form-control:focus {
+     border-color: var(--accent-color);
+     background: var(--white);
+   }
+   
+   .dark-mode .main-layout.profile-page .profile-form-section .form-control:disabled {
+     background: linear-gradient(135deg, var(--white) 0%, #404040 100%);
+     border-color: var(--border-color);
+     color: var(--text-color);
+   }
+   
+   .dark-mode .main-layout.profile-page .profile-btn-primary {
+     background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-dark) 100%);
+     box-shadow: 0 4px 15px rgba(204, 102, 89, 0.4);
+   }
+   
+   .dark-mode .main-layout.profile-page .profile-btn-primary:hover:not(:disabled) {
+     background: linear-gradient(135deg, var(--primary-dark) 0%, #8b3f3a 100%);
+     box-shadow: 0 8px 25px rgba(204, 102, 89, 0.5);
+   }
+   
+   .dark-mode .main-layout.profile-page .universal-card-header .btn {
+     background: rgba(255, 255, 255, 0.1);
+     border-color: rgba(255, 255, 255, 0.2);
+     color: var(--text-color);
+   }
+   
+   .dark-mode .main-layout.profile-page .universal-card-header .btn:hover {
+     background: rgba(255, 255, 255, 0.2);
+     border-color: rgba(255, 255, 255, 0.3);
+     color: var(--text-color);
+   }
+   
+   /* ======================================================
+      반응형 스타일 - 프로필 페이지 전용
+      ====================================================== */
+   
+   @media (max-width: 1200px) {
+     .main-layout.profile-page .main-content {
+       padding: 1.5rem;
+     }
+   
+     .main-layout.profile-page .profile-container {
+       max-width: 900px;
+     }
+   }
+   
+   @media (max-width: 992px) {
+     .main-layout.profile-page .profile-main-title {
+       font-size: 2.5rem;
+     }
+   
+     .main-layout.profile-page .profile-subtitle {
+       font-size: 1.1rem;
+     }
+   
+     .main-layout.profile-page .email-verification-card-compact .universal-card-content {
+       padding: 0.75rem 1rem;
+     }
+   }
+   
+   @media (max-width: 768px) {
+     .main-layout.profile-page .main-content {
+       padding: 1rem;
+     }
+   
+     .main-layout.profile-page .profile-header-section {
+       padding: 1.5rem 0;
+     }
+   
+     .main-layout.profile-page .profile-main-title {
+       font-size: 2rem;
+     }
+   
+     .main-layout.profile-page .profile-subtitle {
+       font-size: 1rem;
+     }
+   
+     .main-layout.profile-page .interests-display {
+       gap: 0.4rem;
+     }
+   
+     .main-layout.profile-page .interest-tag {
+       padding: 0.3rem 0.6rem;
+       font-size: 0.85rem;
+     }
+   
+     .main-layout.profile-page .verification-badge {
+       font-size: 0.8rem;
+       padding: 0.2rem 0.4rem;
+     }
+   }
+   
+   @media (max-width: 480px) {
+     .main-layout.profile-page .profile-main-title {
+       font-size: 1.8rem;
+     }
+   
+     .main-layout.profile-page .email-verification-status {
+       flex-direction: column;
+       gap: 0.5rem;
+       align-items: flex-start;
+     }
+   
+     .main-layout.profile-page .interests-display {
+       gap: 0.3rem;
+     }
+   
+     .main-layout.profile-page .interest-tag {
+       padding: 0.25rem 0.5rem;
+       font-size: 0.8rem;
+     }
+   
+     .main-layout.profile-page .profile-btn-primary {
+       width: 100%;
+       padding: 0.8rem 1.5rem;
+     }
+   }

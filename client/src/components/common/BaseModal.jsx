@@ -2,10 +2,7 @@ import { useState } from "react";
 import { Modal, Button, Alert, Spinner, Form } from "react-bootstrap";
 import { useDarkMode } from "../../contexts/DarkModeContext";
 
-/**
- * 통합 모달 컴포넌트 - 모든 모달을 하나로 통합
- * JoinRequestModal, LeaveGroupModal, DeleteGroupModal 등을 대체
- */
+// 통합 모달 컴포넌트 - 모든 모달을 하나로 통합
 const BaseModal = ({
   // 기본 모달 속성
   show,
@@ -283,13 +280,9 @@ const BaseModal = ({
   );
 };
 
-// ======================================================================
 // 자주 사용되는 모달 프리셋들
-// ======================================================================
 
-/**
- * 확인 모달 - 간단한 예/아니오 확인용
- */
+// 확인 모달: 간단한 예/아니오 확인용
 export const ConfirmModal = (props) => (
   <BaseModal
     headerVariant="warning"
@@ -309,9 +302,7 @@ export const ConfirmModal = (props) => (
   />
 );
 
-/**
- * 삭제 확인 모달 - 삭제 작업 시 사용
- */
+// 삭제 확인 모달: 삭제 작업 시 사용
 export const DeleteModal = (props) => (
   <BaseModal
     headerVariant="danger"
@@ -334,9 +325,7 @@ export const DeleteModal = (props) => (
   />
 );
 
-/**
- * 정보 모달 - 단순 정보 표시용
- */
+// 정보 모달 단순 정보 표시
 export const InfoModal = (props) => (
   <BaseModal
     headerVariant="info"
@@ -346,9 +335,7 @@ export const InfoModal = (props) => (
   />
 );
 
-/**
- * 폼 모달 - 폼 입력이 있는 모달
- */
+// 폼 모달 - 폼 입력이 있는 모달
 export const FormModal = (props) => (
   <BaseModal
     primaryButton={{
@@ -367,9 +354,7 @@ export const FormModal = (props) => (
   />
 );
 
-/**
- * 경고 모달 - 중요한 경고 메시지용
- */
+// 경고 모달 - 중요한 경고 메시지용
 export const WarningModal = (props) => (
   <BaseModal
     headerVariant="warning"
@@ -389,9 +374,7 @@ export const WarningModal = (props) => (
   />
 );
 
-/**
- * 성공 모달 - 성공 메시지 표시용
- */
+// 성공 모달 - 성공 메시지 표시용
 export const SuccessModal = (props) => (
   <BaseModal
     headerVariant="success"

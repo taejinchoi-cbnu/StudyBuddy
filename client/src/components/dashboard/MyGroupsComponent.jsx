@@ -5,7 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useDarkMode } from "../../contexts/DarkModeContext";
 import UniversalCard from "../common/UniversalCard";
 
-// 그룹 카드 메모이제이션 - 불필요한 리렌더링 방지
+// 그룹 카드 메모이제이션
 const GroupCard = memo(({ group, onClick }) => {
   const { darkMode } = useDarkMode();
   
@@ -43,7 +43,7 @@ const MyGroupsComponent = memo(({ userGroups = [], onDataChange }) => {
   const { darkMode } = useDarkMode();
   const navigate = useNavigate();
   
-  // 그룹 페이지로 이동 - useCallback으로 메모이제이션
+  // 그룹 페이지로 이동
   const handleGroupClick = useCallback((groupId) => {
     navigate(`/groups/${groupId}`);
   }, [navigate]);

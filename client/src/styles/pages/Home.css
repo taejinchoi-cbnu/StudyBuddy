@@ -17,13 +17,6 @@
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
-/* 네비게이션 바 그리드 영역 */
-.transparent-navbar-wrapper {
-  grid-row: 1;
-  position: relative;
-  z-index: 10;
-}
-
 /* 메인 컨텐츠 그리드 영역 */
 .main-content {
   grid-row: 1 / -1;

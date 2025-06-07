@@ -149,7 +149,6 @@ const CreateGroupForm = () => {
   
   return (
     <div className="page-container">
-      {/* 네비게이션바 높이만큼 추가하는 여백 */}
       <div className="navbar-spacer"></div>
     
       <div className="create-group-container">

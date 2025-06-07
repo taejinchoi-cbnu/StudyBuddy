@@ -1,4 +1,3 @@
-// src/components/dashboard/GroupRequestsComponent.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge, Alert, Spinner, Button } from "react-bootstrap";

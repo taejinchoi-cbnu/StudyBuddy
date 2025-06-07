@@ -1,7 +1,6 @@
-// src/components/dashboard/UpcomingEventsComponent.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ListGroup, Badge, Alert, Spinner, Button } from "react-bootstrap";
+import { Badge, Alert, Spinner, Button } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { useDarkMode } from "../../contexts/DarkModeContext";
 
