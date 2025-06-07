@@ -10,7 +10,7 @@
      display: flex;
      flex-direction: column;
      min-height: 100vh;
-     background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%);
+     background: var(--light-bg);
      color: var(--text-color);
      transition: background-color var(--transition-normal), color var(--transition-normal);
    }
@@ -62,7 +62,7 @@
    
    /* 프로필 페이지 전용 카드 스타일 */
    .main-layout.profile-page .universal-card {
-     background: linear-gradient(135deg, var(--white) 0%, #fefefe 100%);
+     background: #fefefe;
      border: 2px solid var(--border-color);
      border-radius: 16px;
      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
@@ -78,7 +78,7 @@
    
    /* 프로필 페이지 전용 카드 헤더 */
    .main-layout.profile-page .universal-card-header {
-     background: linear-gradient(135deg, var(--primary-color) 0%, #ffe8e4 100%);
+     background: #ffe8e4;
      padding: 1.5rem 1.5rem 1.25rem 1.5rem;
      border-bottom: 2px solid var(--accent-color);
      display: flex;
@@ -184,7 +184,7 @@
      display: inline-flex;
      align-items: center;
      padding: 0.6rem 1rem;
-     background: linear-gradient(135deg, var(--primary-color) 0%, #ffe0dc 100%);
+     background: l#ffe0dc;
      color: var(--text-color);
      border-radius: 25px;
      font-size: 0.9rem;
@@ -196,7 +196,7 @@
    }
    
    .main-layout.profile-page .interest-tag:hover {
-     background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-dark) 100%);
+     background: var(--accent-color);
      color: var(--white);
      transform: translateY(-2px) scale(1.05);
      box-shadow: 0 6px 16px rgba(204, 102, 89, 0.3);
@@ -205,7 +205,6 @@
    .main-layout.profile-page .interest-tag.disabled {
      cursor: default;
      opacity: 0.7;
-     background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
      color: var(--text-muted);
      border-color: #dee2e6;
    }
@@ -223,12 +222,12 @@
      opacity: 0.8;
      padding: 0.2rem;
      border-radius: 50%;
-     background: rgba(255, 255, 255, 0.2);
+     background: transparent;
      transition: all var(--transition-fast);
    }
    
    .main-layout.profile-page .interest-tag:hover .remove-icon {
-     background: rgba(255, 255, 255, 0.3);
+     background: transparent;
      opacity: 1;
    }
    
@@ -286,7 +285,6 @@
      padding: 0.75rem 1rem;
      font-size: 1rem;
      transition: all var(--transition-normal);
-     background: linear-gradient(135deg, var(--white) 0%, #fafafa 100%);
    }
    
    .main-layout.profile-page .profile-form-section .form-control:focus {
@@ -296,7 +294,6 @@
    }
    
    .main-layout.profile-page .profile-form-section .form-control:disabled {
-     background: linear-gradient(135deg, var(--light-bg) 0%, #e9ecef 100%);
      border-color: #dee2e6;
      opacity: 0.8;
      cursor: not-allowed;
@@ -310,7 +307,7 @@
    }
    
    .main-layout.profile-page .profile-btn-primary {
-     background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-dark) 100%);
+     background: var(--accent-color);
      border: none;
      border-radius: 30px;
      font-weight: 600;
@@ -324,7 +321,7 @@
    }
    
    .main-layout.profile-page .profile-btn-primary:hover:not(:disabled) {
-     background: linear-gradient(135deg, var(--primary-dark) 0%, #8b3f3a 100%);
+     background: var(--primary-dark);
      transform: translateY(-2px);
      box-shadow: 0 8px 25px rgba(204, 102, 89, 0.4);
    }
@@ -333,7 +330,7 @@
      opacity: 0.6;
      cursor: not-allowed;
      transform: none;
-     background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+     background:#6c757d;
      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
    }
    
