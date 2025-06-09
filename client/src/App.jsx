@@ -34,6 +34,31 @@ const ProtectedElement = ({ children }) => {
   return currentUser ? children : <Navigate to="/login" />;
 };
 
+// 이메일 인증 확인이 필요한 라우트 보호 컴포넌트
+const CertifiedElement = ({ children }) => {
+  const { currentUser, userProfile, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="d-flex justify-content-center mt-5">
+      <div className="spinner-border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>;
+  }
+  
+  if (!currentUser) {
+    return <Navigate to="/" />;
+  }
+  
+  // 이메일이 인증되지 않은 경우 프로필 페이지로 리다이렉트
+  if (!userProfile?.certified_email) {
+    alert('이메일 인증을 먼저 완료해주세요.');
+    return <Navigate to="/profile" />;
+  }
+  
+  return children;
+};
+
 // NavBar 렌더링을 위한 래퍼 컴포넌트
 const AppWithNavbar = () => {
   const location = useLocation();
@@ -50,9 +75,9 @@ const AppWithNavbar = () => {
         <Route 
           path="/dashboard" 
           element={
-            <ProtectedElement>
+            <CertifiedElement>
               <DashboardPage />
-            </ProtectedElement>
+            </CertifiedElement>
           } 
         />
         
@@ -69,36 +94,36 @@ const AppWithNavbar = () => {
         <Route 
           path="/groups" 
           element={
-            <ProtectedElement>
+            <CertifiedElement>
               <GroupsPage />
-            </ProtectedElement>
+            </CertifiedElement>
           } 
         />
         
         <Route 
           path="/groups/create" 
           element={
-            <ProtectedElement>
+            <CertifiedElement>
               <CreateGroupPage />
-            </ProtectedElement>
+            </CertifiedElement>
           } 
         />
         
         <Route 
           path="/groups/:groupId" 
           element={
-            <ProtectedElement>
+            <CertifiedElement>
               <GroupDetailPage />
-            </ProtectedElement>
+            </CertifiedElement>
           } 
         />
         
         <Route 
           path="/schedule" 
           element={
-            <ProtectedElement>
+            <CertifiedElement>
               <SchedulePage />
-            </ProtectedElement>
+            </CertifiedElement>
           } 
         />
         

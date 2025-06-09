@@ -6,7 +6,6 @@ import { useDarkMode } from "../contexts/DarkModeContext";
 import LoadingSpinner from "./LoadingSpinner"; 
 import logoSmall from "../assets/logoSmall.png";
 import logoLogin from "../assets/logoLogin.png";
-import EmailVerificationService from "../utils/EmailVerificationService";
 import useNotification from "../hooks/useNotification";
 const AppNavbar = forwardRef((props, ref) => {
   // 컨텍스트 및 훅
@@ -173,45 +172,31 @@ const AppNavbar = forwardRef((props, ref) => {
       clearAll();
       setIsProcessing(true);
       
-      // 1. 이메일 유효성 확인
-      let verificationResponse;
-      try {
-        verificationResponse = await EmailVerificationService.verifyEmail(email);
-        
-        if (!verificationResponse.success) {
-          throw new Error(verificationResponse.message || "유효하지 않은 이메일입니다.");
-        }
-      } catch (verificationError) {
-        console.error("이메일 확인 요청 오류:", verificationError);
-        showError("이메일 확인 요청에 실패했습니다: " + verificationError.message);
-        return;
-      }
-      
-      // 2. 계정 생성
+      // 계정 생성 (이메일 인증 제거)
       try {
         await signup(
           email,
           password,
           displayName,
-          true,
-          verificationResponse.certified_date || new Date().toISOString()
+          false, // 기본적으로 인증되지 않은 상태
+          null   // 인증 날짜 없음
         );
         
-        showSuccess("회원가입이 완료되었습니다.");
+        showSuccess("회원가입이 완료되었습니다. 프로필에서 이메일 인증을 완료해주세요.");
         
         setTimeout(() => {
           closeModal("signup");
-          navigate("/dashboard");
+          navigate("/profile"); // 프로필 페이지로 리다이렉트
         }, 1500);
       } catch (signupError) {
         console.error("계정 생성 중 오류:", signupError);
         
         // currentUser가 이미 설정되어 있으면 성공으로 처리
         if (currentUser) {
-          showSuccess("회원가입이 완료되었습니다.");
+          showSuccess("회원가입이 완료되었습니다. 프로필에서 이메일 인증을 완료해주세요.");
           setTimeout(() => {
             closeModal("signup");
-            navigate("/dashboard");
+            navigate("/profile");
           }, 1500);
         } else {
           showError("계정 생성 중 오류가 발생했습니다: " + (signupError.message || "알 수 없는 오류"));

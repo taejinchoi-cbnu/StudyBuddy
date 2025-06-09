@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // API 기본 URL 설정
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:3000';
 
 const EmailVerificationService = {
   /**

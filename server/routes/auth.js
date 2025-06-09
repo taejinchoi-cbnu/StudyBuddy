@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
+const { admin, firestore } = require('../config/firebase');
 
 // 기존 도메인 검증 함수
 const isValidChungbukEmail = (email) => {
@@ -176,6 +177,352 @@ router.post('/check-status', async (req, res) => {
     return res.status(500).json({
       success: false,
       message: '서버 내부 오류가 발생했습니다. 관리자에게 문의해주세요.'
+    });
+  }
+});
+
+// Firebase 토큰 검증 미들웨어
+const verifyFirebaseToken = async (req, res, next) => {
+  try {
+    console.log('토큰 검증 시작...');
+    const authHeader = req.headers.authorization;
+    console.log('Authorization 헤더:', authHeader ? authHeader.substring(0, 20) + '...' : 'None');
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('토큰 헤더가 없거나 잘못된 형식');
+      return res.status(401).json({
+        success: false,
+        message: '인증 토큰이 필요합니다.'
+      });
+    }
+
+    const token = authHeader.substring(7);
+    console.log('토큰 길이:', token.length);
+    console.log('Firebase admin 토큰 검증 시도...');
+    
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    console.log('토큰 검증 성공, UID:', decodedToken.uid);
+    
+    req.user = decodedToken;
+    next();
+  } catch (error) {
+    console.error('토큰 검증 오류 상세:', error);
+    console.error('토큰 검증 에러 스택:', error.stack);
+    return res.status(401).json({
+      success: false,
+      message: '유효하지 않은 토큰입니다.',
+      error: error.message
+    });
+  }
+};
+
+// 회원가입 서버 인증 API
+router.post('/register', verifyFirebaseToken, async (req, res) => {
+  try {
+    console.log('[회원가입 서버 인증] 시작');
+    console.log('[회원가입 서버 인증] 요청 본문:', req.body);
+    console.log('[회원가입 서버 인증] 인증된 사용자 정보:', req.user);
+
+    // req.body가 undefined인 경우 Firebase 토큰에서 정보 추출
+    let email, displayName, verified, certifiedDate;
+    if (req.body && typeof req.body === 'object') {
+      email = req.body.email;
+      displayName = req.body.displayName;
+      verified = req.body.verified;
+      certifiedDate = req.body.certified_date;
+    } else {
+      console.log('[회원가입 서버 인증] req.body가 undefined, Firebase 토큰에서 정보 추출');
+      email = req.user.email;
+      displayName = req.user.name || req.user.displayName || '';
+      verified = false;
+      certifiedDate = null;
+    }
+    
+    const uid = req.user.uid;
+
+    console.log(`[회원가입 서버 인증] UID: ${uid}, 이메일: ${email}, 이름: ${displayName}`);
+
+    // 이미 등록된 사용자인지 확인
+    console.log('[회원가입 서버 인증] Firestore에서 기존 사용자 확인 중...');
+    const userDoc = await firestore.collection('users').doc(uid).get();
+    
+    if (userDoc.exists) {
+      console.log(`[회원가입 서버 인증] 이미 등록된 사용자: ${uid}`);
+      return res.status(200).json({
+        success: true,
+        message: '이미 등록된 사용자입니다.',
+        user: userDoc.data()
+      });
+    }
+
+    console.log('[회원가입 서버 인증] 새 사용자, 계속 진행...');
+
+    // 충북대 이메일 검증
+    console.log('[회원가입 서버 인증] 이메일 도메인 검증:', email);
+    if (!isValidChungbukEmail(email)) {
+      console.log('[회원가입 서버 인증] 잘못된 이메일 도메인');
+      return res.status(400).json({
+        success: false,
+        message: '충북대학교 이메일만 가입 가능합니다.'
+      });
+    }
+
+    // 회원가입 시 항상 인증되지 않은 상태로 시작
+    console.log('[회원가입 서버 인증] 기본 인증 상태 설정 (false)');
+    const certificationData = { certified_email: false, certified_date: null };
+
+    // 사용자 정보를 Firestore에 저장
+    console.log('[회원가입 서버 인증] Firestore에 사용자 정보 저장 중...');
+    const currentTime = new Date().toISOString();
+    const userData = {
+      uid: uid,
+      email: email,
+      displayName: displayName || '',
+      department: '',
+      interests: [],
+      groups: [],
+      certified_email: certificationData.certified_email,
+      certified_date: certificationData.certified_date,
+      createdAt: currentTime,
+      lastLoginAt: currentTime
+    };
+
+    console.log('[회원가입 서버 인증] 저장할 사용자 데이터:', userData);
+    
+    try {
+      await firestore.collection('users').doc(uid).set(userData);
+      console.log('[회원가입 서버 인증] Firestore 저장 완료');
+    } catch (firestoreError) {
+      console.error('[회원가입 서버 인증] Firestore 저장 실패:', firestoreError);
+      throw firestoreError;
+    }
+
+    console.log(`[회원가입 서버 인증] 사용자 등록 완료: ${uid}`);
+    res.status(201).json({
+      success: true,
+      message: '회원가입이 완료되었습니다.',
+      user: userData
+    });
+
+  } catch (error) {
+    console.error('[회원가입 서버 인증] 오류 상세:', error);
+    console.error('[회원가입 서버 인증] 에러 스택:', error.stack);
+    console.error('[회원가입 서버 인증] 에러 메시지:', error.message);
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다.',
+      error: error.message
+    });
+  }
+});
+
+// 로그인 서버 인증 API
+router.post('/login', verifyFirebaseToken, async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    const email = req.user.email;
+
+    console.log(`[로그인 서버 인증] UID: ${uid}, 이메일: ${email}`);
+
+    // Firestore에서 사용자 정보 조회
+    const userDoc = await firestore.collection('users').doc(uid).get();
+    
+    if (!userDoc.exists) {
+      console.log(`[로그인 서버 인증] 등록되지 않은 사용자: ${uid}`);
+      return res.status(404).json({
+        success: false,
+        message: '등록되지 않은 사용자입니다. 회원가입을 먼저 진행해주세요.'
+      });
+    }
+
+    const userData = userDoc.data();
+
+    // 마지막 로그인 시간 업데이트
+    await firestore.collection('users').doc(uid).update({
+      lastLoginAt: new Date().toISOString()
+    });
+
+    console.log(`[로그인 서버 인증] 로그인 성공: ${uid}`);
+    res.status(200).json({
+      success: true,
+      message: '로그인이 완료되었습니다.',
+      user: {
+        ...userData,
+        lastLoginAt: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('로그인 서버 인증 오류 상세:', error);
+    console.error('로그인 에러 스택:', error.stack);
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다.',
+      error: error.message
+    });
+  }
+});
+
+// 사용자 프로필 조회 API
+router.get('/profile', verifyFirebaseToken, async (req, res) => {
+  try {
+    const uid = req.user.uid;
+
+    console.log(`[프로필 조회] UID: ${uid}`);
+
+    const userDoc = await firestore.collection('users').doc(uid).get();
+    
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: '사용자 프로필을 찾을 수 없습니다.'
+      });
+    }
+
+    const userData = userDoc.data();
+    res.status(200).json({
+      success: true,
+      user: userData
+    });
+
+  } catch (error) {
+    console.error('프로필 조회 오류:', error);
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다.'
+    });
+  }
+});
+
+// 사용자 프로필 업데이트 API
+router.put('/profile', verifyFirebaseToken, async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    const updateData = req.body;
+
+    console.log(`[프로필 업데이트] UID: ${uid}, 데이터:`, updateData);
+
+    // 보안상 중요한 필드는 업데이트에서 제외
+    const allowedFields = ['displayName', 'department', 'interests'];
+    const filteredData = {};
+    
+    allowedFields.forEach(field => {
+      if (updateData[field] !== undefined) {
+        filteredData[field] = updateData[field];
+      }
+    });
+
+    if (Object.keys(filteredData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: '업데이트할 데이터가 없습니다.'
+      });
+    }
+
+    // 업데이트 시간 추가
+    filteredData.updatedAt = new Date().toISOString();
+
+    await firestore.collection('users').doc(uid).update(filteredData);
+
+    console.log(`[프로필 업데이트] 업데이트 완료: ${uid}`);
+    res.status(200).json({
+      success: true,
+      message: '프로필이 업데이트되었습니다.',
+      updatedFields: Object.keys(filteredData)
+    });
+
+  } catch (error) {
+    console.error('프로필 업데이트 오류:', error);
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다.'
+    });
+  }
+});
+
+// 로그아웃 API (토큰 무효화)
+router.post('/logout', verifyFirebaseToken, async (req, res) => {
+  try {
+    const uid = req.user.uid;
+
+    console.log(`[로그아웃] UID: ${uid}`);
+
+    // Firebase Admin SDK를 통해 사용자의 모든 토큰 무효화
+    await admin.auth().revokeRefreshTokens(uid);
+
+    res.status(200).json({
+      success: true,
+      message: '로그아웃이 완료되었습니다.'
+    });
+
+  } catch (error) {
+    console.error('로그아웃 오류:', error);
+    res.status(500).json({
+      success: false,
+      message: '로그아웃 중 오류가 발생했습니다.'
+    });
+  }
+});
+
+// 이메일 인증 상태 업데이트 API
+router.post('/update-email-certification', verifyFirebaseToken, async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    const email = req.user.email;
+
+    console.log(`[이메일 인증 업데이트] UID: ${uid}, 이메일: ${email}`);
+
+    // UnivCert API로 현재 인증 상태 확인
+    let certificationData = { certified_email: false, certified_date: null };
+    
+    try {
+      const checkResponse = await axios.post('https://univcert.com/api/v1/status', {
+        key: process.env.UNIVCERT_API_KEY,
+        email: email
+      });
+      
+      console.log('[이메일 인증 업데이트] UnivCert API 응답:', checkResponse.data);
+      
+      if (checkResponse.data.success) {
+        certificationData = {
+          certified_email: true,
+          certified_date: checkResponse.data.certified_date || new Date().toISOString()
+        };
+        console.log('[이메일 인증 업데이트] 인증 성공:', certificationData);
+      } else {
+        console.log('[이메일 인증 업데이트] 인증되지 않음');
+      }
+    } catch (verifyError) {
+      console.error('[이메일 인증 업데이트] API 호출 실패:', verifyError.response?.data || verifyError.message);
+      return res.status(400).json({
+        success: false,
+        message: '이메일 인증 상태 확인에 실패했습니다.'
+      });
+    }
+
+    // Firestore에서 사용자 인증 상태 업데이트
+    const updateData = {
+      certified_email: certificationData.certified_email,
+      certified_date: certificationData.certified_date,
+      updatedAt: new Date().toISOString()
+    };
+
+    await firestore.collection('users').doc(uid).update(updateData);
+
+    console.log(`[이메일 인증 업데이트] 업데이트 완료: ${uid}`, updateData);
+    
+    res.status(200).json({
+      success: true,
+      message: '이메일 인증 상태가 업데이트되었습니다.',
+      certified_email: certificationData.certified_email,
+      certified_date: certificationData.certified_date
+    });
+
+  } catch (error) {
+    console.error('[이메일 인증 업데이트] 오류:', error);
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다.'
     });
   }
 });

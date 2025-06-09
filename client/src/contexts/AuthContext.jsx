@@ -10,6 +10,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import useUIState from '../hooks/useUIState';
+import ServerApi from '../utils/ServerApi';
 
 const AuthContext = createContext();
 
@@ -37,7 +38,7 @@ export function AuthProvider({ children }) {
     try {
       setLoading(true);
       
-      // Firebase 인증
+      // 1. Firebase 인증
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
@@ -45,8 +46,26 @@ export function AuthProvider({ children }) {
         throw new Error("사용자 계정 생성에 실패했습니다.");
       }
       
+      // 2. 서버 등록 (선택적)
+      try {
+        const token = await user.getIdToken();
+        console.log('[회원가입] 서버 등록 시도 중...');
+        
+        const serverResponse = await ServerApi.registerUser(token, {
+          email: email,
+          displayName: displayName,
+          verified: false, // 항상 false로 설정
+          certified_date: null // 항상 null로 설정
+        });
+        console.log('[회원가입] 서버 등록 성공:', serverResponse);
+      } catch (serverError) {
+        console.error('[회원가입] 서버 등록 실패 (무시됨):', serverError);
+        console.log('[회원가입] Firebase 가입은 성공했으므로 계속 진행합니다.');
+        // 서버 등록 실패해도 Firebase 가입은 성공했으므로 계속 진행
+        // 사용자는 나중에 로그인할 때 서버에 등록될 수 있음
+      }
       
-      // Firestore에 사용자 프로필 문서 생성
+      // 3. Firestore에 사용자 프로필 문서 생성 (백업용)
       try {
         await setDoc(doc(firestore, 'users', user.uid), {
           uid: user.uid,
@@ -55,8 +74,8 @@ export function AuthProvider({ children }) {
           department: "",
           interests: [],
           groups: [],
-          certified_email: true,  // 항상 true로 설정
-          certified_date: certifiedDate || new Date().toISOString(),
+          certified_email: false, // 항상 false로 설정
+          certified_date: null, // 항상 null로 설정
           createdAt: serverTimestamp()
         });
       } catch (firestoreError) {
@@ -77,7 +96,35 @@ export function AuthProvider({ children }) {
   async function login(email, password) {
     try {
       return await ui.startLoading("isLoggingIn", async () => {
-        return await signInWithEmailAndPassword(auth, email, password);
+        // 1. Firebase 인증
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        
+        // 2. 서버 인증
+        try {
+          const token = await userCredential.user.getIdToken();
+          const serverResponse = await ServerApi.loginUser(token);
+          console.log('[로그인] 서버 인증 성공:', serverResponse);
+        } catch (serverError) {
+          console.error('[로그인] 서버 인증 실패:', serverError);
+          
+          // 만약 404 에러 (사용자 없음)라면 서버에 등록 시도
+          if (serverError.message && serverError.message.includes('등록되지 않은 사용자')) {
+            try {
+              console.log('[로그인] 서버에 사용자 등록 시도...');
+              const token = await userCredential.user.getIdToken();
+              await ServerApi.registerUser(token, {
+                email: userCredential.user.email,
+                displayName: userCredential.user.displayName || ''
+              });
+              console.log('[로그인] 서버 등록 성공');
+            } catch (registerError) {
+              console.error('[로그인] 서버 등록 실패:', registerError);
+            }
+          }
+          // 서버 인증 실패해도 Firebase 인증이 성공했으면 계속 진행
+        }
+        
+        return userCredential;
       });
     } catch (error) {
       console.error("로그인 오류:", error);
@@ -89,6 +136,19 @@ export function AuthProvider({ children }) {
   async function logout() {
     try {
       await ui.startLoading("isLoggingOut", async () => {
+        // 1. 서버 로그아웃 (토큰 무효화)
+        try {
+          if (currentUser) {
+            const token = await currentUser.getIdToken();
+            await ServerApi.logoutUser(token);
+            console.log('[로그아웃] 서버 로그아웃 성공');
+          }
+        } catch (serverError) {
+          console.error('[로그아웃] 서버 로그아웃 실패:', serverError);
+          // 서버 로그아웃 실패해도 Firebase 로그아웃은 계속 진행
+        }
+        
+        // 2. Firebase 로그아웃
         await signOut(auth);
       });
     } catch (error) {
@@ -118,12 +178,12 @@ export function AuthProvider({ children }) {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         
-        // 이메일 인증 필드가 없으면 기본값 추가
+        // 이메일 인증 필드가 없으면 기본값 추가 (false로 설정)
         if (userData.certified_email === undefined) {
-          userData.certified_email = true; // 기본값을 true로 변경
+          userData.certified_email = false; // 기본값을 false로 변경
         }
         if (userData.certified_date === undefined) {
-          userData.certified_date = userData.createdAt || new Date().toISOString();
+          userData.certified_date = null; // 기본값을 null로 변경
         }
         
         setUserProfile(userData);
@@ -140,8 +200,8 @@ export function AuthProvider({ children }) {
             department: "",
             interests: [],
             groups: [],
-            certified_email: true, // 기본값을 true로 변경
-            certified_date: new Date().toISOString(),
+            certified_email: false, // 기본값을 false로 변경
+            certified_date: null, // 기본값을 null로 변경
             createdAt: serverTimestamp()
           };
           
@@ -168,15 +228,33 @@ export function AuthProvider({ children }) {
       // Firebase Authentication 이메일 업데이트
       await firebaseUpdateEmail(auth.currentUser, newEmail);
       
-      // 충북대 이메일인지 확인
-      const isChungbukEmail = newEmail.endsWith('@chungbuk.ac.kr');
+      // 서버에서 이메일 인증 상태 확인 및 업데이트
+      let certificationData = { certified_email: false, certified_date: null };
+      try {
+        const token = await currentUser.getIdToken();
+        const certResponse = await ServerApi.updateEmailCertification(token);
+        if (certResponse.success) {
+          certificationData = {
+            certified_email: certResponse.certified_email,
+            certified_date: certResponse.certified_date
+          };
+        }
+      } catch (serverError) {
+        console.error('서버 인증 상태 업데이트 실패:', serverError);
+        // 충북대 이메일인지만 확인 (기본 로직)
+        const isChungbukEmail = newEmail.endsWith('@chungbuk.ac.kr');
+        certificationData = {
+          certified_email: isChungbukEmail,
+          certified_date: isChungbukEmail ? new Date().toISOString() : null
+        };
+      }
       
       // Firestore에 이메일 업데이트
       const userDocRef = doc(firestore, 'users', currentUser.uid);
       await setDoc(userDocRef, { 
         email: newEmail,
-        certified_email: isChungbukEmail, // 충북대 이메일이면 자동 인증
-        certified_date: isChungbukEmail ? new Date().toISOString() : null
+        certified_email: certificationData.certified_email,
+        certified_date: certificationData.certified_date
       }, { merge: true });
       console.log('Firestore 이메일 업데이트 성공');
       
@@ -184,13 +262,46 @@ export function AuthProvider({ children }) {
       setUserProfile(prev => ({
         ...prev,
         email: newEmail,
-        certified_email: isChungbukEmail,
-        certified_date: isChungbukEmail ? new Date().toISOString() : null
+        certified_email: certificationData.certified_email,
+        certified_date: certificationData.certified_date
       }));
       
       return true;
     } catch (error) {
       console.error('이메일 업데이트 오류:', error);
+      throw error;
+    }
+  }
+
+  // 이메일 인증 상태 업데이트 함수
+  async function updateEmailCertification() {
+    if (!currentUser) throw new Error('No authenticated user');
+    
+    try {
+      const token = await currentUser.getIdToken();
+      const response = await ServerApi.updateEmailCertification(token);
+      
+      if (response.success) {
+        // 프로필 상태 업데이트
+        setUserProfile(prev => ({
+          ...prev,
+          certified_email: response.certified_email,
+          certified_date: response.certified_date
+        }));
+        
+        // Firestore도 업데이트
+        const userDocRef = doc(firestore, 'users', currentUser.uid);
+        await setDoc(userDocRef, {
+          certified_email: response.certified_email,
+          certified_date: response.certified_date
+        }, { merge: true });
+        
+        return response;
+      }
+      
+      throw new Error(response.message || '인증 상태 업데이트 실패');
+    } catch (error) {
+      console.error('이메일 인증 상태 업데이트 오류:', error);
       throw error;
     }
   }
@@ -261,6 +372,7 @@ export function AuthProvider({ children }) {
     fetchUserProfile,
     updateUserProfile,
     updateEmail,
+    updateEmailCertification,
     authLoading: {
       signup: ui.isSigningUp,
       login: ui.isLoggingIn,
