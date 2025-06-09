@@ -13,6 +13,16 @@
 
 StudyBuddy는 React와 Firebase를 기반으로 한 모던 웹 애플리케이션으로, 학생들이 스터디 그룹을 쉽게 만들고 참여할 수 있도록 설계되었습니다. 직관적인 UI/UX와 실시간 데이터 동기화를 통해 효율적인 협업 환경을 제공합니다.
 
+## 📽️ 데모 및 결과물
+
+[여기에 데모 영상이나 스크린샷이 추가하기]
+<div align="cneter">
+  <video controls width="300" muted autoplay>
+    <source src="https://github.com/taejinchoi-cbnu/StudyBuddy/raw/main/docs/Videos/WelcomePage.mp4" type="video/mp4">
+  </video>
+</div>
+
+
 ## ✨ 주요 기능
 
 - **🏠 대시보드**: 개인화된 대시보드로 활동 현황 한눈에 파악
