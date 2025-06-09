@@ -32,12 +32,19 @@ export const saveGroupAppointment = async (groupId, appointmentData, userId) => 
       throw new Error('Permission denied: Not a group admin');
     }
     
+    // appointmentData에 타임스탬프와 생성자 정보 추가 (JavaScript Date 사용)
+    const appointmentWithMetadata = {
+      ...appointmentData,
+      createdAt: new Date().toISOString(),
+      createdBy: userId
+    };
+    
     // 그룹 문서 업데이트
     await updateDoc(doc(groupsCollection, groupId), {
-      appointments: arrayUnion(appointmentData)
+      appointments: arrayUnion(appointmentWithMetadata)
     });
     
-    return true;
+    return appointmentWithMetadata;
   } catch (error) {
     console.error('Error saving group appointment:', error);
     throw error;
@@ -71,6 +78,57 @@ export const deleteGroupAppointment = async (groupId, appointmentId, userId) => 
     return true;
   } catch (error) {
     console.error('Error deleting group appointment:', error);
+    throw error;
+  }
+};
+
+// 사용자의 가용성 데이터 저장 함수
+export const saveUserAvailability = async (groupId, userId, availabilityData) => {
+  try {
+    // 사용자가 그룹 멤버인지 확인
+    const memberDoc = await getDoc(doc(groupMembersCollection, `${groupId}_${userId}`));
+    if (!memberDoc.exists()) {
+      throw new Error('Not a member of this group');
+    }
+    
+    // 가용성 데이터 저장
+    const availabilityRef = doc(firestore, 'groupAvailability', `${groupId}_${userId}`);
+    await setDoc(availabilityRef, {
+      groupId,
+      userId,
+      unavailableTimes: availabilityData.unavailableTimes || [],
+      lastUpdated: serverTimestamp()
+    }, { merge: true });
+    
+    return true;
+  } catch (error) {
+    console.error('Error saving user availability:', error);
+    throw error;
+  }
+};
+
+// 그룹의 모든 가용성 데이터 가져오기 함수
+export const getGroupAvailability = async (groupId) => {
+  try {
+    const availabilityQuery = query(
+      collection(firestore, 'groupAvailability'),
+      where('groupId', '==', groupId)
+    );
+    
+    const querySnapshot = await getDocs(availabilityQuery);
+    const availabilityData = {};
+    
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      availabilityData[data.userId] = {
+        unavailableTimes: data.unavailableTimes || [],
+        lastUpdated: data.lastUpdated
+      };
+    });
+    
+    return availabilityData;
+  } catch (error) {
+    console.error('Error fetching group availability:', error);
     throw error;
   }
 };
@@ -505,6 +563,35 @@ export const deleteGroup = async (groupId, userId) => {
   }
 };
 
+// 사용자가 참여한 그룹의 모든 일정 가져오기 (SchedulePage용)
+export const getUserGroupAppointments = async (userId) => {
+  try {
+    // 사용자가 속한 그룹들 가져오기
+    const userGroups = await getUserGroups(userId);
+    
+    // 각 그룹의 일정들 수집
+    const allAppointments = [];
+    
+    for (const group of userGroups) {
+      if (group.appointments && Array.isArray(group.appointments)) {
+        group.appointments.forEach(appointment => {
+          allAppointments.push({
+            ...appointment,
+            groupId: group.id,
+            groupName: group.name,
+            isGroupEvent: true
+          });
+        });
+      }
+    }
+    
+    return allAppointments;
+  } catch (error) {
+    console.error('Error fetching user group appointments:', error);
+    throw error;
+  }
+};
+
 export default {
   createGroup,
   getGroupById,
@@ -520,5 +607,8 @@ export default {
   removeMember,
   deleteGroup,
   saveGroupAppointment,
-  deleteGroupAppointment
+  deleteGroupAppointment,
+  saveUserAvailability,
+  getGroupAvailability,
+  getUserGroupAppointments
 };

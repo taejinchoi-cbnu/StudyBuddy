@@ -1,22 +1,16 @@
-import { useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import { format } from "date-fns";
-import useUIState from "../../hooks/useUIState";
 
 const EventForm = ({ event, onSave, onDelete, onCancel }) => {
-  // useUIState로 통합 폼 상태 관리
-  const ui = useUIState({
-    // 폼 필드들
+  // 직접적인 상태 관리
+  const [formData, setFormData] = useState({
     title: "",
     start: "",
     end: "",
     description: "",
     isAllDay: false,
-    
-    // 에러 상태
     error: ""
-  }, {
-    showNotifications: true
   });
 
   // 수정 모드일 경우 폼 초기화
@@ -36,7 +30,7 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
         const startDate = format(new Date(event.start), "yyyy-MM-dd'T'HH:mm");
         const endDate = format(new Date(event.end), "yyyy-MM-dd'T'HH:mm");
         
-        ui.updateState({
+        setFormData({
           title,
           start: startDate,
           end: endDate,
@@ -52,7 +46,7 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
         const now = new Date();
         const oneHourLater = new Date(now.getTime() + (60 * 60 * 1000));
         
-        ui.updateState({
+        setFormData({
           title,
           start: format(now, "yyyy-MM-dd'T'HH:mm"),
           end: format(oneHourLater, "yyyy-MM-dd'T'HH:mm"),
@@ -67,7 +61,7 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
       const now = new Date();
       const oneHourLater = new Date(now.getTime() + (60 * 60 * 1000));
       
-      ui.updateState({
+      setFormData({
         title: "",
         start: format(now, "yyyy-MM-dd'T'HH:mm"),
         end: format(oneHourLater, "yyyy-MM-dd'T'HH:mm"),
@@ -76,7 +70,7 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
         error: ""
       });
     }
-  }, [event, ui]);
+  }, [event]);
   
   // 폼 제출 핸들러
   const handleSubmit = useCallback((e) => {
@@ -84,45 +78,45 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
     e.preventDefault();
     
     // 에러 초기화
-    ui.setValue("error", "");
+    setFormData(prev => ({ ...prev, error: "" }));
     
     // 유효성 검사
-    if (!ui.get("title").trim()) {
+    if (!formData.title.trim()) {
       console.log("🔍 제목 누락 오류");
-      ui.setValue("error", "제목을 입력해주세요.");
+      setFormData(prev => ({ ...prev, error: "제목을 입력해주세요." }));
       return;
     }
     
-    const startDate = new Date(ui.get("start"));
-    const endDate = new Date(ui.get("end"));
+    const startDate = new Date(formData.start);
+    const endDate = new Date(formData.end);
     
     console.log("🔍 날짜 유효성 검사", { startDate, endDate });
     
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       console.log("🔍 유효하지 않은 날짜");
-      ui.setValue("error", "유효한 날짜와 시간을 입력해주세요.");
+      setFormData(prev => ({ ...prev, error: "유효한 날짜와 시간을 입력해주세요." }));
       return;
     }
     
     if (startDate >= endDate) {
       console.log("🔍 시작 시간이 종료 시간보다 늦음");
-      ui.setValue("error", "종료 시간은 시작 시간보다 이후여야 합니다.");
+      setFormData(prev => ({ ...prev, error: "종료 시간은 시작 시간보다 이후여야 합니다." }));
       return;
     }
     
     // 이벤트 데이터 구성
     const eventData = {
       ...(event ? { id: event.id } : {}),
-      title: ui.get("title"),
+      title: formData.title,
       start: startDate,
       end: endDate,
-      description: ui.get("description"),
-      allDay: ui.get("isAllDay")
+      description: formData.description,
+      allDay: formData.isAllDay
     };
     
     console.log("🔍 이벤트 데이터 구성 완료:", eventData);
     onSave(eventData);
-  }, [event, onSave, ui]);
+  }, [event, onSave, formData]);
   
   // 삭제 핸들러
   const handleDelete = useCallback(() => {
@@ -135,9 +129,16 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
   // 취소 핸들러
   const handleCancel = useCallback(() => {
     console.log("🔍 취소 버튼 클릭");
-    ui.resetState();
+    setFormData({
+      title: "",
+      start: "",
+      end: "",
+      description: "",
+      isAllDay: false,
+      error: ""
+    });
     onCancel();
-  }, [onCancel, ui]);
+  }, [onCancel]);
   
   // 그룹 이벤트인지 확인
   const isGroupEvent = event?.isGroupEvent || false;
@@ -150,8 +151,8 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
       </div>
       <div className="card-body">
         {/* 에러 메시지 */}
-        {ui.get("error") && (
-          <Alert variant="danger">{ui.get("error")}</Alert>
+        {formData.error && (
+          <Alert variant="danger">{formData.error}</Alert>
         )}
         
         {/* 그룹 일정 안내 */}
@@ -168,10 +169,10 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
             <Form.Label>제목</Form.Label>
             <Form.Control
               type="text"
-              value={ui.get("title")}
+              value={formData.title}
               onChange={(e) => {
                 console.log("🔍 제목 변경:", e.target.value);
-                ui.setValue("title", e.target.value);
+                setFormData(prev => ({ ...prev, title: e.target.value }));
               }}
               disabled={isGroupEvent}
               required
@@ -183,10 +184,10 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
             <Form.Check
               type="checkbox"
               label="종일"
-              checked={ui.get("isAllDay")}
+              checked={formData.isAllDay}
               onChange={(e) => {
                 console.log("🔍 종일 설정 변경:", e.target.checked);
-                ui.setValue("isAllDay", e.target.checked);
+                setFormData(prev => ({ ...prev, isAllDay: e.target.checked }));
               }}
               disabled={isGroupEvent}
             />
@@ -196,11 +197,11 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
           <Form.Group className="mb-3">
             <Form.Label>시작 시간</Form.Label>
             <Form.Control
-              type={ui.get("isAllDay") ? "date" : "datetime-local"}
-              value={ui.get("start")}
+              type={formData.isAllDay ? "date" : "datetime-local"}
+              value={formData.start}
               onChange={(e) => {
                 console.log("🔍 시작 시간 변경:", e.target.value);
-                ui.setValue("start", e.target.value);
+                setFormData(prev => ({ ...prev, start: e.target.value }));
               }}
               disabled={isGroupEvent}
               required
@@ -211,11 +212,11 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
           <Form.Group className="mb-3">
             <Form.Label>종료 시간</Form.Label>
             <Form.Control
-              type={ui.get("isAllDay") ? "date" : "datetime-local"}
-              value={ui.get("end")}
+              type={formData.isAllDay ? "date" : "datetime-local"}
+              value={formData.end}
               onChange={(e) => {
                 console.log("🔍 종료 시간 변경:", e.target.value);
-                ui.setValue("end", e.target.value);
+                setFormData(prev => ({ ...prev, end: e.target.value }));
               }}
               disabled={isGroupEvent}
               required
@@ -228,10 +229,10 @@ const EventForm = ({ event, onSave, onDelete, onCancel }) => {
             <Form.Control
               as="textarea"
               rows={3}
-              value={ui.get("description")}
+              value={formData.description}
               onChange={(e) => {
                 console.log("🔍 설명 변경");
-                ui.setValue("description", e.target.value);
+                setFormData(prev => ({ ...prev, description: e.target.value }));
               }}
               disabled={isGroupEvent}
             />

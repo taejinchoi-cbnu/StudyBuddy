@@ -175,12 +175,7 @@ const SchedulePage = () => {
     clearMessages();
 
     try {
-      const newEventData = {
-        ...eventData,
-        userId: currentUser.uid
-      };
-
-      await addUserEvent(newEventData);
+      await addUserEvent(currentUser.uid, eventData);
       setSuccessMessage("일정이 성공적으로 추가되었습니다!");
       setShowEventForm(false);
       setSelectedEvent(null);
@@ -206,7 +201,7 @@ const SchedulePage = () => {
         return;
       }
 
-      await updateUserEvent(eventData);
+      await updateUserEvent(currentUser.uid, eventData);
       setSuccessMessage("일정이 성공적으로 업데이트되었습니다!");
       setShowEventForm(false);
       setSelectedEvent(null);
@@ -217,7 +212,7 @@ const SchedulePage = () => {
     } finally {
       setIsEventOperationLoading(false);
     }
-  }, [clearMessages, refetchUserEvents]);
+  }, [currentUser, clearMessages, refetchUserEvents]);
 
   // 일정 삭제 핸들러
   const handleDeleteEvent = useCallback(async (eventId) => {
@@ -233,7 +228,7 @@ const SchedulePage = () => {
         return;
       }
 
-      await deleteUserEvent(eventId);
+      await deleteUserEvent(currentUser.uid, eventId);
       setSuccessMessage("일정이 성공적으로 삭제되었습니다!");
       setShowEventForm(false);
       setSelectedEvent(null);
@@ -244,7 +239,7 @@ const SchedulePage = () => {
     } finally {
       setIsEventOperationLoading(false);
     }
-  }, [allEvents, clearMessages, refetchUserEvents]);
+  }, [currentUser, allEvents, clearMessages, refetchUserEvents]);
 
   // 일정 선택 핸들러
   const handleSelectEvent = useCallback((event) => {

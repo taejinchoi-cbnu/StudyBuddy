@@ -311,14 +311,12 @@ const GroupDetailPage = () => {
                       <div className="tab-pane-content schedule-tab">
                         <div className="schedule-header">
                           <h3>그룹 일정</h3>
-                          <div className="schedule-actions">
-                            <Button variant="primary">일정 추가</Button>
-                          </div>
                         </div>
                         <GroupScheduleComponent 
                           group={group} 
                           members={members}
                           currentUser={currentUser}
+                          onGroupUpdate={reloadGroupData}
                         />
                       </div>
                     </div>

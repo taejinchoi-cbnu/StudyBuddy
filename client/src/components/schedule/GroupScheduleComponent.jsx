@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, Container, Row, Col, Button, Alert, Table, ProgressBar } from 'react-bootstrap';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContext';
-import { getGroupById, saveGroupAppointment, deleteGroupAppointment } from '../../utils/GroupService';
+import { getGroupById, saveGroupAppointment, deleteGroupAppointment, saveUserAvailability, getGroupAvailability } from '../../utils/GroupService';
 import ScheduleManager from './ScheduleManager';
 import useLoading from '../../hooks/useLoading';
 
@@ -14,7 +14,7 @@ for (let hour = 9; hour <= 21; hour++) {
   TIME_SLOTS.push(`${formattedHour}:00`);
 }
 
-const GroupScheduleComponent = ({ group, members }) => {
+const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
   const { currentUser } = useAuth();
   const { darkMode } = useDarkMode();
   const [availabilityData, setAvailabilityData] = useState({});
@@ -63,87 +63,164 @@ const GroupScheduleComponent = ({ group, members }) => {
       setAppointments(group.appointments);
     }
     
-    // 멤버 데이터로 초기 가용성 데이터 구조 생성
+    // 저장된 가용성 데이터 로드
+    const loadAvailabilityData = async () => {
+      try {
+        // 데이터베이스에서 가용성 데이터 가져오기
+        const savedAvailability = await getGroupAvailability(group.id);
+        
+        // 초기 데이터 구조 생성
+        const initialData = {};
+        
+        members.forEach(member => {
+          const savedData = savedAvailability[member.userId];
+          initialData[member.userId] = {
+            name: member.displayName || '사용자',
+            unavailableTimes: savedData?.unavailableTimes || []
+          };
+        });
+        
+        setAvailabilityData(initialData);
+        console.log('가용성 데이터 로드 완료:', initialData);
+      } catch (error) {
+        console.error('가용성 데이터 로드 실패:', error);
+        // 오류 시 기본 데이터 구조만 생성
+        const initialData = {};
+        members.forEach(member => {
+          initialData[member.userId] = {
+            name: member.displayName || '사용자',
+            unavailableTimes: []
+          };
+        });
+        setAvailabilityData(initialData);
+      }
+    };
+    
     if (members.length > 0) {
-      const initialData = {};
-      
-      members.forEach(member => {
-        initialData[member.userId] = {
-          name: member.displayName || '사용자',
-          unavailableTimes: []
-        };
-      });
-      
-      setAvailabilityData(initialData);
+      loadAvailabilityData();
     }
   }, [currentUser, members, group]);
 
   // 불가능한 시간 추가
-  const addUnavailableTime = (userId, day, startTime, endTime) => {
+  const addUnavailableTime = async (userId, day, startTime, endTime) => {
     // 시간 형식 검증
     if (!day || !startTime || !endTime || startTime >= endTime) {
       setError('유효한 시간 범위를 선택해주세요.');
       return false;
     }
 
-    setAvailabilityData(prevData => {
-      // 기존 사용자 데이터가 없으면 초기화
-      if (!prevData[userId]) {
-        prevData[userId] = {
-          name: members.find(m => m.userId === userId)?.displayName || '사용자',
-          unavailableTimes: []
-        };
-      }
+    try {
+      startSaving();
 
-      // 중복 체크
-      const isDuplicate = prevData[userId].unavailableTimes.some(
-        time => time.day === day && time.start === startTime && time.end === endTime
-      );
-
-      if (isDuplicate) {
-        setError('이미 추가된 시간입니다.');
-        return prevData;
-      }
-
-      // 새 시간 추가
-      return {
-        ...prevData,
-        [userId]: {
-          ...prevData[userId],
-          unavailableTimes: [
-            ...prevData[userId].unavailableTimes,
-            { day, start: startTime, end: endTime }
-          ]
+      const newTime = { day, start: startTime, end: endTime };
+      
+      setAvailabilityData(prevData => {
+        // 기존 사용자 데이터가 없으면 초기화
+        if (!prevData[userId]) {
+          prevData[userId] = {
+            name: members.find(m => m.userId === userId)?.displayName || '사용자',
+            unavailableTimes: []
+          };
         }
-      };
-    });
-    
-    // 추가 성공
-    setError('');
-    setSuccess('불가능한 시간이 추가되었습니다.');
-    return true;
+
+        // 중복 체크
+        const isDuplicate = prevData[userId].unavailableTimes.some(
+          time => time.day === day && time.start === startTime && time.end === endTime
+        );
+
+        if (isDuplicate) {
+          setError('이미 추가된 시간입니다.');
+          return prevData;
+        }
+
+        // 새 시간 추가
+        const updatedData = {
+          ...prevData,
+          [userId]: {
+            ...prevData[userId],
+            unavailableTimes: [
+              ...prevData[userId].unavailableTimes,
+              newTime
+            ]
+          }
+        };
+
+        // 데이터베이스에 저장
+        saveUserAvailability(group.id, userId, updatedData[userId])
+          .then(() => {
+            console.log('가용성 데이터 저장 성공');
+          })
+          .catch(error => {
+            console.error('가용성 데이터 저장 실패:', error);
+            setError('시간 저장 중 오류가 발생했습니다.');
+          });
+
+        return updatedData;
+      });
+      
+      // 추가 성공
+      setError('');
+      setSuccess('불가능한 시간이 추가되었습니다.');
+      return true;
+    } catch (error) {
+      console.error('시간 추가 실패:', error);
+      setError('시간 추가 중 오류가 발생했습니다.');
+      return false;
+    } finally {
+      // startSaving 완료를 비동기로 처리
+      setTimeout(() => {
+        if (typeof isSaving === 'function') {
+          // useLoading 훅의 stop 함수 호출
+        }
+      }, 500);
+    }
   };
 
   // 불가능한 시간 삭제
-  const removeUnavailableTime = (userId, index) => {
-    setAvailabilityData(prevData => {
-      if (!prevData[userId] || !prevData[userId].unavailableTimes[index]) {
-        return prevData;
-      }
+  const removeUnavailableTime = async (userId, index) => {
+    try {
+      startSaving();
 
-      const updatedTimes = [...prevData[userId].unavailableTimes];
-      updatedTimes.splice(index, 1);
-
-      return {
-        ...prevData,
-        [userId]: {
-          ...prevData[userId],
-          unavailableTimes: updatedTimes
+      setAvailabilityData(prevData => {
+        if (!prevData[userId] || !prevData[userId].unavailableTimes[index]) {
+          return prevData;
         }
-      };
-    });
-    
-    setSuccess('시간이 삭제되었습니다.');
+
+        const updatedTimes = [...prevData[userId].unavailableTimes];
+        updatedTimes.splice(index, 1);
+
+        const updatedData = {
+          ...prevData,
+          [userId]: {
+            ...prevData[userId],
+            unavailableTimes: updatedTimes
+          }
+        };
+
+        // 데이터베이스에 저장
+        saveUserAvailability(group.id, userId, updatedData[userId])
+          .then(() => {
+            console.log('가용성 데이터 삭제 저장 성공');
+          })
+          .catch(error => {
+            console.error('가용성 데이터 삭제 저장 실패:', error);
+            setError('시간 삭제 저장 중 오류가 발생했습니다.');
+          });
+
+        return updatedData;
+      });
+      
+      setSuccess('시간이 삭제되었습니다.');
+    } catch (error) {
+      console.error('시간 삭제 실패:', error);
+      setError('시간 삭제 중 오류가 발생했습니다.');
+    } finally {
+      setTimeout(() => {
+        if (typeof isSaving === 'function') {
+          // useLoading 훅의 stop 함수 호출
+        }
+      }, 500);
+    }
   };
 
   // 가능한 시간 계산
@@ -284,27 +361,46 @@ const GroupScheduleComponent = ({ group, members }) => {
       return;
     }
 
+    if (!currentUser) {
+      setError('사용자 정보가 없습니다.');
+      return;
+    }
+
     try {
       startSaving();
       
       if (action === 'delete') {
-        // 일정 삭제
-        await deleteGroupAppointment(group.id, appointmentData.id);
+        // 일정 삭제 - userId 파라미터 추가
+        await deleteGroupAppointment(group.id, appointmentData.id, currentUser.uid);
         setAppointments(prev => prev.filter(app => app.id !== appointmentData.id));
         setSuccess('일정이 삭제되었습니다.');
       } else {
-        // 일정 추가
-        const savedAppointment = await saveGroupAppointment(group.id, appointmentData);
+        // 일정 추가 - userId 파라미터 추가
+        const savedAppointment = await saveGroupAppointment(group.id, appointmentData, currentUser.uid);
         setAppointments(prev => [...prev, savedAppointment]);
         setSuccess('일정이 저장되었습니다.');
       }
+      
+      // 부모 컴포넌트에 업데이트 알림
+      if (onGroupUpdate) {
+        setTimeout(() => {
+          onGroupUpdate();
+        }, 500);
+      }
+      
     } catch (error) {
       console.error('일정 처리 오류:', error);
       if (action === 'delete') {
-        setError('일정 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+        setError('일정 삭제 중 오류가 발생했습니다: ' + error.message);
       } else {
-        setError('일정 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+        setError('일정 저장 중 오류가 발생했습니다: ' + error.message);
       }
+    } finally {
+      setTimeout(() => {
+        if (typeof isSaving === 'function') {
+          // useLoading 훅의 stop 함수 호출
+        }
+      }, 500);
     }
   };
 
