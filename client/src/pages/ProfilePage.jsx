@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Container, Row, Col, Alert, Button, Form, Badge, Dropdown, Spinner } from 'react-bootstrap';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -9,12 +8,8 @@ import useNotification from '../hooks/useNotification';
 import useLoading from '../hooks/useLoading';
 import UniversalCard from '../components/common/UniversalCard';
 
-// 모든 태그를 하나의 배열로 평탄화
-const ALL_TAGS = Object.values(GROUP_TAGS).flat();
-
 const ProfilePage = () => {
-  const { currentUser, userProfile, updateUserProfile, logout, authLoading, updateEmail } = useAuth();
-  const navigate = useNavigate();
+  const { currentUser, userProfile, updateUserProfile, authLoading, updateEmail, updateEmailCertification } = useAuth();
   
   // useNotification 훅 사용
   const { 
@@ -27,7 +22,7 @@ const ProfilePage = () => {
     clearAll 
   } = useNotification();
   
-  // useLoading 훅 사용 (기존 프로젝트 패턴)
+  // useLoading 훅 사용
   const [isUpdatingProfile, startUpdatingProfile] = useLoading();
   
   // 프로필 상태 관리
@@ -45,6 +40,8 @@ const ProfilePage = () => {
 
   // 편집 모드 상태
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isInterestEditMode, setIsInterestEditMode] = useState(false);
+
 
   // 초기 프로필 데이터 로드
   useEffect(() => {
@@ -90,9 +87,30 @@ const ProfilePage = () => {
       setIsCheckingVerification(true);
       clearAll(); // 기존 메시지 지우기
       
+      console.log("이메일 인증 상태 확인 시작");
+      
+      // 먼저 서버의 updateEmailCertification 사용 (더 신뢰할만함)
+      try {
+        console.log("서버 인증 상태 업데이트 시도");
+        const serverResponse = await updateEmailCertification();
+        
+        if (serverResponse.success) {
+          setIsEmailVerified(serverResponse.certified_email);
+          if (serverResponse.certified_email) {
+            showSuccess('이메일이 인증되었습니다.');
+          } else {
+            showError('이메일이 인증되지 않았습니다.');
+          }
+          return;
+        }
+      } catch (serverError) {
+        console.log("서버 인증 확인 실패, EmailVerificationService로 대체:", serverError);
+      }
+      
+      // 서버 방법이 실패하면 기존 EmailVerificationService 사용
       const response = await EmailVerificationService.checkVerificationStatus(currentUser.email);
       
-      console.log("인증 상태 확인 응답:", response);
+      console.log("EmailVerificationService 응답:", response);
       
       if (response.success === true) { // 명시적으로 true와 비교
         setIsEmailVerified(true);
@@ -196,12 +214,20 @@ const ProfilePage = () => {
       if (originalProfile) {
         setDisplayName(originalProfile.displayName);
         setEmail(originalProfile.email);
-        setDepartment(originalProfile.department);
+      }
+    }
+
+    setIsEditMode(!isEditMode);
+  };
+
+  const toggleInterestEditMode = () => {
+    if (isInterestEditMode) {
+      if (originalProfile) {
         setInterests([...originalProfile.interests]);
       }
     }
-    setIsEditMode(!isEditMode);
-  };
+    setIsInterestEditMode(!isInterestEditMode)
+  }
 
   // 태그 추가 핸들러
   const handleAddInterest = (tag) => {
@@ -280,6 +306,7 @@ const ProfilePage = () => {
       
       // 편집 모드 비활성화
       setIsEditMode(false);
+      setIsInterestEditMode(false);
       
       showSuccess('프로필이 성공적으로 업데이트되었습니다!');
       
@@ -506,6 +533,17 @@ const ProfilePage = () => {
                   variant="dashboard"
                   title="관심 분야"
                   icon="bi-tags"
+                  headerAction={
+                    <Button 
+                      variant={isInterestEditMode ? "outline-secondary" : "outline-primary"}
+                      size="sm"
+                      onClick={toggleInterestEditMode}
+                      disabled={isUpdatingProfile}
+                    >
+                      <i className={`bi ${isInterestEditMode ? 'bi-x-circle' : 'bi-pencil'} me-1`}></i>
+                      {isInterestEditMode ? '취소' : '편집'}
+                    </Button>
+                  }
                 >
                   <div className="interests-section">
                     <Form.Label>선택된 관심 분야</Form.Label>
@@ -514,33 +552,49 @@ const ProfilePage = () => {
                         interests.map((interest) => (
                           <div 
                             key={interest} 
-                            className={`interest-tag ${!isEditMode ? 'disabled' : ''}`}
-                            onClick={() => isEditMode && handleRemoveInterest(interest)}
-                            title={isEditMode ? "클릭하여 제거" : "편집 모드에서 제거 가능"}
+                            className={`interest-tag ${!isInterestEditMode ? 'disabled' : ''}`}
+                            onClick={() => isInterestEditMode && handleRemoveInterest(interest)}
+                            title={isInterestEditMode ? "클릭하여 제거" : "편집 모드에서 제거 가능"}
                           >
                             {interest}
-                            {isEditMode && <span className="remove-icon">×</span>}
+                            {isInterestEditMode && <span className="remove-icon">×</span>}
                           </div>
                         ))
                       ) : (
                         <div className="interests-empty">
-                          선택된 관심 분야가 없습니다. {isEditMode ? '아래에서 추가해주세요.' : '편집 모드에서 추가할 수 있습니다.'}
+                          선택된 관심 분야가 없습니다. {isInterestEditMode ? '아래에서 추가해주세요.' : '편집 모드에서 추가할 수 있습니다.'}
                         </div>
                       )}
                     </div>
                     
                     {/* 편집 모드일 때만 태그 추가 드롭다운 표시 */}
-                    {isEditMode && (
+                    {isInterestEditMode && (
                       <div className="d-flex flex-wrap">
                         {renderProgrammingTagsDropdown()}
                       </div>
-                    )}
-                    
+                    )}  
                     <Form.Text className="text-muted d-block mt-2">
                       관심 분야를 선택하면 관련 스터디 그룹을 더 쉽게 찾을 수 있습니다. 
-                      {isEditMode ? '태그를 클릭하면 제거됩니다.' : '편집 모드에서 수정할 수 있습니다.'}
+                      {isInterestEditMode ? '태그를 클릭하면 제거됩니다.' : '편집 모드에서 수정할 수 있습니다.'}
                     </Form.Text>
                   </div>
+
+                    {/* 편집 모드일 때만 저장 버튼 표시 */}
+                    {isInterestEditMode && (
+                      <Button 
+                        variant="primary"
+                        disabled={isUpdatingProfile || !hasChanges()} 
+                        className="profile-btn-primary w-100 mt-4" 
+                        type="submit"
+                      >
+                        {isUpdatingProfile 
+                          ? '업데이트 중...' 
+                          : !hasChanges() 
+                            ? '변경사항 없음' 
+                            : '프로필 저장'}
+                      </Button>
+                    )}
+
                 </UniversalCard>
               </Col>
             </Row>
