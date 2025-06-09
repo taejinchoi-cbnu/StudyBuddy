@@ -13,9 +13,9 @@ const ListItem = ({
   
   return (
     <div 
-      className={`list-item-common list-item-${variant} ${className} ${darkMode ? "dark-mode" : ""}`}
+      className={`mb-1 list-item-common list-item-${variant} ${className} ${darkMode ? "dark-mode" : ""}`}
       onClick={onClick}
-      style={{ cursor: onClick ? "pointer" : "default" }}
+      style={{ cursor: onClick ? "pointer" : "default", border: "1px solid var(--accent-color)", borderRadius: "var(--border-radius)" }}
     >
       <div className="list-item-content">
         <div className="list-item-info">
@@ -23,7 +23,7 @@ const ListItem = ({
           {subtitle && <div className="list-item-subtitle">{subtitle}</div>}
         </div>
         {(badge || rightContent) && (
-          <div className="list-item-right">
+          <div>
             {badge}
             {rightContent}
           </div>

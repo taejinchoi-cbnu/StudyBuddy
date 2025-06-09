@@ -204,7 +204,7 @@
      border-top: 1px solid var(--border-color);
    }
    
-   .list-item-common.list-item-group-card .list-item-right {
+   .list-item-common.list-item-group-card {
      align-self: flex-start;
    }
    

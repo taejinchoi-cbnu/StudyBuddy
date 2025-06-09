@@ -39,15 +39,14 @@
 /* List Item (CommonComponents에서 이동) */
 .list-item-common {
   background-color: var(--white);
-  border-radius: 12px;
-  padding: 1rem;
+  padding: 0.5rem;
   transition: all var(--transition-fast);
   cursor: pointer;
 }
 
 .list-item-common:hover {
   background-color: var(--light-gray);
-  transform: translateX(5px);
+  transform: translateY(-5px);
 }
 
 /* 다크모드 스타일 */
