@@ -17,7 +17,7 @@ StudyBuddy는 React와 Firebase를 기반으로 한 모던 웹 애플리케이�
 
 [여기에 데모 영상이나 스크린샷이 추가하기]
 <div align="cneter">
-  <video controls src="StudyBuddy/docs/Videos/WelcomePage.mp4" width="300" muted autoplay ></video>
+  <video controls src="docs/Videos/WelcomePage.mp4" width="300" muted autoplay ></video>
 </div>
 
 ## ✨ 주요 기능
