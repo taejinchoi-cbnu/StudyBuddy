@@ -71,9 +71,9 @@ const GroupRecommendationComponent = ({ userGroups = [] }) => {
   }
 
   return (
-    <div className={`group-recommendation-component ${darkMode ? "dark-mode" : ""}`} style={{textAlign: "center", maxHeight: "270px", overflowY: "auto"}}>
+    <div className={`group-recommendation-component ${darkMode ? "dark-mode" : ""}`} style={{textAlign: "center"}}>
       {recommendedGroups.length > 0 ? (
-        <div className="scroll-container mt-3">
+        <div className="scroll-container">
           {recommendedGroups.map((group) => (
             <ListItem
               key={group.id}
