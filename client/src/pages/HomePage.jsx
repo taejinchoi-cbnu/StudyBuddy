@@ -79,15 +79,15 @@ const HomePage = () => {
           entry.target.classList.add("animate-in");
           
           // animate-target 클래스를 가진 자식 요소들에도 애니메이션 적용
-          const animateTargets = entry.target.querySelectorAll('.animate-target');
+          const animateTargets = entry.target.querySelectorAll('.feature-wrapper');
           animateTargets.forEach((target, index) => {
             setTimeout(() => {
               target.classList.add("animate-in");
-            }, index * 300); // 순차적 애니메이션
+            }, index * 200); // 순차적 애니메이션
           });
         }
       },
-      { threshold: 0.7 }
+      { threshold: 0.5 }
     );
     
     // 각 섹션 관찰 시작
@@ -182,7 +182,7 @@ const HomePage = () => {
                 ) : (
                   <>
                     {renderHeroButton("primary", handleSignup, "시작하기")}
-                    {renderHeroButton("secondary", handleLogin, "로그인 »")}
+                    {renderHeroButton("secondary", handleLogin, "로그인")}
                   </>
                 )}
               </div>
