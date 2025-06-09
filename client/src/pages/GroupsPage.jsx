@@ -473,7 +473,6 @@ const renderGroupCard = (group, isMember) => {
                       onChange={(e) => handleSubjectChange(e.target.value)}
                       style={{boxShadow: "none"}}
                     >
-                      <option value="">모든 주제</option>
                       {GROUP_SUBJECTS && GROUP_SUBJECTS.map(subject => (
                         <option key={subject} value={subject}>{subject}</option>
                       ))}
@@ -497,7 +496,7 @@ const renderGroupCard = (group, isMember) => {
                           {tag}
                         </Badge>
                       ))
-                    : ALL_TAGS && ALL_TAGS.slice(0, 20).map(tag => (
+                    : ALL_TAGS && ALL_TAGS.map(tag => (
                         <Badge
                           key={tag}
                           bg={selectedTags.includes(tag) ? "primary" : "secondary"}

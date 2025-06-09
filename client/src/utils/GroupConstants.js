@@ -8,10 +8,10 @@ export const GROUP_TAGS = {
     "JavaScript", "React", "Python", "Java", "C/C++", "Android",
     "iOS", "Web Development", "Backend", "Frontend", "Database",
     "Node.js", "Vue.js", "Angular", "TypeScript", "Kotlin", "Swift",
-    "Flutter", "React Native", "DevOps", "Cloud", "AWS",
-    "Google Cloud", "Machine Learning", "Artificial Intelligence",
-    "Blockchain", "Game Development", "Unity", "Unreal Engine",
-    "Embedded Systems", "Cybersecurity"
+    "Flutter", "React Native", "Mysql", "Nest.js", "Next.js",
+    "Java Spring", "Spring Boot", "HTML/CSS",
+    "FireBase", "Svelte", "Docker", "FullStack",
+    "Algorithm"
   ]
 };
 
