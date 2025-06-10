@@ -7,9 +7,11 @@ import EmailVerificationService from '../utils/EmailVerificationService';
 import useNotification from '../hooks/useNotification';
 import useLoading from '../hooks/useLoading';
 import UniversalCard from '../components/common/UniversalCard';
+import { useDarkMode } from '../contexts/DarkModeContext';
 
 const ProfilePage = () => {
   const { currentUser, userProfile, updateUserProfile, authLoading, updateEmail, updateEmailCertification } = useAuth();
+  const { darkMode } = useDarkMode();
   
   // useNotification 훅 사용
   const { 
@@ -343,14 +345,12 @@ const ProfilePage = () => {
   );
 
   return (
-    <div className="main-layout profile-page">
+    <div className={`main-layout profile-page ${darkMode ? "dark-mode" : ""}`}>
       {/* 로딩 오버레이 추가 */}
       {(authLoading.updateProfile || authLoading.logout || isUpdatingEmail || 
         isUpdatingProfile) && <LoadingSpinner />}
       
-      {/* 네비게이션바 높이만큼 추가하는 여백 */}
-      <div className="navbar-spacer"></div>
-      
+      {/* 메인 콘텐츠 영역 */}
       <main className="main-content">
         {/* 프로필 헤더 섹션 */}
         <section className="profile-header-section">

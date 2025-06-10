@@ -104,6 +104,40 @@ body {
   }
 }
 
+/* ======================================================
+   CreateGroupPage - HomePage 패턴 적용
+   ====================================================== */
+
+.main-layout.create-group-page {
+  display: grid;
+  grid-template-rows: var(--navbar-height) 1fr;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%);
+  color: var(--text-color);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* 메인 컨텐츠 그리드 영역 - HomePage와 동일한 패턴 */
+.main-layout.create-group-page .main-content {
+  grid-row: 1 / -1;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 4rem 1rem 2rem 1rem;
+  overflow-y: auto;
+  min-height: 100vh;
+}
+
+.create-group-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* 다크모드 CreateGroupPage */
+.dark-mode .main-layout.create-group-page {
+  background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%);
+}
+
 /* 전역 스크롤바 스타일 */
 ::-webkit-scrollbar {
   width: 8px;

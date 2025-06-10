@@ -3,24 +3,27 @@
    ====================================================== */
 
    /* ======================================================
-      프로필 페이지 레이아웃 - 스코프 제한
+      프로필 페이지 레이아웃 - HomePage 패턴 적용
       ====================================================== */
    
    .main-layout.profile-page {
-     display: flex;
-     flex-direction: column;
+     display: grid;
+     grid-template-rows: var(--navbar-height) 1fr;
      min-height: 100vh;
-     background: var(--light-bg);
+     background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%);
      color: var(--text-color);
      transition: background-color var(--transition-normal), color var(--transition-normal);
    }
    
+   /* 메인 컨텐츠 그리드 영역 - HomePage와 동일한 패턴 */
    .main-layout.profile-page .main-content {
-     flex: 1;
+     grid-row: 1 / -1;
+     z-index: 1;
      display: flex;
      flex-direction: column;
-     padding: 2rem;
+     padding: 4rem 2rem 2rem 2rem;
      overflow-y: auto;
+     min-height: 100vh;
    }
    
    /* ======================================================
@@ -363,7 +366,7 @@
    }
    
    /* ======================================================
-      다크모드 스타일 - 프로필 페이지 전용
+      다크모드 스타일 - HomePage 패턴 적용
       ====================================================== */
    
    .dark-mode .main-layout.profile-page {

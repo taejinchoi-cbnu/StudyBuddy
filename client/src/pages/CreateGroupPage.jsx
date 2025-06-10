@@ -6,9 +6,14 @@ const CreateGroupPage = () => {
   const { darkMode } = useDarkMode();
   
   return (
-    <Container className={`my-4 ${darkMode ? 'dark-mode' : ''}`}>
-      <CreateGroupForm />
-    </Container>
+    <div className={`main-layout create-group-page ${darkMode ? "dark-mode" : ""}`}>
+      {/* 메인 콘텐츠 영역 */}
+      <main className="main-content">
+        <Container className={`create-group-container ${darkMode ? "dark-mode" : ""}`}>
+          <CreateGroupForm />
+        </Container>
+      </main>
+    </div>
   );
 };
 

@@ -366,9 +366,10 @@ const renderGroupCard = (group, isMember) => {
 };
 
   return (
-    <div className={`page-container ${darkMode ? "dark-mode" : ""}`}>
-      {/* 네비게이션바 */}
-      <Container className={`mt-4 ${darkMode ? "dark-mode" : ""}`}>
+    <div className={`main-layout groups-page ${darkMode ? "dark-mode" : ""}`}>
+      {/* 메인 콘텐츠 영역 */}
+      <main className="main-content">
+        <Container className={`groups-container ${darkMode ? "dark-mode" : ""}`}>
         {/* 로딩 상태 */}
         {isLoading ? (
           <div className="text-center py-5">
@@ -431,12 +432,12 @@ const renderGroupCard = (group, isMember) => {
             </div>
 
             {/* 검색 및 필터 */}
-            <UniversalCard
-              variant="dashboard"
-              title="그룹 검색 및 필터"
-              icon="bi-search"
-              
-              headerAction={
+            <div className={`search-filter-card ${darkMode ? "dark-mode" : ""} ${isFilterAnimating ? 'filter-animating' : ''}`}>
+              <div className="search-filter-header">
+                <h5 className="search-filter-title">
+                  <i className="bi bi-search me-2"></i>
+                  그룹 검색 및 필터
+                </h5>
                 <Button
                   variant="outline-secondary"
                   size="sm"
@@ -444,74 +445,77 @@ const renderGroupCard = (group, isMember) => {
                   disabled={isLoading}
                   className="refresh-btn"
                 >
+                  <i className="bi bi-arrow-clockwise"></i>
                 </Button>
-              }
-              className={`mb-4 search-filter-card ${isFilterAnimating ? 'filter-animating' : ''}`}
-            >
-              <Row>
-                <Col md={6} className="mb-3">
-                  <InputGroup>
-                    <FormControl
-                      placeholder="그룹 검색..."
-                      value={searchTerm}
-                      onChange={(e) => handleSearchChange(e.target.value)}
-                      className={`search-input ${isSearching ? 'searching' : ''}`}
-                    />
-                    {isSearching && (
-                      <InputGroup.Text>
-                      </InputGroup.Text>
-                    )}
-                  </InputGroup>
-                </Col>
+              </div>
+              
+              <div className="search-filter-content">
+                <Row>
+                  <Col md={6} className="mb-3">
+                    <InputGroup>
+                      <FormControl
+                        placeholder="그룹 검색..."
+                        value={searchTerm}
+                        onChange={(e) => handleSearchChange(e.target.value)}
+                        className={`search-input ${isSearching ? 'searching' : ''}`}
+                      />
+                      {isSearching && (
+                        <InputGroup.Text>
+                          <i className="bi bi-search"></i>
+                        </InputGroup.Text>
+                      )}
+                    </InputGroup>
+                  </Col>
 
-                <Col md={6} className="mb-3">
-                  <InputGroup>
-                    <InputGroup.Text>주제</InputGroup.Text>
-                    <FormControl
-                      as="select"
-                      value={selectedSubject}
-                      onChange={(e) => handleSubjectChange(e.target.value)}
-                      style={{boxShadow: "none"}}
-                    >
-                      <option value="">모든 주제</option>
-                      {GROUP_SUBJECTS && GROUP_SUBJECTS.map(subject => (
-                        <option key={subject} value={subject}>{subject}</option>
-                      ))}
-                    </FormControl>
-                  </InputGroup>
-                </Col>
-              </Row>
+                  <Col md={6} className="mb-3">
+                    <InputGroup>
+                      <InputGroup.Text>주제</InputGroup.Text>
+                      <FormControl
+                        as="select"
+                        value={selectedSubject}
+                        onChange={(e) => handleSubjectChange(e.target.value)}
+                        style={{boxShadow: "none"}}
+                      >
+                        <option value="">모든 주제</option>
+                        {GROUP_SUBJECTS && GROUP_SUBJECTS.map(subject => (
+                          <option key={subject} value={subject}>{subject}</option>
+                        ))}
+                      </FormControl>
+                    </InputGroup>
+                  </Col>
+                </Row>
 
-              <div>
-                <p className="mb-2">태그 필터:</p>
-                <div className="tags-container">
-                  {selectedSubject && GROUP_TAGS && GROUP_TAGS[selectedSubject]
-                    ? (GROUP_TAGS[selectedSubject] || []).map(tag => (
-                        <Badge
-                          key={tag}
-                          bg={selectedTags.includes(tag) ? "primary" : "secondary"}
-                          className="me-1 mb-1 p-2 tag-badge"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => toggleTag(tag)}
-                        >
-                          {tag}
-                        </Badge>
-                      ))
-                    : ALL_TAGS && ALL_TAGS.slice(0, 20).map(tag => (
-                        <Badge
-                          key={tag}
-                          bg={selectedTags.includes(tag) ? "primary" : "secondary"}
-                          className="me-1 mb-1 p-2 tag-badge"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => toggleTag(tag)}
-                        >
-                          {tag}
-                        </Badge>
-                      ))
-                  }
+                <div>
+                  <p className="mb-2">태그 필터:</p>
+                  <div className="tags-container">
+                    {selectedSubject && GROUP_TAGS && GROUP_TAGS[selectedSubject]
+                      ? (GROUP_TAGS[selectedSubject] || []).map(tag => (
+                          <Badge
+                            key={tag}
+                            bg={selectedTags.includes(tag) ? "primary" : "secondary"}
+                            className="me-1 mb-1 p-2 tag-badge"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => toggleTag(tag)}
+                          >
+                            {tag}
+                          </Badge>
+                        ))
+                      : ALL_TAGS && ALL_TAGS.slice(0, 20).map(tag => (
+                          <Badge
+                            key={tag}
+                            bg={selectedTags.includes(tag) ? "primary" : "secondary"}
+                            className="me-1 mb-1 p-2 tag-badge"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => toggleTag(tag)}
+                          >
+                            {tag}
+                          </Badge>
+                        ))
+                    }
+                  </div>
                 </div>
               </div>
-            </UniversalCard>
+            </div>
 
             {/* 그룹 목록 */}
             {displayGroups.length > 0 ? (
@@ -561,7 +565,8 @@ const renderGroupCard = (group, isMember) => {
             )}
           </>
         )}
-      </Container>
+        </Container>
+      </main>
     </div>
   );
 };

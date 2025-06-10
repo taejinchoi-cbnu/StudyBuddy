@@ -285,10 +285,10 @@ const SchedulePage = () => {
   }
 
   return (
-    <div className={`schedule-page ${darkMode ? "dark-mode" : ""}`}>
-      <div className="navbar-spacer"></div>
-      
-      <Container fluid>
+    <div className={`main-layout schedule-page ${darkMode ? "dark-mode" : ""}`}>
+      {/* 메인 콘텐츠 영역 */}
+      <main className="main-content">
+        <Container fluid className={`schedule-container ${darkMode ? "dark-mode" : ""}`}>
         <Row className="mb-4">
           <Col>
             <div className="d-flex justify-content-between align-items-center schedule-header">
@@ -362,7 +362,8 @@ const SchedulePage = () => {
             </Col>
           )}
         </Row>
-      </Container>
+        </Container>
+      </main>
     </div>
   );
 };

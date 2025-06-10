@@ -234,8 +234,9 @@ const GroupDetailPage = () => {
   const members = membersApi.data || [];
 
   return (
-    <div className="main-layout group-detail-page">
-      <div className="group-detail-content">
+    <div className={`main-layout group-detail-page ${darkMode ? "dark-mode" : ""}`}>
+      <main className="main-content">
+        <div className="group-detail-content">
         {/* 통합된 알림 메시지 표시 */}
         {groupApi.error && (
           <Alert variant="danger" onClose={() => groupApi.clearNotifications()} dismissible>
@@ -393,6 +394,7 @@ const GroupDetailPage = () => {
         action="leave"
         onAction={handleLeaveSuccess}
       />
+      </main>
     </div>
   );
 };

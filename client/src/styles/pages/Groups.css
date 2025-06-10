@@ -3,26 +3,27 @@
    ====================================================== */
 
    /* ======================================================
-      Groups Page 전체 레이아웃
+      Groups Page 전체 레이아웃 - HomePage 패턴 적용
       ====================================================== */
    
    .main-layout.groups-page {
      display: grid;
-     grid-template-rows: 1fr;
+     grid-template-rows: var(--navbar-height) 1fr;
      min-height: 100vh;
+     background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%);
      color: var(--text-color);
      transition: background-color var(--transition-normal), color var(--transition-normal);
    }
    
-   /* Groups Page 메인 콘텐츠 */
-   .groups-page .main-content {
-     grid-row: 1;
+   /* 메인 컨텐츠 그리드 영역 - HomePage와 동일한 패턴 */
+   .main-layout.groups-page .main-content {
+     grid-row: 1 / -1;
      z-index: 1;
      display: flex;
      flex-direction: column;
-     padding: 2rem;
+     padding: 4rem 1rem 2rem 1rem;
      overflow-y: auto;
-     padding-top: calc(var(--navbar-height) + 2rem);
+     min-height: 100vh;
    }
    
    /* ======================================================
@@ -81,11 +82,34 @@
       ====================================================== */
    
 .search-filter-card {
-  background-color: var(--white) !important;
-  border: 2px solid var(--border-color) !important;
-  border-radius: var(--border-radius) !important;
-  padding: 1.5rem !important;
-  margin-bottom: 2rem !important;
+  background-color: var(--white);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+  transition: all var(--transition-normal);
+}
+
+.search-filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(255, 204, 196, 0.1);
+}
+
+.search-filter-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.search-filter-content {
+  padding: 1.5rem;
 }
    .tags-filter-section {
      margin-top: 1rem;
@@ -264,12 +288,12 @@
    }
    
    /* ======================================================
-      다크모드 스타일
+      다크모드 스타일 - HomePage 패턴 적용
       ====================================================== */
    
    .dark-mode {
      .main-layout.groups-page {
-       background-color: var(--light-bg);
+       background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%);
      }
 
      .section-title {
@@ -315,6 +339,20 @@
 
      .empty-groups-section {
        color: var(--text-muted);
+     }
+
+     .search-filter-card {
+       background-color: var(--white);
+       border-color: var(--border-color);
+     }
+
+     .search-filter-header {
+       background-color: rgba(102, 77, 74, 0.1);
+       border-color: var(--border-color);
+     }
+
+     .search-filter-title {
+       color: var(--text-color);
      }
    }
    
