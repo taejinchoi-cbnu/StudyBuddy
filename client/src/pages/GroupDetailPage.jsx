@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Badge, Alert, Nav } from "react-bootstrap";
+import { Container, Card, Button, Alert, Nav } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -208,19 +208,18 @@ const GroupDetailPage = () => {
               요청하신 그룹을 찾을 수 없거나 데이터를 불러오는 도중 문제가 발생했습니다.
               <br />잠시 후 다시 시도해 주세요.
             </p>
-            <Button 
-              variant="primary" 
+            <button 
+              className="action-btn-primary me-2"
               onClick={() => navigate("/groups")}
-              className="me-2"
             >
               그룹 목록으로 돌아가기
-            </Button>
-            <Button 
-              variant="outline-secondary"
+            </button>
+            <button 
+              className="action-btn-secondary"
               onClick={() => window.location.reload()}
             >
               새로고침
-            </Button>
+            </button>
           </Card.Body>
         </Card>
       </Container>
@@ -307,7 +306,7 @@ const GroupDetailPage = () => {
 
                 {ui.get("isMember") && (
                   <div className={`tab-pane ${activeKey === "schedule" ? "active" : ""}`} id="schedule">
-                    <div className="tab-content-area">
+                    <div className="tab-content-area" style={{border: "none", boxShadow: "none !important"}}>
                       <div className="tab-pane-content schedule-tab">
                         <div className="schedule-header">
                           <h3>그룹 일정</h3>
@@ -359,20 +358,20 @@ const GroupDetailPage = () => {
         {/* 고정 액션 버튼 */}
         <div className="group-action-buttons">
           {!ui.get("isMember") && !ui.get("hasPendingRequest") && (
-            <Button 
+            <button 
               className="action-btn-primary"
               onClick={() => ui.openModal("join")}
             >
               가입하기
-            </Button>
+            </button>
           )}
           {ui.get("isMember") && !ui.get("isAdmin") && (
-            <Button 
+            <button 
               className="action-btn-secondary"
               onClick={() => ui.openModal("leave")}
             >
               탈퇴하기
-            </Button>
+            </button>
           )}
         </div>
       </div>

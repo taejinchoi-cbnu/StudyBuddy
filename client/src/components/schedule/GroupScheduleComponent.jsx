@@ -407,19 +407,19 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
   // 그룹 멤버가 아닌 경우 접근 제한
   if (!userStatus.isMember) {
     return (
-      <Card className={`${darkMode ? 'dark-mode' : ''}`}>
-        <Card.Body className="text-center py-5">
+      <div className={`schedule-component access-denied ${darkMode ? 'dark-mode' : ''}`}>
+        <div className="schedule-component-body text-center py-5">
           <h4 className="mb-3">접근 권한이 없습니다</h4>
           <p>이 기능은 그룹 멤버만 사용할 수 있습니다.</p>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className={`${darkMode ? 'dark-mode' : ''}`}>
-      <Card.Body>
-        <h3 className="mb-3">그룹 스케줄 조정</h3>
+    <div className={`schedule-component ${darkMode ? 'dark-mode' : ''}`}>
+      <div className="schedule-component-body">
+        <h3 className="schedule-component-title mb-3">그룹 스케줄 조정</h3>
         
         {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
         {success && <Alert variant="success" onClose={() => setSuccess('')} dismissible>{success}</Alert>}
@@ -433,21 +433,20 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
         
         {/* 확정된 일정 섹션 */}
         {appointments.length > 0 && (
-          <Card className="mb-3">
-            <Card.Header>
+          <div className="schedule-section confirmed-schedules-section mb-4">
+            <div className="schedule-section-header">
               <div className="d-flex justify-content-between align-items-center">
-                <h4 className="mb-0">확정된 그룹 일정</h4>
-                <Button 
-                  variant="link"
+                <h4 className="section-title mb-0">확정된 그룹 일정</h4>
+                <button 
+                  className="btn-schedule-action btn-link"
                   onClick={() => setShowConfirmedSchedules(!showConfirmedSchedules)}
-                  className="p-0"
                 >
                   {showConfirmedSchedules ? '숨기기' : '보이기'}
-                </Button>
+                </button>
               </div>
-            </Card.Header>
+            </div>
             {showConfirmedSchedules && (
-              <Card.Body>
+              <div className="schedule-section-body">
                 {appointments.map((appointment, idx) => (
                   <Alert key={idx} variant="success" className="mb-2">
                     <div className="d-flex justify-content-between align-items-center">
@@ -461,27 +460,26 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
                         </small>
                       </div>
                       {userStatus.isAdmin && (
-                        <Button 
-                          variant="outline-danger" 
-                          size="sm"
+                        <button 
+                          className="btn-schedule-action btn-outline-danger"
                           onClick={() => handleAppointment(appointment, 'delete')}
                         >
                           삭제
-                        </Button>
+                        </button>
                       )}
                     </div>
                   </Alert>
                 ))}
-              </Card.Body>
+              </div>
             )}
-          </Card>
+          </div>
         )}
         
         {/* 진행 상황 표시 - 관리자만 볼 수 있음 */}
         {userStatus.isAdmin && (
-          <Card className="mb-4">
-            <Card.Body>
-              <h4 className="mb-3">멤버 제출 현황</h4>
+          <div className="schedule-section submission-status-section mb-4">
+            <div className="schedule-section-body">
+              <h4 className="section-title mb-3">멤버 제출 현황</h4>
               <div className="mb-3">
                 <ProgressBar 
                   now={getSubmissionPercentage()} 
@@ -520,14 +518,14 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
                   ))}
                 </tbody>
               </Table>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
         )}
         
         {/* 내 불가능한 시간 입력 섹션 */}
-        <Card className="mb-4">
-          <Card.Body>
-            <h4 className="mb-3">내 불가능한 시간 설정</h4>
+        <div className="schedule-section availability-input-section mb-4">
+          <div className="schedule-section-body">
+            <h4 className="section-title mb-3">내 불가능한 시간 설정</h4>
             {currentUser && (
               <ScheduleManager
                 currentUser={currentUser}
@@ -546,21 +544,21 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
                 isLoading={isSaving}
               />
             )}
-          </Card.Body>
-        </Card>
+          </div>
+        </div>
         
         {/* 시간 계산 버튼 - 관리자만 사용 가능 */}
         {userStatus.isAdmin && !calculationDone && (
           <div className="d-grid gap-2 mb-4">
-            <Button
-              variant="primary"
+            <button
+              className="action-btn-primary"
               onClick={calculateAvailableTimes}
               disabled={!allMembersSubmitted() || isSaving}
             >
               {!allMembersSubmitted() 
                 ? '모든 멤버가 시간을 입력해야 계산할 수 있습니다' 
                 : isSaving ? '계산 중...' : '가능한 시간 계산하기'}
-            </Button>
+            </button>
             {!allMembersSubmitted() && (
               <small className="text-muted text-center mt-1">
                 아직 미제출한 멤버가 있습니다. 모든 멤버가 입력 완료해야 계산이 가능합니다.
@@ -568,8 +566,8 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
             )}
           </div>
         )}
-      </Card.Body>
-    </Card>
+      </div>
+    </div>
   );
 };
 

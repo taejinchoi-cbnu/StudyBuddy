@@ -123,9 +123,9 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
 
   return (
     <>
-      <Card className={`shadow-sm ${darkMode ? 'dark-mode' : ''}`}>
-        <Card.Body>
-          <h3 className="mb-4">그룹 관리</h3>
+      <div className={`management-component ${darkMode ? 'dark-mode' : ''}`}>
+        <div className="management-component-body">
+          <h3 className="management-component-title mb-4">그룹 관리</h3>
           
           {error && <Alert variant="danger" onClose={clearAll} dismissible>{error}</Alert>}
           {success && <Alert variant="success" onClose={clearAll} dismissible>{success}</Alert>}
@@ -133,7 +133,9 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
           <Tabs defaultActiveKey="settings" className="mb-4">
             {/* 그룹 설정 탭 */}
             <Tab eventKey="settings" title="그룹 설정">
-              <Form onSubmit={handleSubmit}>
+              <div className="management-section settings-section">
+                <div className="management-section-body">
+                  <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Label>그룹 이름</Form.Label>
                   <Form.Control
@@ -153,6 +155,11 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
                     name="description"
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.stopPropagation();
+                      }
+                    }}
                     placeholder="그룹에 대한 설명을 입력하세요"
                   />
                 </Form.Group>
@@ -197,9 +204,8 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
                           className="d-flex align-items-center"
                         >
                           {subject}
-                          <Button
-                            variant="link"
-                            className="text-white p-0 ms-2"
+                          <button
+                            className="btn-schedule-action btn-link text-white p-0 ms-2"
                             onClick={() => {
                               setFormData({
                                 ...formData,
@@ -209,7 +215,7 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
                             }}
                           >
                             ×
-                          </Button>
+                          </button>
                         </Badge>
                       ))}
                     </div>
@@ -231,8 +237,8 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
                         <option key={tag} value={tag} />
                       ))}
                     </datalist>
-                    <Button
-                      variant="outline-primary"
+                    <button
+                      className="btn-schedule-action btn-outline-primary"
                       onClick={() => {
                         if (tagInput && !formData.tags.includes(tagInput)) {
                           setFormData({
@@ -244,7 +250,7 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
                       }}
                     >
                       추가
-                    </Button>
+                    </button>
                   </div>
                   
                   {formData.tags.length > 0 && (
@@ -256,9 +262,8 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
                           className="d-flex align-items-center"
                         >
                           {tag}
-                          <Button
-                            variant="link"
-                            className="text-white p-0 ms-2"
+                          <button
+                            className="btn-schedule-action btn-link text-white p-0 ms-2"
                             onClick={() => {
                               setFormData({
                                 ...formData,
@@ -267,7 +272,7 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
                             }}
                           >
                             ×
-                          </Button>
+                          </button>
                         </Badge>
                       ))}
                     </div>
@@ -303,35 +308,40 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
                   </Form.Select>
                 </Form.Group>
                 
-                <Button 
-                  variant="primary" 
-                  type="submit" 
-                  className="w-100 mt-3" 
-                  disabled={isUpdating}
-                >
-                  {isUpdating ? '업데이트 중...' : '그룹 정보 저장'}
-                </Button>
-              </Form>
-              
-              <hr className="my-4" />
+                    <button 
+                      className="action-btn-primary w-100 mt-3" 
+                      type="submit"
+                      disabled={isUpdating}
+                    >
+                      {isUpdating ? '업데이트 중...' : '그룹 정보 저장'}
+                    </button>
+                  </Form>
+                </div>
+              </div>
               
               {/* 위험 영역 */}
-              <div className="danger-zone">
-                <h4 className="text-danger mb-3">위험 영역</h4>
-                <p className="text-muted mb-3">이 작업은 되돌릴 수 없으니 신중하게 선택하세요.</p>
-                <Button 
-                  variant="outline-danger" 
-                  className="w-100"
-                  onClick={handleDeleteClick}
-                >
-                  그룹 삭제하기
-                </Button>
+              <div className="management-section danger-section mt-4">
+                <div className="management-section-header">
+                  <h4 className="section-title text-danger mb-0">그룹 삭제</h4>
+                </div>
+                <div className="management-section-body">
+                  <p className="text-muted mb-3">이 작업은 되돌릴 수 없으니 신중하게 선택하세요.</p>
+                  <button 
+                    className="action-btn-secondary w-100"
+                    onClick={handleDeleteClick}
+                    style={{borderColor: '#dc3545', color: '#dc3545'}}
+                  >
+                    그룹 삭제하기
+                  </button>
+                </div>
               </div>
             </Tab>
 
             {/* 멤버 관리 탭 */}
             <Tab eventKey="members" title="멤버 관리">
-              <ListGroup>
+              <div className="management-section members-section">
+                <div className="management-section-body">
+                  <ListGroup variant="flush">
                 {Array.isArray(members) && members.map((member) => {
                   const profile = memberProfiles[member.userId] || {};
                   const isCurrentUser = currentUser && member.userId === currentUser.uid;
@@ -364,23 +374,24 @@ const GroupManagement = ({ group, members = [], currentUser, onUpdateSuccess, on
                       
                       <div>
                         {!isCurrentUser && member.role !== 'admin' && (
-                          <Button 
-                            variant="outline-danger" 
-                            size="sm"
+                          <button 
+                            className="btn-schedule-action btn-outline-danger"
                             onClick={() => handleRemoveMember(member.userId)}
                           >
                             제거
-                          </Button>
+                          </button>
                         )}
                       </div>
                     </ListGroup.Item>
                   );
                 })}
-              </ListGroup>
+                  </ListGroup>
+                </div>
+              </div>
             </Tab>
           </Tabs>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
 
       {/* 그룹 액션 모달 */}
       <GroupActionModal

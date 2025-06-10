@@ -286,14 +286,13 @@ const ScheduleManager = ({
               </Col>
               
               <Col md={3} className="d-flex align-items-end">
-                <Button 
-                  variant="primary" 
+                <button 
+                  className="btn-schedule-action btn-primary w-100"
                   onClick={handleAddTime}
                   disabled={!isTimeSelectionValid()}
-                  className="w-100"
                 >
                   {isLoading ? '처리 중...' : '추가'}
-                </Button>
+                </button>
               </Col>
             </Row>
           </Form>
@@ -366,14 +365,13 @@ const ScheduleManager = ({
                       </small>
                     </div>
                     {isAdmin && (
-                      <Button 
-                        variant="outline-danger" 
-                        size="sm"
+                      <button 
+                        className="btn-schedule-action btn-outline-danger"
                         onClick={() => !isLoading && onSelectAppointment(app, 'delete')}
                         disabled={isLoading}
                       >
                         {isLoading ? '처리 중...' : '삭제'}
-                      </Button>
+                      </button>
                     )}
                   </div>
                 </Alert>
@@ -422,14 +420,13 @@ const ScheduleManager = ({
                         
                         return (
                           <div key={blockIndex} className="mb-1">
-                            <Button
-                              variant="outline-primary"
-                              size="sm"
+                            <button
+                              className="btn-schedule-action btn-outline-primary"
                               onClick={() => handleSelectTime(dayData.day, block)}
                               disabled={isScheduled || isLoading}
                             >
                               {isScheduled ? '확정됨' : isLoading ? '처리 중...' : '선택'}
-                            </Button>
+                            </button>
                           </div>
                         );
                       })}
@@ -507,8 +504,8 @@ const ScheduleManager = ({
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button 
-            variant="secondary" 
+          <button 
+            className="action-btn-secondary"
             onClick={() => setScheduleState(prev => ({
               ...prev,
               showAppointmentModal: false
@@ -516,14 +513,14 @@ const ScheduleManager = ({
             disabled={isLoading}
           >
             취소
-          </Button>
-          <Button 
-            variant="primary" 
+          </button>
+          <button 
+            className="action-btn-primary"
             onClick={handleAddAppointment}
             disabled={isLoading}
           >
             {isLoading ? '처리 중...' : '추가'}
-          </Button>
+          </button>
         </Modal.Footer>
       </Modal>
     </div>

@@ -6,6 +6,37 @@
   color: var(--text-color);
 }
 
+/* GroupDetail 페이지 내에서의 스타일 */
+.group-detail-page .schedule-manager {
+  padding: 0;
+}
+
+.group-detail-page .schedule-manager .card {
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  background-color: var(--white);
+}
+
+.group-detail-page .schedule-manager .card:last-child {
+  margin-bottom: 0;
+}
+
+.group-detail-page .schedule-manager .card-body {
+  padding: 1.5rem;
+  background-color: var(--white);
+}
+
+.group-detail-page .schedule-manager .card-header {
+  background-color: var(--light-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
 /* 단계 표시기 스타일 */
 .schedule-manager .progress {
   height: 8px;
@@ -116,6 +147,39 @@
   margin-bottom: 16px;
 }
 
+/* 다크모드 스타일 */
+.dark-mode .group-detail-page .schedule-manager .card {
+  background-color: var(--dark-bg);
+  border-color: var(--border-color);
+}
+
+.dark-mode .group-detail-page .schedule-manager .card-body {
+  background-color: var(--dark-bg);
+  color: var(--text-color);
+}
+
+.dark-mode .group-detail-page .schedule-manager .card-header {
+  background-color: var(--primary-color);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.dark-mode .schedule-manager .form-select {
+  background-color: var(--dark-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.dark-mode .schedule-manager .table th {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.dark-mode .schedule-manager .modal-content {
+  background-color: var(--dark-bg);
+  border-color: var(--border-color);
+}
+
 /* 반응형 스타일 */
 @media (max-width: 768px) {
   .schedule-manager .form-row {
@@ -129,6 +193,19 @@
   .schedule-manager .badge {
     font-size: 0.8rem;
     padding: 4px 8px;
+  }
+
+  .group-detail-page .schedule-manager .card {
+    margin-bottom: 1rem;
+  }
+
+  .group-detail-page .schedule-manager .card-body {
+    padding: 1rem;
+  }
+
+  .group-detail-page .schedule-manager .card-header {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
   }
 }
 
