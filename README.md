@@ -16,11 +16,6 @@ StudyBuddy는 React와 Firebase를 기반으로 한 모던 웹 애플리케이�
 ## 📽️ 데모 및 결과물
 
 [여기에 데모 영상이나 스크린샷이 추가하기]
-<div align="cneter">
-  <video controls width="300" muted autoplay>
-    <source src="https://github.com/taejinchoi-cbnu/StudyBuddy/raw/main/docs/Videos/WelcomePage.mp4" type="video/mp4">
-  </video>
-</div>
 
 
 ## ✨ 주요 기능
@@ -35,19 +30,22 @@ StudyBuddy는 React와 Firebase를 기반으로 한 모던 웹 애플리케이�
 ## 🛠️ 기술 스택
 
 ### Frontend
-- **React 18** - 모던 리액트 기반 사용자 인터페이스
-- **Vite** - 빠른 개발 환경 및 빌드 도구
-- **CSS3** - 반응형 디자인 및 스타일링
-- **React Router** - 클라이언트 사이드 라우팅
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
 
 ### Backend & Database
-- **Node.js** - 서버사이드 런타임
-- **Express.js** - 웹 애플리케이션 프레임워크
-- **Firebase** - 실시간 데이터베이스 및 인증
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=white)
 
 ### Development Tools
-- **ESLint** - 코드 품질 관리
-- **Git** - 버전 관리
+![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
 
 ## 🚀 설치 및 실행
 
@@ -119,6 +117,7 @@ StudyBuddy/
 │   └── server.js         # 서버 진입점
 └── README.md
 ```
+
 
 ## 🤝 기여하기
 
