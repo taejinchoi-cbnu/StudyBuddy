@@ -67,6 +67,105 @@
   background-color: var(--primary-color);
 }
 
+/* ======================================================
+   리스트 아이템 스타일
+   ====================================================== */
+
+.list-item-common {
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 12px;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.list-item-common:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--hover-shadow);
+  background-color: var(--primary-color);
+}
+
+.list-item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.list-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-item-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+.list-item-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* 추천 그룹 특별 스타일 */
+.list-item-recommendation .recommendation-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.list-item-recommendation .recommendation-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.list-item-recommendation .recommendation-tag {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+}
+
+.list-item-recommendation .recommendation-members {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.list-item-recommendation .member-count {
+  background-color: rgba(204, 102, 89, 0.1);
+  color: var(--accent-color);
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid var(--accent-color);
+}
+
+/* 다크모드 추천 그룹 스타일 */
+.dark-mode .list-item-recommendation .recommendation-tag {
+  background-color: var(--white);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.dark-mode .list-item-recommendation .member-count {
+  background-color: rgba(153, 77, 66, 0.2);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
 /* 반응형 */
 @media (max-width: 768px) {
   .universal-card {

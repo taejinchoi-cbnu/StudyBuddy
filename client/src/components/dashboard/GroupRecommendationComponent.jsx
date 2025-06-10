@@ -81,23 +81,20 @@ const GroupRecommendationComponent = ({ userGroups = [] }) => {
               onClick={() => handleGroupClick(group.id)}
               title={group.name}
               subtitle={
-                <>
-                  <p className="mb-1">
-                    {group.description?.length > 60 
-                      ? `${group.description.substring(0, 60)}...` 
-                      : group.description}
-                  </p>
-                  <div className="d-flex flex-wrap gap-1 mb-2">
-                    {group.tags?.slice(0, 2).map(tag => (
-                      <Badge key={tag} bg="secondary" className="badge-count-small">
+                <div className="recommendation-content">
+                  <div className="recommendation-tags">
+                    {group.tags?.slice(0, 3).map(tag => (
+                      <span key={tag} className="recommendation-tag">
                         {tag}
-                      </Badge>
+                      </span>
                     ))}
                   </div>
-                  <small className="text-muted">
-                    {group.memberCount || 1}/{group.maxMembers}명
-                  </small>
-                </>
+                  <div className="recommendation-members">
+                    <span className="member-count">
+                      {group.memberCount || 1}/{group.maxMembers}명
+                    </span>
+                  </div>
+                </div>
               }
             />
           ))}
