@@ -379,14 +379,12 @@ const DashboardPage = () => {
   const showAdminCards = hasAdminGroups();
 
   return (
-    <Container fluid className={`dashboard-layout ${darkMode ? "dark-mode" : ""}`}>
-      <div className="main-area-full">
-        <div className="navbar-spacer"></div>
-
-        <main className="dashboard-content">
+    <div className={`main-layout dashboard-page ${darkMode ? "dark-mode" : ""}`}>
+      {/* 메인 콘텐츠 영역 */}
+      <main className="main-content dashboard-content">
           {/* 에러 메시지 표시 */}
           {(groupsError || eventsError) && (
-            <div className="alert alert-danger mt-3" role="alert">
+            <div className={`alert alert-danger mt-3 ${darkMode ? "dark-mode" : ""}`} role="alert">
               데이터를 불러오는 중 오류가 발생했습니다: {groupsError || eventsError}
             </div>
           )}
@@ -413,7 +411,7 @@ const DashboardPage = () => {
           </div>
 
           {/* 첫 번째 카드 행: 다가오는 일정 + 그룹 요청 + 그룹 추천 */}
-          <Container className="dashboard-cards-container">
+          <Container className={`dashboard-cards-container ${darkMode ? "dark-mode" : ""}`}>
             <Row className="g-4 mb-4 ">
               {/* 다가오는 일정 카드 */}
               <Col lg={showAdminCards ? 4 : 6} md={6} sm={12}>
@@ -650,8 +648,7 @@ const DashboardPage = () => {
             </Row>
           </Container>
         </main>
-      </div>
-    </Container>
+    </div>
   );
 };
 

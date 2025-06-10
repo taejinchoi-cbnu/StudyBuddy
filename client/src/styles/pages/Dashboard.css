@@ -1,31 +1,30 @@
-/* 대시보드 디자인 - 정리된 CSS */
-
 /* ======================================================
-   대시보드 기본 레이아웃
+   대시보드 디자인 - 정리된 CSS
    ====================================================== */
 
-.dashboard-layout {
-  display: flex;
+/* ======================================================
+   대시보드 기본 레이아웃 - HomePage 패턴 적용
+   ====================================================== */
+
+.main-layout.dashboard-page {
+  display: grid;
+  grid-template-rows: var(--navbar-height) 1fr;
   min-height: 100vh;
+  background: linear-gradient(135deg, #f8f4f0 0%, #ffccc4 100%);
   color: var(--text-color);
-  background-color: var(--light-bg);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
-.main-area-full {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.dashboard-content {
-  flex: 1;
-  overflow-y: auto;
+/* 메인 컨텐츠 그리드 영역 - HomePage와 동일한 패턴 */
+.main-content.dashboard-content {
+  grid-row: 1 / -1;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  min-height: calc(100vh - var(--navbar-height));
-  padding: 1rem;
+  padding: 4rem 1rem 2rem 1rem;
+  overflow-y: auto;
+  min-height: 100vh;
 }
 
 /* 대시보드 중앙 컨텐츠 */
@@ -129,7 +128,7 @@
   align-items: center;
   margin-top: 1rem;
   border-bottom: 1px solid var(--border-color);
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: transparent;
 }
 
 .card-component-content {
@@ -385,10 +384,14 @@
 }
 
 /* ======================================================
-   다크모드 스타일
+   다크모드 스타일 - HomePage 패턴 적용
    ====================================================== */
 
 .dark-mode {
+  .main-layout.dashboard-page {
+    background: linear-gradient(135deg, #2c2c2c 0%, #404040 100%);
+  }
+
   .dashboard-card {
     background-color: var(--white);
     border-color: var(--border-color);
@@ -465,6 +468,16 @@
 
   .timer-control-btn.btn-outline-secondary:hover {
     background-color: var(--border-color);
+  }
+
+  .alert.alert-danger {
+    background-color: var(--white);
+    border-color: var(--danger-color);
+    color: var(--text-color);
+  }
+
+  .dashboard-cards-container {
+    color: var(--text-color);
   }
 }
 
