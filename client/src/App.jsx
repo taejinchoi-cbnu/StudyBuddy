@@ -1,4 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { DarkModeProvider } from './contexts/DarkModeContext';
 import { useAuth } from './contexts/AuthContext';
@@ -22,40 +28,44 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 // ProtectedRoute 컴포넌트를 App.jsx에 통합
 const ProtectedElement = ({ children }) => {
   const { currentUser, loading } = useAuth();
-  
+
   if (loading) {
-    return <div className="d-flex justify-content-center mt-5">
-      <div className="spinner-border" role="status">
-        <span className="visually-hidden">Loading...</span>
+    return (
+      <div className="d-flex justify-content-center mt-5">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
       </div>
-    </div>;
+    );
   }
-  
+
   return currentUser ? children : <Navigate to="/login" />;
 };
 
 // 이메일 인증 확인이 필요한 라우트 보호 컴포넌트
 const CertifiedElement = ({ children }) => {
   const { currentUser, userProfile, loading } = useAuth();
-  
+
   if (loading) {
-    return <div className="d-flex justify-content-center mt-5">
-      <div className="spinner-border" role="status">
-        <span className="visually-hidden">Loading...</span>
+    return (
+      <div className="d-flex justify-content-center mt-5">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
       </div>
-    </div>;
+    );
   }
-  
+
   if (!currentUser) {
     return <Navigate to="/" />;
   }
-  
+
   // 이메일이 인증되지 않은 경우 프로필 페이지로 리다이렉트
   if (!userProfile?.certified_email) {
     alert('이메일 인증을 먼저 완료해주세요.');
     return <Navigate to="/profile" />;
   }
-  
+
   return children;
 };
 
@@ -63,76 +73,76 @@ const CertifiedElement = ({ children }) => {
 const AppWithNavbar = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
-  
+
   return (
     <AuthProvider>
       {/* 홈페이지가 아닐 때만 NavBar 표시 */}
       {!isHomePage && <AppNavbar />}
       <Routes>
         <Route path="/" element={<HomePage />} />
-        
+
         {/* Protected Routes */}
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
             <CertifiedElement>
               <DashboardPage />
             </CertifiedElement>
-          } 
+          }
         />
-        
-        <Route 
-          path="/profile" 
+
+        <Route
+          path="/profile"
           element={
             <ProtectedElement>
               <ProfilePage />
             </ProtectedElement>
-          } 
+          }
         />
-        
+
         {/* 그룹 라우트 추가 */}
-        <Route 
-          path="/groups" 
+        <Route
+          path="/groups"
           element={
             <CertifiedElement>
               <GroupsPage />
             </CertifiedElement>
-          } 
+          }
         />
-        
-        <Route 
-          path="/groups/create" 
+
+        <Route
+          path="/groups/create"
           element={
             <CertifiedElement>
               <CreateGroupPage />
             </CertifiedElement>
-          } 
+          }
         />
-        
-        <Route 
-          path="/groups/:groupId" 
+
+        <Route
+          path="/groups/:groupId"
           element={
             <CertifiedElement>
               <GroupDetailPage />
             </CertifiedElement>
-          } 
+          }
         />
-        
-        <Route 
-          path="/schedule" 
+
+        <Route
+          path="/schedule"
           element={
             <CertifiedElement>
               <SchedulePage />
             </CertifiedElement>
-          } 
+          }
         />
-        
+
         {/* 잘못된 경로로 이동하면 Home으로 보내기 */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </AuthProvider>
   );
-}
+};
 
 function App() {
   return (
