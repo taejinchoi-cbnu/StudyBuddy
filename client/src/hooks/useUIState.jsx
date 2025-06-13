@@ -201,11 +201,11 @@ const useUIState = (initialData = {}, opts = {}) => {
 
   //에러 메시지 보여주기
   const displayError = useCallback((msg) => {
-    if (!isMounted.current || !showAlerts) return;
+    if (!isMounted.current || !canShowAlerts) return;
     changeValue('error', msg);
     changeValue('success', '');
     changeValue('info', '');
-  }, [changeValue, showAlerts]);
+  }, [changeValue, canShowAlerts]);
   
   //성공 메시지
   const displaySuccess = useCallback((msg) => {
