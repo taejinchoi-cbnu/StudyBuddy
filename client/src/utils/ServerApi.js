@@ -6,27 +6,25 @@ class ServerApi {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        ...options.headers
+        ...options.headers,
       },
-      ...options
+      ...options,
     };
 
-    console.log(`Making API request to: ${url}`);
-    console.log('Request config:', { ...config, headers: { ...config.headers, Authorization: config.headers.Authorization ? '[TOKEN]' : undefined } });
 
     try {
       const response = await fetch(url, config);
       const data = await response.json();
-      
-      console.log(`API response from ${endpoint}:`, { status: response.status, data });
-      
+
+
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        throw new Error(
+          data.message || `HTTP error! status: ${response.status}`,
+        );
       }
-      
+
       return data;
     } catch (error) {
-      console.error(`API call failed for ${endpoint}:`, error);
       throw error;
     }
   }
@@ -36,8 +34,8 @@ class ServerApi {
       ...options,
       headers: {
         ...options.headers,
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
   }
 
@@ -45,32 +43,32 @@ class ServerApi {
   static async registerUser(token, userData) {
     return this.authenticatedRequest('/auth/register', token, {
       method: 'POST',
-      body: JSON.stringify(userData)
+      body: JSON.stringify(userData),
     });
   }
 
   static async loginUser(token) {
     return this.authenticatedRequest('/auth/login', token, {
-      method: 'POST'
+      method: 'POST',
     });
   }
 
   static async getUserProfile(token) {
     return this.authenticatedRequest('/auth/profile', token, {
-      method: 'GET'
+      method: 'GET',
     });
   }
 
   static async updateUserProfile(token, profileData) {
     return this.authenticatedRequest('/auth/profile', token, {
       method: 'PUT',
-      body: JSON.stringify(profileData)
+      body: JSON.stringify(profileData),
     });
   }
 
   static async logoutUser(token) {
     return this.authenticatedRequest('/auth/logout', token, {
-      method: 'POST'
+      method: 'POST',
     });
   }
 
@@ -81,23 +79,27 @@ class ServerApi {
       body: JSON.stringify({
         email,
         univName,
-        univ_check
-      })
+        univ_check,
+      }),
     });
   }
 
   static async checkEmailStatus(email) {
     return this.makeRequest('/auth/check-status', {
       method: 'POST',
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email }),
     });
   }
 
   // Update email certification status
   static async updateEmailCertification(token) {
-    return this.authenticatedRequest('/auth/update-email-certification', token, {
-      method: 'POST'
-    });
+    return this.authenticatedRequest(
+      '/auth/update-email-certification',
+      token,
+      {
+        method: 'POST',
+      },
+    );
   }
 }
 
