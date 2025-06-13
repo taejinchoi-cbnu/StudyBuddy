@@ -11,14 +11,13 @@ export function DarkModeProvider({ children }) {
       const savedMode = localStorage.getItem('darkMode');
       return savedMode ? JSON.parse(savedMode) : false;
     } catch (error) {
-      console.error('다크모드 설정을 로드하는 중 오류가 발생했습니다:', error);
       return false; // 오류 발생 시 기본값 사용
     }
   });
 
   // 다크모드 토글 함수
   const toggleDarkMode = () => {
-    setDarkMode(prevMode => !prevMode);
+    setDarkMode((prevMode) => !prevMode);
   };
 
   // 다크모드 상태가 변경될 때마다 로컬 스토리지에 저장하고 body 클래스 업데이트
@@ -26,26 +25,25 @@ export function DarkModeProvider({ children }) {
     try {
       localStorage.setItem('darkMode', JSON.stringify(darkMode));
     } catch (error) {
-      console.error('다크모드 설정을 저장하는 중 오류가 발생했습니다:', error);
     }
-    
+
     // 테마 전환 애니메이션을 위한 클래스 추가
     document.body.classList.add('theme-transition');
-    
+
     // body에 dark-mode 클래스 추가 또는 제거
     if (darkMode) {
       document.body.classList.add('dark-mode');
     } else {
       document.body.classList.remove('dark-mode');
     }
-    
+
     // 애니메이션이 끝난 후 transition 클래스 제거
     const transitionEndHandler = () => {
       document.body.classList.remove('theme-transition');
     };
-    
+
     const timer = setTimeout(transitionEndHandler, 1000); // 전환 시간보다 조금 더 길게 설정
-    
+
     return () => {
       clearTimeout(timer);
       // 컴포넌트 언마운트 시 transition 클래스 제거
@@ -56,7 +54,7 @@ export function DarkModeProvider({ children }) {
   // 프로바이더 값 설정
   const value = {
     darkMode,
-    toggleDarkMode
+    toggleDarkMode,
   };
 
   return (
