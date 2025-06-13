@@ -1,8 +1,4 @@
 /* ======================================================
-   홈페이지 디자인
-   ====================================================== */
-
-/* ======================================================
    전체 페이지 레이아웃
    ====================================================== */
 
@@ -76,7 +72,7 @@
   align-items: center;
 }
 
-/* 히어로 버튼 스타일 */
+/* 히어로 버튼 스타일 주요 액션 */
 .hero-button {
   display: inline-flex;
   align-items: center;
@@ -246,7 +242,7 @@
 }
 
 /* ======================================================
-   주요 특징 섹션
+   주요 특징 섹션 카드들
    ====================================================== */
 
 .features-section {
@@ -261,7 +257,7 @@
   transform: none !important;
 }
 
-/* Feature Card 스타일 */
+/* Feature Card 스타일 호버 효과 있음 */
 .feature-card {
   display: flex;
   align-items: center;
@@ -344,7 +340,7 @@
   font-size: 10px;
 }
 
-/* 애니메이션 섹션 스타일 */
+/* 애니메이션 섹션 스타일 스크롤 애니메이션 */
 .animated-section {
   opacity: 0 !important;
   transform: translateY(40px) !important;
@@ -368,7 +364,7 @@
   transform: translateY(0);
 }
 
-/* 순차적 애니메이션을 위한 delay */
+/* 순차적 애니메이션을 위한 delay 0.1s씩 */
 .feature-wrapper:nth-child(1) { transition-delay: 0.1s; }
 .feature-wrapper:nth-child(2) { transition-delay: 0.3s; }
 

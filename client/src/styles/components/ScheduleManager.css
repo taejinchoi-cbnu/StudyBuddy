@@ -1,3 +1,4 @@
+/* 스케줄 매니저 전체 너비 */
 .schedule-manager {
   width: 100%;
 }
@@ -6,7 +7,7 @@
   color: var(--text-color);
 }
 
-/* GroupDetail 페이지 내에서의 스타일 */
+/* GroupDetail 페이지 내에서의 스타일 카드 형태 */
 .group-detail-page .schedule-manager {
   padding: 0;
 }

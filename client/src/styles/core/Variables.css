@@ -1,9 +1,9 @@
 /* ======================================================
-   CSS 변수 정의 - 전역에서 사용되는 변수만 포함
+   CSS 변수 정의 - 전역에서 사용되는 변수만 포함 전체 테마
    ====================================================== */
 
 :root {
-  /* 색상 시스템 */
+  /* 색상 시스템 메인 색상들 */
   --primary-color: #ffccc4;
   --primary-dark: #cc9991;
   --accent-color: #cc6659;
@@ -29,17 +29,17 @@
   --border-color: #ffccc4;
   --border-radius: 15px;
   
-  /* 레이아웃 */
+  /* 레이아웃 반응형 디자인 */
   --navbar-height: 55px;
   --container-max-width: 1200px;
   
-  /* 애니메이션 */
+  /* 애니메이션 전환 효과 */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
 }
 
-/* 다크모드 변수 */
+/* 다크모드 변수 색상 대체 */
 .dark-mode {
   --primary-color: #664d4a;
   --primary-dark: #50403e;
@@ -53,7 +53,7 @@
   --border-color: #50403e;
 }
 
-/* 테마 전환 애니메이션을 위한 CSS */
+/* 테마 전환 애니메이션을 위한 CSS 부드럽게 */
 .theme-transition,
 .theme-transition *,
 .theme-transition *:before,
