@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 import { firestore } from '../firebase';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from 'firebase/firestore';
 
 // Simplified useApi hook to replace the deleted comprehensive version
 const useApi = (endpoint, options = {}) => {
@@ -10,13 +17,13 @@ const useApi = (endpoint, options = {}) => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const {
-    apiType = "firebase",
-    firebaseOperation = "get",
+    apiType = 'firebase',
+    firebaseOperation = 'get',
     firebaseFilters = [],
     executeOnMount = true,
     onSuccess,
     onError,
-    transform
+    transform,
   } = options;
 
   const execute = async () => {
@@ -29,29 +36,32 @@ const useApi = (endpoint, options = {}) => {
     try {
       let result = null;
 
-      if (apiType === "firebase") {
-        if (firebaseOperation === "get") {
+      if (apiType === 'firebase') {
+        if (firebaseOperation === 'get') {
           // Handle document get
           const docRef = doc(firestore, endpoint);
           const docSnap = await getDoc(docRef);
-          
+
           if (docSnap.exists()) {
             result = { id: docSnap.id, ...docSnap.data() };
           } else {
-            throw new Error("Document not found");
+            throw new Error('Document not found');
           }
-        } else if (firebaseOperation === "list") {
+        } else if (firebaseOperation === 'list') {
           // Handle collection query
           const collectionRef = collection(firestore, endpoint);
           let q = collectionRef;
 
           // Apply filters
-          firebaseFilters.forEach(filter => {
+          firebaseFilters.forEach((filter) => {
             q = query(q, where(filter.field, filter.operator, filter.value));
           });
 
           const querySnapshot = await getDocs(q);
-          result = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          result = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
         }
       }
 
@@ -62,14 +72,14 @@ const useApi = (endpoint, options = {}) => {
 
       setData(result);
       setIsSuccess(true);
-      
+
       if (onSuccess) {
         onSuccess(result);
       }
     } catch (err) {
       setError(err);
       setIsSuccess(false);
-      
+
       if (onError) {
         onError(err);
       }
@@ -90,7 +100,7 @@ const useApi = (endpoint, options = {}) => {
     error,
     isSuccess,
     execute,
-    refetch: execute
+    refetch: execute,
   };
 };
 
