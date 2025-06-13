@@ -5,50 +5,50 @@ import { useDarkMode } from '../../contexts/DarkModeContext';
 import { leaveGroup, deleteGroup } from '../../utils/GroupService';
 import useUIState from '../../hooks/useUIState';
 
-const GroupActionModal = ({ 
-  show, 
-  onHide, 
+const GroupActionModal = ({
+  show,
+  onHide,
   type, // 'join', 'leave', 'delete'
-  group, 
-  userId, 
+  group,
+  userId,
   onJoinRequest,
-  onLeaveSuccess, 
-  onDeleteSuccess 
+  onLeaveSuccess,
+  onDeleteSuccess,
 }) => {
   const { darkMode } = useDarkMode();
   const [joinMessage, setJoinMessage] = useState('');
-  
+
   const ui = useUIState({
-    error: "",
-    isProcessing: false
+    error: '',
+    isProcessing: false,
   });
 
   // 액션 타입별 핸들러
   const handleAction = async () => {
     try {
       ui.clearAll();
-      
+
       switch (type) {
         case 'join':
           await onJoinRequest(joinMessage);
           setJoinMessage('');
           break;
-          
+
         case 'leave':
-          await ui.startLoading("isProcessing", async () => {
+          await ui.startLoading('isProcessing', async () => {
             await leaveGroup(group.id, userId);
             onLeaveSuccess();
           });
           break;
-          
+
         case 'delete':
-          await ui.startLoading("isProcessing", async () => {
+          await ui.startLoading('isProcessing', async () => {
             await deleteGroup(group.id, userId);
             onDeleteSuccess();
           });
           break;
       }
-      
+
       onHide();
     } catch (error) {
       ui.showError(`작업 중 오류가 발생했습니다: ${error.message}`);
@@ -61,8 +61,16 @@ const GroupActionModal = ({
       case 'join':
         return {
           title: `"${group?.name}" 그룹 가입 요청`,
-          primaryButton: { text: '요청 보내기', variant: 'primary', icon: 'bi-check-lg' },
-          secondaryButton: { text: '취소', variant: 'secondary', icon: 'bi-x-lg' },
+          primaryButton: {
+            text: '요청 보내기',
+            variant: 'primary',
+            icon: 'bi-check-lg',
+          },
+          secondaryButton: {
+            text: '취소',
+            variant: 'secondary',
+            icon: 'bi-x-lg',
+          },
           content: (
             <>
               <p>그룹 관리자에게 가입 요청을 보냅니다.</p>
@@ -80,23 +88,33 @@ const GroupActionModal = ({
                 </Form.Text>
               </Form.Group>
             </>
-          )
+          ),
         };
-        
+
       case 'leave':
         return {
           title: '그룹 탈퇴 확인',
           headerVariant: 'warning',
-          primaryButton: { text: '탈퇴하기', variant: 'warning', icon: 'bi-check-lg' },
-          secondaryButton: { text: '취소', variant: 'secondary', icon: 'bi-x-lg' },
+          primaryButton: {
+            text: '탈퇴하기',
+            variant: 'warning',
+            icon: 'bi-check-lg',
+          },
+          secondaryButton: {
+            text: '취소',
+            variant: 'secondary',
+            icon: 'bi-x-lg',
+          },
           content: (
             <>
               <p>정말 "{group?.name}" 그룹에서 탈퇴하시겠습니까?</p>
-              <p className="text-danger">탈퇴 후에는 관리자의 승인 없이 다시 가입할 수 없습니다.</p>
+              <p className="text-danger">
+                탈퇴 후에는 관리자의 승인 없이 다시 가입할 수 없습니다.
+              </p>
             </>
-          )
+          ),
         };
-        
+
       case 'delete':
         return {
           title: '그룹 삭제 확인',
@@ -104,18 +122,27 @@ const GroupActionModal = ({
           confirmationRequired: true,
           confirmationText: '삭제하기',
           confirmationPlaceholder: '삭제하기',
-          primaryButton: { text: '그룹 삭제', variant: 'danger', icon: 'bi-trash' },
-          secondaryButton: { text: '취소', variant: 'secondary', icon: 'bi-x-lg' },
+          primaryButton: {
+            text: '그룹 삭제',
+            variant: 'danger',
+            icon: 'bi-trash',
+          },
+          secondaryButton: {
+            text: '취소',
+            variant: 'secondary',
+            icon: 'bi-x-lg',
+          },
           content: (
             <>
               <h5>"{group?.name}" 그룹을 정말 삭제하시겠습니까?</h5>
               <p className="text-danger">
-                이 작업은 되돌릴 수 없으며, 모든 그룹 데이터와 멤버십 정보가 영구적으로 삭제됩니다.
+                이 작업은 되돌릴 수 없으며, 모든 그룹 데이터와 멤버십 정보가
+                영구적으로 삭제됩니다.
               </p>
             </>
-          )
+          ),
         };
-        
+
       default:
         return null;
     }
@@ -135,11 +162,12 @@ const GroupActionModal = ({
       primaryButton={{
         ...config.primaryButton,
         onClick: handleAction,
-        disabled: ui.isProcessing || (type === 'join' && joinMessage.length > 300)
+        disabled:
+          ui.isProcessing || (type === 'join' && joinMessage.length > 300),
       }}
       secondaryButton={{
         ...config.secondaryButton,
-        onClick: onHide
+        onClick: onHide,
       }}
       isLoading={ui.isProcessing}
       loadingText="처리 중..."
@@ -153,11 +181,11 @@ const GroupActionModal = ({
         }
       }}
       onSubmit={type === 'join' ? handleAction : undefined}
-      className={`group-action-modal ${darkMode ? "dark-mode" : ""}`}
+      className={`group-action-modal ${darkMode ? 'dark-mode' : ''}`}
     >
       {config.content}
     </BaseModal>
   );
 };
 
-export default GroupActionModal; 
+export default GroupActionModal;

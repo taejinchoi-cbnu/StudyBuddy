@@ -1,284 +1,164 @@
-import { useState } from "react";
-import { Modal, Button, Alert, Spinner, Form } from "react-bootstrap";
-import { useDarkMode } from "../../contexts/DarkModeContext";
+import { useState } from 'react';
+import { Modal, Button, Alert, Spinner, Form } from 'react-bootstrap';
+import { useDarkMode } from '../../contexts/DarkModeContext';
 
-// 통합 모달 컴포넌트 - 모든 모달을 하나로 통합
-const BaseModal = ({
-  // 기본 모달 속성
-  show,
-  onHide,
-  title,
-  size = "md", // "sm", "md", "lg", "xl"
-  centered = true,
+//기본 모달 너무 복잡하게 만든거 같음
+const BaseModal = (props) => {
+  const {
+    show,
+    onHide,
+    title,
+    size,
+    children,
+    error,
+    success,
+    primaryButton,
+    secondaryButton,
+    isLoading,
+    confirmationRequired,
+    confirmationText,
+    onSubmit
+  } = props;
   
-  // 헤더 설정
-  showCloseButton = true,
-  headerIcon,
-  headerVariant = "default", // "default", "danger", "warning", "success", "info"
-  
-  // 콘텐츠
-  children,
-  
-  // 알림 메시지
-  error,
-  success,
-  info,
-  onClearMessages,
-  
-  // 푸터 버튼 설정
-  showFooter = true,
-  primaryButton,
-  secondaryButton,
-  customFooter,
-  
-  // 로딩 상태
-  isLoading = false,
-  loadingText = "처리 중...",
-  
-  // 확인 입력 (삭제 모달 등에서 사용)
-  confirmationRequired = false,
-  confirmationText = "",
-  confirmationPlaceholder = "확인 텍스트를 입력하세요",
-  onConfirmationChange,
-  
-  // 폼 처리
-  onSubmit,
-  
-  // 추가 props
-  className = "",
-  backdrop = true,
-  keyboard = true,
-  ...props
-}) => {
   const { darkMode } = useDarkMode();
-  const [internalConfirmText, setInternalConfirmText] = useState("");
-  
-  // 확인 텍스트 변경 핸들러
-  const handleConfirmationChange = (e) => {
-    const value = e.target.value;
-    setInternalConfirmText(value);
-    if (onConfirmationChange) {
-      onConfirmationChange(value);
-    }
-  };
-  
-  // 확인 텍스트 검증
-  const isConfirmationValid = () => {
-    if (!confirmationRequired) return true;
-    return internalConfirmText.trim().toLowerCase() === confirmationText.toLowerCase();
-  };
-  
-  // 헤더 아이콘 및 스타일 결정
-  const getHeaderStyle = () => {
-    switch (headerVariant) {
-      case "danger":
-        return { titleClass: "text-danger", iconClass: headerIcon || "bi-exclamation-triangle" };
-      case "warning":
-        return { titleClass: "text-warning", iconClass: headerIcon || "bi-exclamation-circle" };
-      case "success":
-        return { titleClass: "text-success", iconClass: headerIcon || "bi-check-circle" };
-      case "info":
-        return { titleClass: "text-info", iconClass: headerIcon || "bi-info-circle" };
-      default:
-        return { titleClass: "", iconClass: headerIcon };
-    }
-  };
-  
-  const headerStyle = getHeaderStyle();
-  
-  // 폼 제출 핸들러
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (onSubmit && (!confirmationRequired || isConfirmationValid())) {
-      onSubmit(e);
-    }
-  };
-  
-  // 모달 닫기 핸들러 (로딩 중이 아닐 때만)
-  const handleHide = () => {
-    if (!isLoading && onHide) {
-      setInternalConfirmText(""); // 확인 텍스트 초기화
+  const [confirmInput, setConfirmInput] = useState('');
+
+  //확인 텍스트 맞는지 체크
+  let confirmOk = true;
+  if (confirmationRequired) {
+    confirmOk = confirmInput.trim().toLowerCase() === (confirmationText || '').toLowerCase();
+  }
+
+  //모달 닫기
+  const handleClose = () => {
+    if (isLoading) return;
+    if (onHide) {
+      setConfirmInput(''); //입력 초기화
       onHide();
     }
   };
-  
-  // 알림 메시지 렌더링
+
+  //폼 제출
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (onSubmit && confirmOk) {
+      onSubmit(event);
+    }
+  };
+
+  //에러/성공 메시지 렌더링
   const renderAlerts = () => {
     return (
       <>
         {error && (
-          <Alert 
-            variant="danger" 
-            onClose={onClearMessages} 
-            dismissible={!!onClearMessages}
-            className="mb-3"
-          >
+          <Alert variant="danger" className="mb-3">
             {error}
           </Alert>
         )}
         {success && (
-          <Alert 
-            variant="success" 
-            onClose={onClearMessages} 
-            dismissible={!!onClearMessages}
-            className="mb-3"
-          >
+          <Alert variant="success" className="mb-3">
             {success}
-          </Alert>
-        )}
-        {info && (
-          <Alert 
-            variant="info" 
-            onClose={onClearMessages} 
-            dismissible={!!onClearMessages}
-            className="mb-3"
-          >
-            {info}
           </Alert>
         )}
       </>
     );
   };
-  
-  // 확인 입력 필드 렌더링
-  const renderConfirmationInput = () => {
+
+  //확인 입력 필드
+  const renderConfirmInput = () => {
     if (!confirmationRequired) return null;
     
     return (
       <div className="mb-3">
-        <p className="mb-2">
-          계속하려면 <strong>"{confirmationText}"</strong>를 정확히 입력하세요.
+        <p>
+          입력하세요: <strong>{confirmationText}</strong>
         </p>
         <Form.Control
           type="text"
-          value={internalConfirmText}
-          onChange={handleConfirmationChange}
-          placeholder={confirmationPlaceholder}
-          disabled={isLoading}
-          className={!isConfirmationValid() && internalConfirmText ? "is-invalid" : ""}
+          value={confirmInput}
+          onChange={(e) => setConfirmInput(e.target.value)}
+          disabled={isLoading || false}
         />
-        {!isConfirmationValid() && internalConfirmText && (
-          <div className="invalid-feedback">
-            입력한 텍스트가 일치하지 않습니다.
-          </div>
-        )}
       </div>
     );
   };
-  
-  // 기본 푸터 렌더링
-  const renderDefaultFooter = () => {
-    if (!showFooter) return null;
-    
-    if (customFooter) {
-      return <Modal.Footer>{customFooter}</Modal.Footer>;
-    }
-    
+
+  //푸터 버튼들
+  const renderFooter = () => {
     return (
       <Modal.Footer>
-        {/* 보조 버튼 (취소, 닫기 등) */}
         {secondaryButton && (
           <Button
-            variant={secondaryButton.variant || "secondary"}
-            onClick={secondaryButton.onClick || handleHide}
+            variant={secondaryButton.variant ? secondaryButton.variant : 'secondary'}
+            onClick={secondaryButton.onClick ? secondaryButton.onClick : handleClose}
             disabled={isLoading}
-            className={secondaryButton.className || ""}
           >
-            {secondaryButton.icon && <i className={`${secondaryButton.icon} me-1`}></i>}
-            {secondaryButton.text || "취소"}
+            {secondaryButton.text ? secondaryButton.text : '취소'}
           </Button>
         )}
-        
-        {/* 주 버튼 (확인, 삭제, 저장 등) */}
+
         {primaryButton && (
           <Button
-            type={onSubmit ? "submit" : "button"}
-            variant={primaryButton.variant || "primary"}
-            onClick={!onSubmit ? primaryButton.onClick : undefined}
-            disabled={
-              isLoading || 
-              (confirmationRequired && !isConfirmationValid()) ||
-              primaryButton.disabled
-            }
-            className={primaryButton.className || ""}
+            type={onSubmit ? 'submit' : 'button'}
+            variant={primaryButton.variant || 'primary'}
+            onClick={onSubmit ? undefined : primaryButton.onClick}
+            disabled={isLoading || !confirmOk}
           >
             {isLoading ? (
               <>
-                <Spinner 
-                  as="span" 
-                  animation="border" 
-                  size="sm" 
-                  role="status" 
-                  aria-hidden="true" 
-                  className="me-2"
-                />
-                {loadingText}
+                <Spinner size="sm" className="me-2" />
+                처리중...
               </>
             ) : (
-              <>
-                {primaryButton.icon && <i className={`${primaryButton.icon} me-1`}></i>}
-                {primaryButton.text || "확인"}
-              </>
+              primaryButton.text || '확인'
             )}
           </Button>
         )}
       </Modal.Footer>
     );
   };
-  
-  // 모달 콘텐츠 렌더링
-  const renderModalContent = () => {
-    if (onSubmit) {
-      return (
-        <Form onSubmit={handleSubmit}>
-          <Modal.Body>
-            {renderAlerts()}
-            {renderConfirmationInput()}
-            {children}
-          </Modal.Body>
-          {renderDefaultFooter()}
-        </Form>
-      );
-    }
-    
-    return (
+
+  //컨텐트 만들기 폼이나 일반 컨텐트
+  let modalContent;
+  if (onSubmit) {
+    modalContent = (
+      <Form onSubmit={handleSubmit}>
+        <Modal.Body>
+          {renderAlerts()}
+          {renderConfirmInput()}
+          {children}
+        </Modal.Body>
+        {renderFooter()}
+      </Form>
+    );
+  } else {
+    modalContent = (
       <>
         <Modal.Body>
           {renderAlerts()}
-          {renderConfirmationInput()}
+          {renderConfirmInput()}
           {children}
         </Modal.Body>
-        {renderDefaultFooter()}
+        {renderFooter()}
       </>
     );
-  };
-  
+  }
+
+  //모달 렌더링
   return (
     <Modal
-      show={show}
-      onHide={handleHide}
-      size={size}
-      centered={centered}
-      backdrop={isLoading ? "static" : backdrop}
-      keyboard={!isLoading && keyboard}
-      className={`base-modal ${darkMode ? "dark-mode" : ""} ${className}`}
-      {...props}
+      show={show || false}
+      onHide={handleClose}
+      size={size || 'md'}
+      backdrop={isLoading ? 'static' : true}
+      className={darkMode ? 'dark-mode' : ''}
     >
-      {/* 모달 헤더 */}
-      <Modal.Header closeButton={showCloseButton && !isLoading}>
-        <Modal.Title className={headerStyle.titleClass}>
-          {headerStyle.iconClass && (
-            <i className={`${headerStyle.iconClass} me-2`}></i>
-          )}
-          {title}
-        </Modal.Title>
+      <Modal.Header closeButton={!isLoading}>
+        <Modal.Title>{title || '제목 없음'}</Modal.Title>
       </Modal.Header>
-      
-      {/* 모달 콘텐츠 */}
-      {renderModalContent()}
+      {modalContent}
     </Modal>
   );
 };
-
 
 export default BaseModal;

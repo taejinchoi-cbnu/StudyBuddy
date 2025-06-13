@@ -6,7 +6,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // date-fns 기반의 localizer 생성
 const locales = {
-  'ko': ko,
+  ko: ko,
 };
 
 // localizer 설정
@@ -20,7 +20,7 @@ const localizer = dateFnsLocalizer({
 
 const CalendarView = ({ events, onSelectEvent }) => {
   const [view, setView] = useState('month');
-  
+
   // 이벤트 스타일 지정
   const eventStyleGetter = useCallback((event) => {
     let style = {
@@ -29,11 +29,11 @@ const CalendarView = ({ events, onSelectEvent }) => {
       opacity: 0.8,
       color: 'white',
       border: '0px',
-      display: 'block'
+      display: 'block',
     };
-    
+
     return {
-      style
+      style,
     };
   }, []);
 
@@ -50,7 +50,7 @@ const CalendarView = ({ events, onSelectEvent }) => {
     time: '시간',
     event: '일정',
     allDay: '하루종일',
-    noEventsInRange: '이 기간 동안 일정이 없습니다.'
+    noEventsInRange: '이 기간 동안 일정이 없습니다.',
   };
 
   return (
