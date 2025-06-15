@@ -24,7 +24,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 const CreateGroupForm = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const [isSubmitting, startSubmitting] = useLoading();
+  const { isLoading: isSubmitting, startLoading: startSubmitting } = useLoading();
 
   // 폼 상태
   const [formData, setFormData] = useState({
@@ -170,7 +170,7 @@ const CreateGroupForm = () => {
       <div className="create-group-container">
         {isSubmitting && <LoadingSpinner />}
 
-        <Card className="shadow-sm create-group-card">
+        <Card className="shadow-sm create-group-card" style={{border: "1px solid var(--accent-color)", padding: "1rem"}}>
           <Card.Body>
             <h2 className="text-center mb-4">새 그룹 만들기</h2>
             {error && <Alert variant="danger">{error}</Alert>}

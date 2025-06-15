@@ -45,7 +45,7 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
   const [success, setSuccess] = useState('');
   const [calculationDone, setCalculationDone] = useState(false);
   const [appointments, setAppointments] = useState([]);
-  const [isSaving, startSaving] = useLoading();
+  const { isLoading: isSaving, setLoading: setSaving } = useLoading();
   const [showConfirmedSchedules, setShowConfirmedSchedules] = useState(true);
 
   // 사용자 권한 확인
@@ -119,7 +119,7 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
     }
 
     try {
-      startSaving();
+      setSaving(true);
 
       const newTime = { day, start: startTime, end: endTime };
 
@@ -174,11 +174,8 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
       setError('시간 추가 중 오류가 발생했습니다.');
       return false;
     } finally {
-      // startSaving 완료를 비동기로 처리
       setTimeout(() => {
-        if (typeof isSaving === 'function') {
-          // useLoading 훅의 stop 함수 호출
-        }
+        setSaving(false);
       }, 500);
     }
   };
@@ -186,7 +183,7 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
   // 불가능한 시간 삭제
   const removeUnavailableTime = async (userId, index) => {
     try {
-      startSaving();
+      setSaving(true);
 
       setAvailabilityData((prevData) => {
         if (!prevData[userId] || !prevData[userId].unavailableTimes[index]) {
@@ -220,9 +217,7 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
       setError('시간 삭제 중 오류가 발생했습니다.');
     } finally {
       setTimeout(() => {
-        if (typeof isSaving === 'function') {
-          // useLoading 훅의 stop 함수 호출
-        }
+        setSaving(false);
       }, 500);
     }
   };
@@ -376,7 +371,7 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
     }
 
     try {
-      startSaving();
+      setSaving(true);
 
       if (action === 'delete') {
         // 일정 삭제 - userId 파라미터 추가
@@ -414,9 +409,7 @@ const GroupScheduleComponent = ({ group, members, onGroupUpdate }) => {
       }
     } finally {
       setTimeout(() => {
-        if (typeof isSaving === 'function') {
-          // useLoading 훅의 stop 함수 호출
-        }
+        setSaving(false);
       }, 500);
     }
   };

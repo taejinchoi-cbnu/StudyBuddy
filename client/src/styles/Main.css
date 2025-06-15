@@ -56,9 +56,7 @@ body {
 }
 
 .page-container {
-  padding-top: calc(var(--navbar-height) + 20px);
   min-height: 100vh;
-  background-color: var(--light-bg);
 }
 
 /* 전역 다크모드 전환 애니메이션 */

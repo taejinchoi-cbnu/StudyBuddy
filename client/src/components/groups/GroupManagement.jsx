@@ -33,7 +33,7 @@ const GroupManagement = ({
   onMemberRemoved,
 }) => {
   const { darkMode } = useDarkMode();
-  const [isUpdating, startUpdating] = useLoading();
+  const { isLoading: isUpdating, setLoading: setUpdating } = useLoading();
   const [memberProfiles, setMemberProfiles] = useState({});
   const [showActionModal, setShowActionModal] = useState(false);
   const [modalType, setModalType] = useState(''); // 'delete'
@@ -112,10 +112,13 @@ const GroupManagement = ({
 
     try {
       clearAll();
-      await startUpdating(updateGroup(group.id, formData, currentUser.uid));
+      setUpdating(true);
+      await updateGroup(group.id, formData, currentUser.uid);
+      setUpdating(false);
       showSuccess('그룹 정보가 성공적으로 업데이트되었습니다.');
       onUpdateSuccess();
     } catch (error) {
+      setUpdating(false);
       showError('그룹 정보 업데이트 중 오류가 발생했습니다: ' + error.message);
     }
   };
